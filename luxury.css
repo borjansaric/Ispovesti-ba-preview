@@ -383,3 +383,19 @@ button:disabled{opacity:.55}
   box-shadow:none!important;
   text-shadow:0 0 6px rgba(244,217,143,.65),0 0 12px rgba(216,180,95,.42)!important;
 }
+
+
+/* Match the specificity of the original report-button rules: gold by default, red only after reporting. */
+.story-actions>.action.report,.comment-actions>.action.comment-report,
+.story-actions>.action.report:hover,.comment-actions>.action.comment-report:hover{
+  color:#d6b15e!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
+.story-actions>.action.report.reported,
+.comment-actions>.action.comment-report.reported{
+  color:#ed5555!important;
+}
