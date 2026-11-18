@@ -28,7 +28,7 @@ const button=(text,fn,cls='action')=>{const b=node('button',cls,text);b.type='bu
 const date=v=>v?new Date(v).toLocaleString('sr-Latn',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
 const dailyDayLabel=value=>{const d=new Date(String(value)+'T12:00:00');return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString('sr-Latn',{weekday:'long',day:'numeric',month:'long',year:'numeric'});};
 function toast(text){$('#toast').textContent=text;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').textContent='',6500);}
-function modal(title,content,className=''){dialog.className=className;$('#dialog-title').textContent=title;$('#dialog-body').replaceChildren(content);if(!dialog.open)dialog.showModal();}
+function modal(title,content,className=''){dialog.className=className;const heading=$('#dialog-title');heading.textContent=title;heading.parentElement.hidden=!title;$('#dialog-body').replaceChildren(content);if(!dialog.open)dialog.showModal();}
 const menuToggle=$('#menu-toggle'),sideMenu=$('#side-menu'),menuOverlay=$('#menu-overlay');
 function closeMenu(){setMenu(false);}
 function setMenu(open){
