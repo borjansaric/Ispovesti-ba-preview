@@ -62,8 +62,9 @@ function contentForm(kind,extra,done,onBack){
  const form=node('form',kind==='confession'?'form':'form discussion-form'),label=node('label','',kind==='confession'?'Tvoja priča':'Tvoje reči'),text=node('textarea');text.addEventListener('focus',()=>prepareSubmission(kind,form));text.addEventListener('input',()=>prepareSubmission(kind,form));text.required=true;text.maxLength=kind==='confession'?10000:2000;text.classList.toggle('discussion-textarea',kind!=='confession');text.placeholder=kind==='confession'?'Napiši ono što želiš da podeliš...':kind==='comment'?'':'Napiši odgovor...';label.append(text);
  const nickLabel=node('label','','Ms./Mr.'),nick=node('input');nick.maxLength=40;nick.autocomplete='off';nickLabel.append(nick);
  const status=node('p','hint'),send=node('button','primary',kind==='confession'?'Pošalji ispovest':'Pošalji');send.type='submit';
- const row=node('div','row'),back=onBack?button('← Nazad',()=>onBack(),'discussion-back'):null;if(back)row.append(back);row.append(send);
- form.append(label,nickLabel,row,status);
+ const identityRow=node('div','identity-row');identityRow.append(nickLabel,send);
+ const row=node('div','row'),back=onBack?button('← Nazad',()=>onBack(),'discussion-back'):null;if(back)row.append(back);
+ form.append(label,identityRow,...(back?[row]:[]),status);
  let allowDuplicate=false,duplicateButton,sending=false,requestId=null,lastPayload=null;
  form.onsubmit=async e=>{e.preventDefault();if(sending)return;sending=true;send.disabled=true;if(back)back.disabled=true;text.disabled=true;nick.disabled=true;const submittedAt=performance.now();status.className='hint';status.textContent='Šaljem…';
   try{
