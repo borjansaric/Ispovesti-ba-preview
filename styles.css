@@ -102,6 +102,6 @@ dialog:not(.report-dialog){max-width:560px;width:calc(100% - 28px);max-height:90
 }
 .story-actions > .action.favorite.selected,
 .comment-actions > .comment-heart.selected{
- color:#f4d98f!important;
- text-shadow:0 0 7px rgba(244,217,143,.62)!important;
+ color:#d6b15e!important;
+ text-shadow:0 0 7px rgba(214,177,94,.62)!important;
 }
