@@ -14,10 +14,6 @@ body.chat-open,body.thread-open{overflow:hidden}
 
 .reply-count:empty{display:none}
 
-/* Menu stays in the page header and scrolls away instead of covering stories. */
-#menu-toggle{position:absolute}
-body.menu-open #menu-toggle{position:fixed}
-
 .discussion-form .row{gap:16px}
 .discussion-form .row>.hint{margin-right:auto}
 .discussion-form .row>.primary,.discussion-form .discussion-back{border:0;border-radius:0;background:transparent;box-shadow:none;color:var(--gold);font-size:13px;font-weight:normal;min-height:44px;padding:8px 2px;margin:0;white-space:nowrap}
