@@ -176,7 +176,7 @@ async function openReplies(item,confessionId,refreshContext,trigger){
 }
 function story(item){
  const article=node('article','story');if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
- const row=node('div','story-actions vote-row'),commentsArea=node('section','comments-area comments');
+ const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
  const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.append(commentsList);
  const favorite=button('♡',async b=>{const enabled=b.getAttribute('aria-pressed')!=='true';await request('favorite',{id:item.id,enabled});setFavorite(enabled);pulseHeart(b);},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);}
