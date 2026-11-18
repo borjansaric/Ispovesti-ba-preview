@@ -26,7 +26,7 @@ body::after{
  transform:translate3d(0,var(--lux-scroll-y,0px),0);opacity:.55;
 }
 .site-header,main,footer{position:relative;z-index:1}
-.side-menu{position:fixed;z-index:1001}
+.side-menu{position:fixed;z-index:1001;width:min(320px,48vw);max-width:320px;padding:62px 12px 18px;}
 .site-header{background:transparent!important}
 .site-header h1{letter-spacing:.09em;text-shadow:0 0 24px rgba(201,167,91,.18)}
 .site-header p{letter-spacing:.025em}
@@ -76,3 +76,36 @@ button:disabled{opacity:.55}
 .dialog-heading .icon-button{padding:0 5px!important}
 #toast{border:0!important;border-radius:3px!important;box-shadow:none!important}
 .preview{border:0!important;border-radius:0!important}
+
+
+/* Compact side menu: under half the viewport, with simple underline-only fields. */
+.side-menu .panel h2{
+ max-width:5ch;
+ line-height:1.15;
+ overflow-wrap:normal;
+}
+.side-menu .form input,
+.side-menu .form textarea,
+.side-menu .form input:focus,
+.side-menu .form textarea:focus{
+ width:100%;
+ box-sizing:border-box;
+ background:transparent!important;
+ border:0!important;
+ border-bottom:1px solid rgba(214,177,94,.55)!important;
+ border-radius:0!important;
+ box-shadow:none!important;
+ outline:0;
+ padding:9px 0!important;
+}
+.side-menu .form input:focus,
+.side-menu .form textarea:focus{
+ border-bottom-color:var(--gold)!important;
+}
+.side-menu .form label{margin-bottom:12px}
+.side-menu .form textarea{min-height:72px!important}
+@media(max-width:480px){
+ .side-menu{width:48vw;padding-left:10px;padding-right:10px}
+ .side-menu .menu-links button,
+ .side-menu .private-actions button{white-space:normal;overflow-wrap:anywhere}
+}
