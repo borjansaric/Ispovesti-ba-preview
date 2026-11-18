@@ -18,49 +18,6 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .daily-comment-story>.comment{margin:0}
 .daily-comment-story .daily-context{display:inline-block;margin:8px 0 0;padding:4px 0}
 
-/* Separate emoji reactions: opened from vote controls, never mixed into vote totals. */
-.reaction-picker{display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;margin-top:9px;padding:9px 10px;border:1px solid #625332;border-radius:8px;background:#171717}
-.reaction-picker-label{flex-basis:100%;font-size:11px;color:var(--muted)}
-.reaction-choice{min-width:38px;margin:0;padding:6px 8px;background:#242424;border:1px solid #454545;border-radius:7px;font-size:19px}
-.reaction-choice.selected{border-color:var(--gold);background:#302819}
-.reaction-choice:disabled{opacity:.65}
-.reaction-statistics{display:grid;gap:9px}
-.reaction-stat-line{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid var(--border)}
-
-/* Premium gold glow for emoji reactions and locked vote selection */
-.reaction-picker{
- border-color:rgba(211,174,91,.48);
- box-shadow:inset 0 0 18px rgba(212,174,88,.055),0 0 13px rgba(212,174,88,.12);
-}
-.reaction-choice{
- position:relative;
- border:1px solid rgba(196,157,76,.48);
- background:linear-gradient(145deg,#29251c 0%,#171717 72%);
- box-shadow:0 0 7px rgba(218,181,94,.13),inset 0 0 8px rgba(218,181,94,.06);
- text-shadow:0 0 8px rgba(255,218,133,.3);
- transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease,background .2s ease;
-}
-.reaction-choice:hover,
-.reaction-choice:focus-visible{
- border-color:#e2bd68;
- box-shadow:0 0 10px rgba(225,188,102,.42),0 0 22px rgba(225,188,102,.2),inset 0 0 10px rgba(225,188,102,.13);
-}
-.reaction-choice.selected{
- border-color:#f0ce7a;
- background:linear-gradient(145deg,#4a391b 0%,#211b12 78%);
- box-shadow:0 0 8px rgba(245,204,111,.62),0 0 18px rgba(222,177,79,.48),0 0 30px rgba(222,177,79,.2),inset 0 0 13px rgba(255,222,145,.2);
- text-shadow:0 0 7px rgba(255,225,158,.85),0 0 15px rgba(245,204,111,.5);
-}
-@media(prefers-reduced-motion:no-preference){
- .reaction-choice.selected{animation:gold-reaction-breathe 3.2s ease-in-out infinite}
- @keyframes gold-reaction-breathe{
-  0%,100%{box-shadow:0 0 7px rgba(245,204,111,.48),0 0 16px rgba(222,177,79,.34),inset 0 0 10px rgba(255,222,145,.16)}
-  50%{box-shadow:0 0 11px rgba(245,204,111,.72),0 0 23px rgba(222,177,79,.52),0 0 34px rgba(222,177,79,.22),inset 0 0 15px rgba(255,222,145,.23)}
- }
-}
-
-
-
 /* Canonical feed vote/action styles. Keep all vote-button presentation here only. */
 .story-actions,.comment-actions{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px}
 .vote-controls{display:inline-flex;align-items:center;gap:12px;flex:0 0 auto;position:relative;z-index:2}
@@ -76,7 +33,10 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
  transform:translate(-50%,-50%);
 }
 .vote-controls>.action:focus,.vote-controls>.action:focus-visible{outline:0;border:0;box-shadow:none}
-.vote-controls>.action[aria-disabled="true"]{opacity:.72;cursor:context-menu}
+.vote-controls>.action[aria-disabled="true"]{opacity:1;cursor:default}
+.vote-controls.has-vote>.action:not(.selected){color:#484848;text-shadow:none;box-shadow:none}
+.vote-controls:not(.has-vote)>.action{color:#aaa;text-shadow:none;box-shadow:none}
+.vote-controls>.action.selected{opacity:1}
 .vote-controls>.action[aria-label="Pozitivan glas"].selected{
  color:#f4d98f;box-shadow:0 0 5px rgba(244,217,143,.48),0 0 12px rgba(216,180,95,.3);
  text-shadow:0 0 7px rgba(244,217,143,.62);
