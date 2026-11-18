@@ -18,7 +18,7 @@
     .story-date,.comment-date{color:var(--muted);font-size:11px;margin-top:4px}
     .story-date{font-size:12px;margin-top:12px}
     .vote-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .vote-button{background:#222;color:var(--text);border:1px solid #625332;margin:0;padding:7px 12px}
+
     .vote-button.selected{background:#3b321e;border-color:var(--gold);color:var(--gold)}
     .favorite-button{min-width:42px;font-size:18px;padding:5px 10px;color:#ddd}
     .vote-status{color:var(--muted);font-size:12px;margin-top:5px;min-height:18px}
