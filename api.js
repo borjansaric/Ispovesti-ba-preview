@@ -54,7 +54,7 @@ export async function request(action, args = {}, adminSession = null, captchaHos
   });
   const result = await response.json();
   if(action==='submit')performance.measure('ispovesti-submit-network',{start:networkAt,end:performance.now()});
-  if (!response.ok) throw new Error(result.error || 'Radnja nije uspjela. Pokušaj ponovo.');
+  if (!response.ok) throw new Error(result.error || 'Radnja nije uspela. Pokušaj ponovo.');
   return result;
 }
 // Explicit browser-local preview only. Production always enforces rules in SQL.
@@ -64,7 +64,7 @@ const initial = () => ({
     { id:'1', kind:'confession', body:'Danas sam poslije mnogo godina prošao ulicom u kojoj sam odrastao. Sve je drugačije, a opet sam na trenutak bio onaj klinac koji žuri kući jer ga čeka ručak. Neka mjesta nas nikad ne puste sasvim.', nickname:null, published_at:'2026-10-20T11:00:00Z', state:'published' },
     { id:'2', kind:'confession', body:'Mama mi i dalje spakuje nešto za ponijeti svaki put kad dođem. Imam svoj posao, svoj stan i frižider pun hrane. Ali ta kesa je najljepša stvar koju donesem kući. 🤍', nickname:'Jedan sin', published_at:'2026-10-20T12:00:00Z', state:'published' },
     { id:'3', kind:'confession', body:'Nisam danas uradio ništa veliko. Izašao sam u šetnju, javio se starom prijatelju i spremio sebi večeru. Poslije mjeseci u kojima mi je sve bilo teško, meni je to sasvim dovoljno.', nickname:null, published_at:'2026-10-20T13:00:00Z', state:'published' },
-    { id:'4', kind:'confession', body:'Vratio sam se ovdje jer mi je nedostajao osjećaj da negdje mogu napisati ono što mislim, bez objašnjavanja ko sam. Drago mi je da ovo mjesto ponovo postoji.', nickname:null, published_at:'2026-10-20T14:00:00Z', state:'published' },
+    { id:'4', kind:'confession', body:'Vratio sam se ovde jer mi je nedostajao osećaj da negde mogu napisati ono što mislim, bez objašnjavanja ko sam. Drago mi je da ovo mesto ponovo postoji.', nickname:null, published_at:'2026-10-20T14:00:00Z', state:'published' },
     { id:'5', kind:'comment', confession_id:'1', parent_id:null, body:'Nekad je dovoljan jedan miris iz nečije kuhinje i opet smo kod kuće.', created_at:'2026-10-20T12:00:00Z', state:'published' },
     { id:'6', kind:'reply', confession_id:'1', parent_id:'5', body:'Meni miris pečenih paprika. Odmah septembar kod bake. 🙂', created_at:'2026-10-20T13:00:00Z', state:'published' },
   ], votes:{}, favorites:[], recent:[], reports:[], nextId:100,
@@ -95,7 +95,7 @@ async function previewRequest(action, a) {
     const c={id:String(s.nextId++),kind:a.kind,body,nickname:a.nickname||null,mine:true,state:a.kind==='confession'?'queued':'published',confession_id:a.confession_id?String(a.confession_id):null,parent_id:a.parent_id?String(a.parent_id):null,created_at:new Date().toISOString()};
     s.contents.push(c);persist();return{success:true,id:c.id};
   }
-  if(action==='confession'){if(!visible(item)||item.kind!=='confession')throw new Error('Ispovijest nije dostupna.');return{item:safe(item)};}
+  if(action==='confession'){if(!visible(item)||item.kind!=='confession')throw new Error('Ispovest nije dostupna.');return{item:safe(item)};}
   if(action==='list') {
     let rows=a.list==='my_comments'?s.contents.filter(c=>c.mine&&c.kind!=='confession'&&visible(c)).reverse(): (a.list==='favorites'?s.favorites:s.recent).map(i=>s.contents.find(c=>c.id===i)).filter(visible);
     return{items:rows.slice(offset,offset+20).map(safe)};
