@@ -48,9 +48,6 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
  box-shadow:none;
  text-shadow:0 0 7px rgba(255,115,115,.72);
 }
-.story-actions>.favorite,.comment-actions>.comment-heart{
- color:var(--gold);background:transparent;border:0;border-radius:0;box-shadow:none;
-}
 .story-actions>.action.report,.comment-actions>.action.comment-report{
  flex:0 0 auto;margin:0 0 0 auto;color:var(--gold);background:transparent;
  border:0;border-radius:0;box-shadow:none;position:static;font-size:13px;
@@ -79,7 +76,7 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .vote-controls > button{box-shadow:none!important;}
 .vote-controls > button.selected{box-shadow:none!important;}
 
-/* Align favorite hearts with the vote icons; remove inherited button offset. */
+/* Canonical favorite-heart styling for stories and comments. */
 .story-actions > .action.favorite,
 .comment-actions > .comment-heart{
  display:inline-flex!important;
@@ -91,8 +88,13 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
  padding:4px 5px!important;
  line-height:1!important;
  vertical-align:middle!important;
+ color:var(--gold)!important;
+ font-size:19px!important;
+ font-family:Arial,sans-serif!important;
+ font-weight:normal!important;
  border:0!important;
  border-radius:0!important;
  background:transparent!important;
  box-shadow:none!important;
+ text-shadow:none!important;
 }
