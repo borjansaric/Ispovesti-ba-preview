@@ -25,7 +25,7 @@ body{padding-left:max(32px,env(safe-area-inset-left))}
 body.menu-open #menu-toggle{letter-spacing:normal;font-size:23px}
 
 /* Centered reply dialog; the native backdrop handles outside-click and Escape dismissal. */
-dialog.thread-dialog{display:none;width:min(660px,calc(100% - 24px));max-width:660px;max-height:85dvh;margin:auto;padding:16px;border:0;border-radius:0;background:#1d1d1d;color:var(--text);box-sizing:border-box;overflow:auto;overscroll-behavior:contain}
+dialog.thread-dialog{display:none;width:min(660px,calc(100% - 24px));max-width:660px;max-height:85dvh;margin:auto;padding:16px;border:1px solid #625332;border-radius:12px;background:#1d1d1d;color:var(--text);box-sizing:border-box;overflow:auto;overscroll-behavior:contain}
 dialog.thread-dialog[open]{display:block}
 dialog.thread-dialog::backdrop{backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);background:#0009}
 .thread-replies>.comment{margin:0;padding:13px 0;border-bottom:1px solid #303030}
