@@ -35,7 +35,7 @@ async function localRequest(action,args,retry=true){
  if(protectedAction)await ensureLocalSession();
  const response=await fetch('/api/community',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,args}),credentials:'same-origin',signal:AbortSignal.timeout(20000),cache:'no-store'});
  if(response.status===401&&protectedAction&&retry){localSessionReady=false;return localRequest(action,args,false);}
- const result=await response.json();if(!response.ok)throw new Error(result.error||'Lokalna provjera nije uspjela.');return result;
+ const result=await response.json();if(!response.ok)throw new Error(result.error||'Lokalna provera nije uspjela.');return result;
 }
 export async function request(action, args = {}, adminSession = null, captchaHost = null) {
   if(config.mode==='local')return localRequest(action,args);
