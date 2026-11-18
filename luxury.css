@@ -191,3 +191,53 @@ button:disabled{opacity:.55}
  color:#ff9995!important;background:transparent!important;
  text-shadow:0 0 6px rgba(255,112,106,.82),0 0 12px rgba(190,35,42,.52)!important;
 }
+
+
+/* Final agreed content layout: no decorative cards, frames, capsules or control tiles. */
+.panel,.story,.private-panel,
+.comment,.comment-card,.comments-area,.comments,
+.replies,.comment-replies,.inline-thread,.thread-replies,
+.story-actions,.comment-actions,.vote-controls,
+.reaction-picker,.reaction-choice,
+.story-actions>.action,.comment-actions>.action,.vote-controls>.action,
+.story-actions>.favorite,.comment-actions>.comment-heart,
+.story-actions>.report,.comment-actions>.comment-report{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:0;
+  box-shadow:none!important;
+}
+.story{padding:18px 3px!important;border-bottom:0!important;margin-bottom:20px!important}
+.comment{padding:8px 0!important;margin:8px 0!important}
+.comments-area{margin-top:17px!important;padding-top:0!important}
+.story-actions,.comment-actions{display:flex!important;align-items:center!important;gap:14px!important;width:100%!important}
+.story-actions>.report,.comment-actions>.comment-report{margin-left:auto!important;flex:0 0 auto!important}
+.story-actions>.report,.comment-actions>.comment-report{
+  color:#d6b15e!important;
+  font-size:16px!important;
+  padding:4px 5px!important;
+  text-shadow:none!important;
+}
+.story-actions>.report.reported,.comment-actions>.comment-report.reported{
+  color:#ed5555!important;
+}
+.vote-controls{display:inline-flex!important;align-items:center!important;gap:12px!important}
+.vote-controls>.action,.story-actions>.favorite,.comment-actions>.comment-heart{
+  min-width:0!important;
+  padding:4px 5px!important;
+  color:#d6b15e!important;
+  font-size:16px!important;
+}
+.vote-controls>.action[aria-label="Pozitivan glas"].selected{
+  color:#f0d58e!important;
+  box-shadow:0 0 5px rgba(240,213,142,.38),0 0 11px rgba(214,177,94,.2)!important;
+  text-shadow:0 0 7px rgba(240,213,142,.5)!important;
+}
+.vote-controls>.action[aria-label="Negativan glas"].selected{
+  color:#ffd0d0!important;
+  box-shadow:0 0 5px rgba(224,83,83,.52),0 0 13px rgba(205,55,58,.36)!important;
+  text-shadow:0 0 7px rgba(255,115,115,.62)!important;
+}
+.reaction-picker{display:flex!important;gap:10px!important;padding:7px 0!important;margin-top:9px!important}
+.reaction-choice{padding:5px!important;min-width:0!important;font-size:19px!important}
