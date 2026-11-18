@@ -66,7 +66,7 @@ button:disabled{opacity:.55}
 }
 .side-menu{background:#101010!important;border-right:1px solid rgba(214,177,94,.18)!important;box-shadow:none!important}
 .side-menu .panel{background:transparent!important;border:0!important;box-shadow:none!important}
-.form input,.form select,textarea{
+.form input,textarea{
  background:#101010;color:#eee;border:1px solid #454545;border-radius:3px;
 }
 .dialog-heading .icon-button{padding:0 5px!important}
