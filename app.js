@@ -22,7 +22,7 @@ async function refreshStates(){
 setInterval(()=>{if(!document.hidden)refreshStates();},60000);
 setInterval(()=>{if(!document.hidden&&currentView.startsWith('daily_'))load(true);},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentView.startsWith('daily_'))load(true);});
-const titles={oldest:'Ispovijesti',new:'Novo',popular:'Popularno',daily_confessions:'Ispovest dana',daily_comments:'Komentar dana',favorites:'Omiljene ispovijesti',recently_read:'Nedavno pročitane',my_comments:'Moji komentari'};
+const titles={oldest:'Ispovesti',new:'Novo',popular:'Popularno',daily_confessions:'Ispovest dana',daily_comments:'Komentar dana',favorites:'Omiljene ispovesti',recently_read:'Nedavno pročitane',my_comments:'Moji komentari'};
 const node=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
 const button=(text,fn,cls='action')=>{const b=node('button',cls,text);b.type='button';b.addEventListener('click',()=>Promise.resolve(fn(b)).catch(err=>toast(err.message)));return b;};
 const date=v=>v?new Date(v).toLocaleString('sr-Latn',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
