@@ -2,7 +2,6 @@
 :root{
  --lux-gold:#c9a75b;
  --lux-gold-soft:rgba(201,167,91,.22);
- --gold:#d6b15e;
  --gold-soft:#f0d58e;
  --red-glow:rgba(205,55,58,.58);
 }
@@ -51,7 +50,7 @@ button:disabled{opacity:.55}
  box-shadow:none;text-shadow:none;font-size:19px;
 }
 .comment-report{color:var(--gold);font-size:16px}
-.daily-tabs{gap:18px;border-bottom:1px solid rgba(214,177,94,.22);padding-bottom:8px}
+.daily-tabs{border-bottom:1px solid rgba(214,177,94,.22);padding-bottom:8px}
 .daily-tab{background:transparent;color:#aaa;padding:8px 2px}
 .daily-tab.active{color:var(--gold);border-bottom:1px solid var(--gold)}
 .load-more{width:auto;display:block;margin:18px auto;background:transparent;color:var(--gold)}
