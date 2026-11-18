@@ -2,7 +2,6 @@
 :root{
  --lux-gold:#c9a75b;
  --lux-gold-soft:rgba(201,167,91,.22);
- --lux-figure-size:clamp(420px,42vw,760px);
  --gold:#d6b15e;
  --gold-soft:#f0d58e;
  --red-glow:rgba(205,55,58,.58);
@@ -11,14 +10,12 @@ body{isolation:isolate;background:#090909!important;color:#eee;position:relative
 body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;will-change:transform,background-position}
 body::before{
  background-image:
-  url("luxury-hooded.svg?v=figures1"),
-  url("luxury-masked-woman.svg?v=figures1"),
   radial-gradient(ellipse at 50% 38%,#17140e 0%,#0b0a08 48%,#090909 82%),
   linear-gradient(112deg,transparent 0 17%,rgba(201,167,91,.09) 17.08%,transparent 17.18% 31%,rgba(201,167,91,.055) 31.08%,transparent 31.18% 67%,rgba(201,167,91,.075) 67.08%,transparent 67.18%),
   linear-gradient(72deg,transparent 0 42%,rgba(201,167,91,.07) 42.06%,transparent 42.16% 84%,rgba(201,167,91,.055) 84.06%,transparent 84.16%);
- background-size:var(--lux-figure-size) auto,var(--lux-figure-size) auto,100% 100%,100% 100%,100% 100%;
- background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;
- background-position:left -3vw top calc(2vh + var(--lux-scroll-y,0px)),right -3vw top calc(2vh + var(--lux-scroll-y,0px)),center,center,center;
+ background-size:100% 100%,100% 100%,100% 100%;
+ background-repeat:no-repeat,no-repeat,no-repeat;
+ background-position:center,center,center;
  opacity:.88;transition:background-position .16s linear;
 }
 body::after{
