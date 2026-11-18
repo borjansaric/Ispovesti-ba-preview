@@ -125,7 +125,7 @@ async function showReactionStats(item){
  }catch(err){toast(err.message);}
 }
 function voteControls(item){
- const row=node('div','vote-controls');row.style.display='contents';const buttons=[];
+ const row=node('div','vote-controls');const buttons=[];
  for(const [value,symbol] of [[1,'👍'],[-1,'👎']]){
   const b=button(symbol,async btn=>{
    if(longPressed){longPressed=false;return;}
@@ -156,12 +156,12 @@ function voteControls(item){
 function reportStorageKey(item,kind){return 'ispovesti:reported:'+kind+':'+String(item.id);}
 function syncReportButton(btn,item,kind){try{const done=localStorage.getItem(reportStorageKey(item,kind))==='1';btn.classList.toggle('reported',done);btn.setAttribute('aria-label',done?'Sadržaj je prijavljen':'Prijavi sadržaj');btn.title=done?'Već si prijavio ovaj sadržaj':'Prijavi sadržaj';}catch{}}
 function report(item,reportButton){if(reportButton?.classList.contains('reported')){toast('Već si prijavio ovaj sadržaj.');return;}const form=node('form','form');const label=node('label','','Razlog prijave'),select=node('select');for(const [value,text]of [['abuse','Vrijeđanje ili uznemiravanje'],['threat','Prijetnje'],['spam','Spam'],['other','Ostalo']]){const o=node('option','',text);o.value=value;select.append(o);}label.append(select);const send=node('button','primary','Pošalji prijavu');form.append(label,send);let sending=false;form.onsubmit=async e=>{e.preventDefault();if(sending)return;sending=true;send.disabled=true;try{await request('report',{id:item.id,reason:select.value});if(reportButton){const kind=reportButton.classList.contains('comment-report')?'comment':'confession';try{localStorage.setItem(reportStorageKey(item,kind),'1');}catch{}syncReportButton(reportButton,item,kind);}dialog.close();toast('Prijava je zabilježena. Hvala.');}catch(err){toast(err.message);}finally{sending=false;send.disabled=false;}};modal('Prijavi sadržaj',form);}
-async function commentBranch(confessionId,parentId,container,refreshContext,confirmed){
+async function commentBranch(confessionId,parentId,container,refreshContext,confirmed,heading){
  let loaded=0;const rendered=new Set(),pending=new Map();
  const list=node('div'),sent=node('div'),more=button('Učitaj još komentara ↓',load,'load-more');
  const composer=!parentId?contentForm('comment',{confession_id:confessionId},(item,context)=>{add(item);refreshContext(context).catch(err=>toast(err.message));}):null;
  // The comment composer stays directly under the confession, before the existing comments.
- container.replaceChildren(...(composer?[composer]:[]),list,more,sent);
+ container.replaceChildren(...(composer?[composer]:[]),...(heading?[heading]:[]),list,more,sent);
  function add(item){if(rendered.has(item.id)||pending.has(item.id))return;const entry=comment(item,confessionId,refreshContext);pending.set(item.id,entry);sent.append(entry);}
  branchViews.set(container,add);if(confirmed)add(confirmed);
  async function load(){more.disabled=true;try{const r=await request('comments',{confession_id:confessionId,parent_id:parentId,offset:loaded});for(const item of r.items){pending.get(item.id)?.remove();pending.delete(item.id);if(!rendered.has(item.id)){rendered.add(item.id);list.append(comment(item,confessionId,refreshContext));}}loaded+=r.items.length;more.hidden=r.items.length<20;}finally{more.disabled=false;}}
@@ -180,7 +180,7 @@ function comment(item,confessionId,refreshContext,focusOptions={}){
  const reportButton=button('!',()=>report(item,reportButton),'action comment-report');reportButton.setAttribute('aria-label','Prijavi komentar');reportButton.title='Prijavi komentar';syncReportButton(reportButton,item,'comment');
  const count=node('span','reply-count',''),arrow=node('span','reply-triangle');arrow.setAttribute('aria-hidden','true');
  const repliesButton=button('',()=>focusOptions.close?focusOptions.close():focusOptions.reply?focusOptions.reply(item):openReplies(item,confessionId,refreshContext,repliesButton),'reply-toggle');
- repliesButton.setAttribute('aria-label',focusOptions.close?'Zatvori odgovore':'Otvori ili napiši odgovore');repliesButton.append(count,arrow);if(!focusOptions.readOnly)row.append(repliesButton);row.append(reportButton);wrap.append(card,row);
+ repliesButton.setAttribute('aria-label',focusOptions.close?'Zatvori odgovore':'Otvori ili napiši odgovore');repliesButton.append(count,arrow);if(!focusOptions.readOnly)row.append(repliesButton);row.append(node('span','action-spacer'),reportButton);wrap.append(card,row);
  commentMeta.add({item,wrap,count,favorite});updateCommentMeta();return wrap;
 }
 const inlineThreads=new WeakMap();let activeInlineThread=null;
@@ -203,12 +203,12 @@ async function openReplies(item,confessionId,refreshContext,trigger){
 function story(item){
  const article=node('article','story');if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
  const row=node('div','story-actions vote-row'),commentsArea=node('section','comments-area comments');
- const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.append(comments,commentsList);
+ const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.append(commentsList);
  const favorite=button('♡',async b=>{const enabled=b.getAttribute('aria-pressed')!=='true';await request('favorite',{id:item.id,enabled});setFavorite(enabled);pulseHeart(b);},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);}
  async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite);}
  watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite);});
- const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,reportButton);article.append(row,commentsArea);commentBranch(item.id,null,commentsList,refreshContext).catch(err=>{commentsList.textContent=err.message;});
+ const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,node('span','action-spacer'),reportButton);article.append(row,commentsArea);commentBranch(item.id,null,commentsList,refreshContext,null,comments).catch(err=>{commentsList.textContent=err.message;});
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
  const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!recorded){readTimer=setTimeout(()=>{recorded=true;request('read',{id:item.id}).catch(()=>{});observer.disconnect();},1500);}else clearTimeout(readTimer);},{threshold:.1});observer.observe(article);
