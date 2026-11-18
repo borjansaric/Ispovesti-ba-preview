@@ -51,7 +51,7 @@ document.addEventListener('keydown',event=>{
 });
 $('#close-dialog').onclick=()=>dialog.close();
 $('#write').onclick=()=>modal('Podeli svoju ispovest',contentForm('confession',{},()=>{}));
-$('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledaču. Brisanje podataka preglednika može značiti gubitak privatnih lista i istorije. Nema javnih profila. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
+$('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledaču. Brisanje podataka pregledača može značiti gubitak privatnih lista i istorije. Nema javnih profila. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
 $('#footer-privacy').onclick=()=>$('#privacy').click();
 $('#rules').onclick=()=>modal('Pravila zajednice',node('p','', 'Piši bez vređanja, uznemiravanja, pretnji i spama. Slike i linkovi nisu dozvoljeni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj. Čitanje, objavljivanje ispovesti, komentari, odgovori i glasanje su besplatni. Ispovesti čekaju red i objavljuje se najviše jedna na sat.'));
 if(isLocal)$('#preview').textContent='Lokalni test · bez veze sa živim sajtom';
@@ -59,7 +59,7 @@ else if(window.ISPOVESTI_CONFIG?.mode==='live-test')$('#preview').textContent='T
 else if(!isPreview)$('#preview').hidden=true;
 function metadata(item){const div=node('div','story-meta');div.append(node('span','avatar','“'),node('span','author',item.nickname||'Anonimno'));const t=node('time','',date(item.published_at||item.created_at));t.dateTime=item.published_at||item.created_at||'';div.append(t);return div;}
 function contentForm(kind,extra,done,onBack){
- const form=node('form',kind==='confession'?'form':'form discussion-form'),label=node('label','',kind==='confession'?'Tvoja priča':'Tvoje reči'),text=node('textarea');text.addEventListener('focus',()=>prepareSubmission(kind,form));text.addEventListener('input',()=>prepareSubmission(kind,form));text.required=true;text.maxLength=kind==='confession'?10000:2000;text.placeholder=kind==='confession'?'Napiši ono što želiš da podijeliš...':kind==='comment'?'...':'Napiši odgovor...';label.append(text);
+ const form=node('form',kind==='confession'?'form':'form discussion-form'),label=node('label','',kind==='confession'?'Tvoja priča':'Tvoje reči'),text=node('textarea');text.addEventListener('focus',()=>prepareSubmission(kind,form));text.addEventListener('input',()=>prepareSubmission(kind,form));text.required=true;text.maxLength=kind==='confession'?10000:2000;text.placeholder=kind==='confession'?'Napiši ono što želiš da podeliš...':kind==='comment'?'...':'Napiši odgovor...';label.append(text);
  const nickLabel=node('label','','Ms./Mr.'),nick=node('input');nick.maxLength=40;nick.autocomplete='off';nickLabel.append(nick);
  const status=node('p','hint'),counter=node('span','hint','0 znakova'),send=node('button','primary',kind==='confession'?'Pošalji ispovest':'Pošalji');send.type='submit';
  const row=node('div','row'),back=onBack?button('← Nazad',()=>onBack(),'discussion-back'):null;row.append(counter);if(back)row.append(back);row.append(send);text.oninput=()=>counter.textContent=[...text.value.trim()].length+' znakova';
@@ -238,8 +238,8 @@ function selectDailyView(kind){
  $('#feed-title').textContent=titles[currentView];
  $('#feed-subtitle').hidden=false;
  $('#feed-subtitle').textContent=kind==='confession'
-  ?'Najlajkovanija ispovest za svaki od posljednjih sedam dana.'
-  :'Najlajkovaniji glavni komentar za svaki od posljednjih sedam dana.';
+  ?'Najlajkovanija ispovest za svaki od poslednjih sedam dana.'
+  :'Najlajkovaniji glavni komentar za svaki od poslednjih sedam dana.';
  load(true);
 }
 dailyTabs.confession.onclick=()=>selectDailyView('confession');
