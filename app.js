@@ -174,15 +174,33 @@ async function openReplies(item,confessionId,refreshContext,trigger){
  }
  try{await collectReplies(request,confessionId,item.id,renderBatch,()=>closed||!thread.isConnected);if(closed)return;thread.dataset.loadedMs=String(Math.round(performance.now()-startedAt));notice.remove();}catch(e){if(!closed)notice.textContent=e.message;}
 }
+let activeStoryComments=null;
 function story(item){
- const article=node('article','story');if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
- const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
+ const article=node('article','story'),storyContent=node('div','story-content body-text',item.body);
+ storyContent.tabIndex=0;storyContent.setAttribute('role','button');storyContent.setAttribute('aria-expanded','false');storyContent.setAttribute('aria-label','Otvori komentare za ispovest');
+ if(item.nickname)article.append(node('div','story-nickname',item.nickname));
+ article.append(storyContent);
+ const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
+ const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');commentsArea.hidden=true;commentsArea.id='comments-'+String(item.id);
  const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.append(commentsList);
  const favorite=button('♡',async b=>{const enabled=b.getAttribute('aria-pressed')!=='true';await request('favorite',{id:item.id,enabled});setFavorite(enabled);pulseHeart(b);},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);}
  async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite);}
  watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite);});
- const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),node('span','action-spacer'),favorite,node('span','action-spacer'),reportButton);article.append(row,commentsArea);commentBranch(item.id,null,commentsList,refreshContext,null,comments).catch(err=>{commentsList.textContent=err.message;});
+ const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),node('span','action-spacer'),favorite,node('span','action-spacer'),reportButton);article.append(row,commentsArea);
+ let commentsLoaded=false;
+ function closeComments(){commentsArea.hidden=true;storyContent.setAttribute('aria-expanded','false');if(activeStoryComments===toggleComments)activeStoryComments=null;}
+ function toggleComments(){
+  if(activeStoryComments===toggleComments){closeComments();return;}
+  activeStoryComments?.();
+  activeStoryComments=toggleComments;commentsArea.hidden=false;storyContent.setAttribute('aria-expanded','true');
+  if(!commentsLoaded){commentsLoaded=true;commentBranch(item.id,null,commentsList,refreshContext,null,comments).catch(err=>{commentsList.textContent=err.message;});}
+ }
+ article.addEventListener('click',event=>{
+  if(event.target.closest('button,a,input,textarea,select,form,.comments-area'))return;
+  toggleComments();
+ });
+ storyContent.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleComments();}});
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
  const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!recorded){readTimer=setTimeout(()=>{recorded=true;request('read',{id:item.id}).catch(()=>{});observer.disconnect();},1500);}else clearTimeout(readTimer);},{threshold:.1});observer.observe(article);
