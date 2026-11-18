@@ -57,3 +57,21 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .story-actions>.action-spacer,.comment-actions>.action-spacer{
  flex:1 1 auto;min-width:8px;height:1px;background:transparent;border:0;padding:0;margin:0;
 }
+
+/* Final hard reset: vote controls must never render as framed buttons. */
+.vote-controls,
+.vote-controls > button,
+.vote-controls > button:hover,
+.vote-controls > button:active,
+.vote-controls > button:focus,
+.vote-controls > button:focus-visible{
+ border:0!important;
+ border-style:none!important;
+ border-radius:0!important;
+ outline:0!important;
+ background:transparent!important;
+ -webkit-appearance:none!important;
+ appearance:none!important;
+}
+.vote-controls{background:transparent!important;box-shadow:none!important;}
+.vote-controls > button:not(.selected){box-shadow:none!important;}
