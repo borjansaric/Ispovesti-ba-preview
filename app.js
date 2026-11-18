@@ -15,7 +15,7 @@ async function refreshStates(){
  await Promise.all(entries.map(async e=>{
   try{
    const status=await request('reaction_status',{id:e.id});
-   if(status.can_change!==undefined)e.element.querySelectorAll('.vote-controls button').forEach(b=>{b.dataset.voteLocked=String(status.can_change===false);b.dataset.reactionLocked=String(status.can_change===false);b.setAttribute('aria-disabled',String(status.can_change===false));});
+   if(status.can_change!==undefined)e.element.querySelectorAll('.vote-controls button').forEach(b=>{b.dataset.voteLocked=String(status.can_change===false);b.setAttribute('aria-disabled',String(status.can_change===false));});
   }catch{}
  }));
 }
