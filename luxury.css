@@ -50,7 +50,7 @@ body{background:#0b0b0b;color:#eee}
 .comment{background:transparent!important;border:0!important;border-left:0!important;border-radius:0!important;padding:8px 0!important}
 .replies,.comment-replies{border-left:1px solid rgba(214,177,94,.22)!important}
 .comments-area{border-top:1px solid rgba(214,177,94,.2)!important}
-button,.reply-button,.nav-button,.daily-tab,.load-more,.text-button,
+button:not(.vote-controls>.action),.reply-button,.nav-button,.daily-tab,.load-more,.text-button,
 .icon-button,.comment-heart,.comment-report{
  border:0!important;border-radius:0!important;outline-offset:4px;
  box-shadow:none!important;
@@ -89,16 +89,3 @@ button:disabled{opacity:.55}
 #toast{border:0!important;border-radius:3px!important;box-shadow:none!important}
 .preview{border:0!important;border-radius:0!important}
 
-
-
-/* Vote selection glow must win over the global frameless-button reset. */
-.vote-controls>.action[aria-label="Pozitivan glas"].selected{
- color:#f4d98f!important;
- box-shadow:0 0 5px rgba(244,217,143,.62),0 0 12px rgba(216,180,95,.42)!important;
- text-shadow:0 0 7px rgba(244,217,143,.72)!important;
-}
-.vote-controls>.action[aria-label="Negativan glas"].selected{
- color:#ffd0d0!important;
- box-shadow:0 0 5px rgba(224,83,83,.72),0 0 13px rgba(205,55,58,.56)!important;
- text-shadow:0 0 7px rgba(255,115,115,.82)!important;
-}
