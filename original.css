@@ -7,8 +7,8 @@
     main{width:100%;max-width:760px;margin:0 auto}
     .panel,.story{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:22px;overflow-wrap:anywhere}
     h2{color:var(--gold);font-size:21px;margin:0 0 12px}
-    textarea{display:block;width:100%;min-height:130px;resize:vertical;background:#101010;color:var(--text);border:1px solid #454545;border-radius:8px;padding:12px;font:inherit}
-    textarea:focus{outline:1px solid var(--gold);border-color:var(--gold)}
+    textarea:not(.discussion-form textarea){display:block;width:100%;min-height:130px;resize:vertical;background:#101010;color:var(--text);border:1px solid #454545;border-radius:8px;padding:12px;font:inherit}
+    textarea:focus:not(.discussion-form textarea){outline:1px solid var(--gold);border-color:var(--gold)}
     button{background:var(--gold);color:#17130a;border:0;border-radius:7px;padding:10px 14px;margin-top:10px;font-weight:bold;font-size:14px;cursor:pointer}
     button:disabled{opacity:.6;cursor:wait}
     .hint{color:var(--muted);font-size:13px;margin:7px 0 0}
@@ -36,6 +36,6 @@
     .side-menu .private-panel{padding:0;margin:0;border:0;background:transparent}
     .side-menu .panel{padding:13px;margin:0 0 20px;border-radius:10px}
     .side-menu .panel h2{font-size:18px}
-    .side-menu textarea{min-height:110px;font-size:14px}
+    .side-menu textarea:not(.discussion-form textarea){min-height:110px;font-size:14px}
     .side-menu .panel button{width:100%}
     @media(max-width:480px){body{padding-left:10px;padding-right:10px}header{padding-top:66px}.panel,.story{padding:14px}.side-menu{padding-left:14px;padding-right:14px}}
