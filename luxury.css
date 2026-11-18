@@ -6,7 +6,7 @@
  --gold-soft:#f0d58e;
  --red-glow:rgba(205,55,58,.58);
 }
-body{isolation:isolate;background:#090909!important;color:#eee;position:relative}
+body{isolation:isolate;background:#090909;color:#eee;position:relative}
 body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;will-change:transform,background-position}
 body::before{
  background-image:
@@ -27,51 +27,47 @@ body::after{
 }
 .site-header,main,footer{position:relative;z-index:1}
 
-.site-header{background:transparent!important}
+.site-header{background:transparent}
 .site-header h1{letter-spacing:.09em;text-shadow:0 0 24px rgba(201,167,91,.18)}
 .site-header p{letter-spacing:.025em}
 .panel,.story,.private-panel{
- background:transparent!important;border:0!important;border-radius:0!important;
- box-shadow:none!important;padding:16px 0!important;
+ background:transparent;border:0;border-radius:0;
+ box-shadow:none;padding:16px 0;
 }
-.story{border-bottom:1px solid rgba(214,177,94,.17)!important;margin-bottom:20px!important}
-.private-panel{margin:0 auto 22px!important}
-.comment,.replies,.comment-replies{background:transparent!important;border:0!important;border-radius:0!important}
-.comment{padding:8px 0!important}
-.replies,.comment-replies{padding-left:12px!important;border-left:1px solid rgba(214,177,94,.22)!important}
-.comments-area,.comments{border-top:1px solid rgba(214,177,94,.2)!important}
-button:not(.vote-controls>.action),.reply-button,.nav-button,.daily-tab,.load-more,.text-button,
-.icon-button,.comment-heart,.comment-report{
- border:0!important;border-radius:0!important;outline-offset:4px;box-shadow:none!important;
-}
-button{background:transparent;color:var(--gold);padding:7px 5px}
+.story{border-bottom:1px solid rgba(214,177,94,.17);margin-bottom:20px}
+.private-panel{margin:0 auto 22px}
+.comment,.replies,.comment-replies{background:transparent;border:0;border-radius:0}
+.comment{padding:8px 0}
+.replies,.comment-replies{padding-left:12px;border-left:1px solid rgba(214,177,94,.22)}
+.comments-area,.comments{border-top:1px solid rgba(214,177,94,.2)}
+button{background:transparent;color:var(--gold);padding:7px 5px;border:0;border-radius:0;outline-offset:4px;box-shadow:none}
 button:hover{color:var(--gold-soft);background:transparent}
 button:disabled{opacity:.55}
 .reply-button,.text-button,.icon-button,.comment-report,.comment-heart{
- background:transparent!important;color:var(--gold)!important;padding:5px 7px!important;margin:0!important;
+ background:transparent;color:var(--gold);padding:5px 7px;margin:0;
 }
 .comment-heart,.comment-heart.selected{
- color:var(--gold)!important;background:transparent!important;
- box-shadow:none!important;text-shadow:none!important;font-size:19px!important;
+ color:var(--gold);background:transparent;
+ box-shadow:none;text-shadow:none;font-size:19px;
 }
-.comment-report{color:var(--gold)!important;font-size:16px!important}
-.daily-tabs{gap:18px!important;border-bottom:1px solid rgba(214,177,94,.22);padding-bottom:8px}
-.daily-tab{background:transparent!important;color:#aaa!important;padding:8px 2px!important}
-.daily-tab.active{color:var(--gold)!important;border-bottom:1px solid var(--gold)!important}
-.load-more{width:auto!important;display:block!important;margin:18px auto!important;background:transparent!important;color:var(--gold)!important}
-.menu-toggle{background:transparent!important;border:0!important;color:var(--gold)!important;box-shadow:none!important}
+.comment-report{color:var(--gold);font-size:16px}
+.daily-tabs{gap:18px;border-bottom:1px solid rgba(214,177,94,.22);padding-bottom:8px}
+.daily-tab{background:transparent;color:#aaa;padding:8px 2px}
+.daily-tab.active{color:var(--gold);border-bottom:1px solid var(--gold)}
+.load-more{width:auto;display:block;margin:18px auto;background:transparent;color:var(--gold)}
+.menu-toggle{background:transparent;border:0;color:var(--gold);box-shadow:none}
 .menu-links button,.side-menu .private-actions button{
- background:transparent!important;border:0!important;border-radius:0!important;
- text-align:left;color:#ddd;padding:8px 0!important;
+ background:transparent;border:0;border-radius:0;
+ text-align:left;color:#ddd;padding:8px 0;
 }
 .menu-links button.active,.side-menu .private-actions button.active{
- color:var(--gold)!important;background:transparent!important;border:0!important;
+ color:var(--gold);background:transparent;border:0;
 }
-.side-menu{position:fixed;z-index:1001;background:#101010;border-right:1px solid rgba(214,177,94,.18);box-shadow:none}
-.side-menu .panel{background:transparent!important;border:0!important;box-shadow:none!important}
+.side-menu{background:#101010;border-right:1px solid rgba(214,177,94,.18);box-shadow:none}
+.side-menu .panel{background:transparent;border:0;box-shadow:none}
 .form input,.form select,textarea{
  background:#101010;color:#eee;border:1px solid #454545;border-radius:3px;
 }
-.dialog-heading .icon-button{padding:0 5px!important}
-#toast{border:0!important;border-radius:3px!important;box-shadow:none!important}
-.preview{border:0!important;border-radius:0!important}
+.dialog-heading .icon-button{padding:0 5px}
+#toast{border:0;border-radius:3px;box-shadow:none}
+.preview{border:0;border-radius:0}
