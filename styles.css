@@ -40,12 +40,12 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .vote-controls:not(.has-vote)>.action{color:#aaa;text-shadow:none;box-shadow:none}
 .vote-controls>.action.selected{opacity:1}
 .vote-controls>.action[aria-label="Pozitivan glas"].selected{
- color:#f4d98f;box-shadow:0 0 5px rgba(244,217,143,.48),0 0 12px rgba(216,180,95,.3);
+ color:#f4d98f;background:transparent;border:0;box-shadow:none;
  text-shadow:0 0 7px rgba(244,217,143,.62);
 }
 .vote-controls>.action[aria-label="Negativan glas"].selected{
  color:#ffd0d0;background:transparent;border:0;
- box-shadow:0 0 5px rgba(224,83,83,.6),0 0 13px rgba(205,55,58,.42);
+ box-shadow:none;
  text-shadow:0 0 7px rgba(255,115,115,.72);
 }
 .story-actions>.favorite,.comment-actions>.comment-heart{
@@ -76,7 +76,8 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
  appearance:none!important;
 }
 .vote-controls{background:transparent!important;box-shadow:none!important;}
-.vote-controls > button:not(.selected){box-shadow:none!important;}
+.vote-controls > button{box-shadow:none!important;}
+.vote-controls > button.selected{box-shadow:none!important;}
 
 /* Align favorite hearts with the vote icons; remove inherited button offset. */
 .story-actions > .action.favorite,
