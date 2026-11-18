@@ -22,11 +22,11 @@ async function refreshStates(){
 setInterval(()=>{if(!document.hidden)refreshStates();},60000);
 setInterval(()=>{if(!document.hidden&&currentView.startsWith('daily_'))load(true);},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentView.startsWith('daily_'))load(true);});
-const titles={oldest:'Ispovijesti',new:'Novo',popular:'Popularno',daily_confessions:'Ispovest dana',daily_comments:'Komentar dana',favorites:'Omiljene ispovijesti',recently_read:'Nedavno pročitane',my_comments:'Moji komentari'};
+const titles={oldest:'Ispovesti',new:'Novo',popular:'Popularno',daily_confessions:'Ispovest dana',daily_comments:'Komentar dana',favorites:'Omiljene ispovesti',recently_read:'Nedavno pročitane',my_comments:'Moji komentari'};
 const node=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
 const button=(text,fn,cls='action')=>{const b=node('button',cls,text);b.type='button';b.addEventListener('click',()=>Promise.resolve(fn(b)).catch(err=>toast(err.message)));return b;};
-const date=v=>v?new Date(v).toLocaleString('sr-Latn',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-const dailyDayLabel=value=>{const d=new Date(String(value)+'T12:00:00');return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString('sr-Latn',{weekday:'long',day:'numeric',month:'long',year:'numeric'});};
+const date=v=>v?new Date(v).toLocaleString('sr-Latn-RS',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+const dailyDayLabel=value=>{const d=new Date(String(value)+'T12:00:00');return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString('sr-Latn-RS',{weekday:'long',day:'numeric',month:'long',year:'numeric'});};
 function toast(text){$('#toast').textContent=text;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').textContent='',6500);}
 function modal(title,content){$('#dialog-title').textContent=title;$('#dialog-body').replaceChildren(content);if(!dialog.open)dialog.showModal();}
 const menuToggle=$('#menu-toggle'),sideMenu=$('#side-menu'),menuOverlay=$('#menu-overlay');
@@ -50,18 +50,18 @@ document.addEventListener('keydown',event=>{
  }
 });
 $('#close-dialog').onclick=()=>dialog.close();
-$('#write').onclick=()=>modal('Podijeli svoju ispovijest',contentForm('confession',{},()=>{}));
-$('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledniku. Brisanje podataka preglednika može značiti gubitak privatnih lista i istorije. Nema javnih profila. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
+$('#write').onclick=()=>modal('Podeli svoju ispovest',contentForm('confession',{},()=>{}));
+$('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledaču. Brisanje podataka preglednika može značiti gubitak privatnih lista i istorije. Nema javnih profila. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
 $('#footer-privacy').onclick=()=>$('#privacy').click();
-$('#rules').onclick=()=>modal('Pravila zajednice',node('p','', 'Piši bez vrijeđanja, uznemiravanja, prijetnji i spama. Slike i linkovi nisu dozvoljeni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj. Čitanje, objavljivanje ispovijesti, komentari, odgovori i glasanje su besplatni. Ispovijesti čekaju red i objavljuje se najviše jedna na sat.'));
+$('#rules').onclick=()=>modal('Pravila zajednice',node('p','', 'Piši bez vređanja, uznemiravanja, pretnji i spama. Slike i linkovi nisu dozvoljeni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj. Čitanje, objavljivanje ispovesti, komentari, odgovori i glasanje su besplatni. Ispovesti čekaju red i objavljuje se najviše jedna na sat.'));
 if(isLocal)$('#preview').textContent='Lokalni test · bez veze sa živim sajtom';
 else if(window.ISPOVESTI_CONFIG?.mode==='live-test')$('#preview').textContent='TEST · prava baza, odvojeni probni podaci';
 else if(!isPreview)$('#preview').hidden=true;
 function metadata(item){const div=node('div','story-meta');div.append(node('span','avatar','“'),node('span','author',item.nickname||'Anonimno'));const t=node('time','',date(item.published_at||item.created_at));t.dateTime=item.published_at||item.created_at||'';div.append(t);return div;}
 function contentForm(kind,extra,done,onBack){
- const form=node('form',kind==='confession'?'form':'form discussion-form'),label=node('label','',kind==='confession'?'Tvoja priča':'Tvoje riječi'),text=node('textarea');text.addEventListener('focus',()=>prepareSubmission(kind,form));text.addEventListener('input',()=>prepareSubmission(kind,form));text.required=true;text.maxLength=kind==='confession'?10000:2000;text.placeholder=kind==='confession'?'Napiši ono što želiš da podijeliš...':kind==='comment'?'...':'Napiši odgovor...';label.append(text);
- const nickLabel=node('label','','Nadimak'),nick=node('input');nick.maxLength=40;nick.autocomplete='off';nickLabel.append(nick);
- const status=node('p','hint'),counter=node('span','hint','0 znakova'),send=node('button','primary',kind==='confession'?'Pošalji ispovijest':'Pošalji');send.type='submit';
+ const form=node('form',kind==='confession'?'form':'form discussion-form'),label=node('label','',kind==='confession'?'Tvoja priča':'Tvoje reči'),text=node('textarea');text.addEventListener('focus',()=>prepareSubmission(kind,form));text.addEventListener('input',()=>prepareSubmission(kind,form));text.required=true;text.maxLength=kind==='confession'?10000:2000;text.placeholder=kind==='confession'?'Napiši ono što želiš da podijeliš...':kind==='comment'?'...':'Napiši odgovor...';label.append(text);
+ const nickLabel=node('label','','Ms./Mr.'),nick=node('input');nick.maxLength=40;nick.autocomplete='off';nickLabel.append(nick);
+ const status=node('p','hint'),counter=node('span','hint','0 znakova'),send=node('button','primary',kind==='confession'?'Pošalji ispovest':'Pošalji');send.type='submit';
  const row=node('div','row'),back=onBack?button('← Nazad',()=>onBack(),'discussion-back'):null;row.append(counter);if(back)row.append(back);row.append(send);text.oninput=()=>counter.textContent=[...text.value.trim()].length+' znakova';
  form.append(label,nickLabel,row,status);
  let allowDuplicate=false,duplicateButton,sending=false,requestId=null,lastPayload=null;
@@ -76,7 +76,7 @@ function contentForm(kind,extra,done,onBack){
    if(r.duplicate){requestId=null;lastPayload=null;status.textContent='Ovaj tekst si već poslao. Ako želiš, možeš ga poslati ponovo.';if(!duplicateButton){duplicateButton=button('Ipak pošalji',()=>{allowDuplicate=true;form.requestSubmit();});form.append(duplicateButton);}return;}
    const confirmed=r.item||{id:r.id,body:text.value.trim(),nickname:nick.value.trim()||null,created_at:new Date().toISOString(),parent_id:extra.parent_id||null,has_replies:false};
    requestId=null;lastPayload=null;status.textContent='';text.value='';nick.value='';counter.textContent='0 znakova';allowDuplicate=false;duplicateButton?.remove();duplicateButton=null;
-   if(kind==='confession'){dialog.close();closeMenu();toast('Tvoja ispovijest je uspješno poslata. Čeka svoj red za objavljivanje.');}
+   if(kind==='confession'){dialog.close();closeMenu();toast('Tvoja ispovest je uspešno poslata. Čeka svoj red za objavljivanje.');}
    else{done(confirmed,r.context);toast(kind==='reply'?'Tvoj odgovor je poslat.':'Tvoj komentar je poslat.');}
    requestAnimationFrame(()=>{performance.measure('ispovesti-submit-render',{start:confirmedAt,end:performance.now()});performance.measure('ispovesti-submit-total',{start:submittedAt,end:performance.now()});
     const timings={};for(const name of ['session','captcha','network','render','total']){const measure=performance.getEntriesByName('ispovesti-submit-'+name).at(-1);if(measure)timings[name]=Math.round(measure.duration);}
@@ -129,7 +129,29 @@ function voteControls(item){
 }
 function reportStorageKey(item,kind){return 'ispovesti:reported:'+kind+':'+String(item.id);}
 function syncReportButton(btn,item,kind){try{const done=localStorage.getItem(reportStorageKey(item,kind))==='1';btn.classList.toggle('reported',done);btn.setAttribute('aria-label',done?'Sadržaj je prijavljen':'Prijavi sadržaj');btn.title=done?'Već si prijavio ovaj sadržaj':'Prijavi sadržaj';}catch{}}
-function report(item,reportButton){if(reportButton?.classList.contains('reported')){toast('Već si prijavio ovaj sadržaj.');return;}const form=node('form','form');const label=node('label','','Razlog prijave'),select=node('select');for(const [value,text]of [['abuse','Vrijeđanje ili uznemiravanje'],['threat','Prijetnje'],['spam','Spam'],['other','Ostalo']]){const o=node('option','',text);o.value=value;select.append(o);}label.append(select);const send=node('button','primary','Pošalji prijavu');form.append(label,send);let sending=false;form.onsubmit=async e=>{e.preventDefault();if(sending)return;sending=true;send.disabled=true;try{await request('report',{id:item.id,reason:select.value});if(reportButton){const kind=reportButton.classList.contains('comment-report')?'comment':'confession';try{localStorage.setItem(reportStorageKey(item,kind),'1');}catch{}syncReportButton(reportButton,item,kind);}dialog.close();toast('Prijava je zabilježena. Hvala.');}catch(err){toast(err.message);}finally{sending=false;send.disabled=false;}};modal('Prijavi sadržaj',form);}
+let activeReportMenu=null;
+function closeReportMenu(){if(!activeReportMenu)return;activeReportMenu.panel.remove();activeReportMenu.button.setAttribute('aria-expanded','false');activeReportMenu=null;}
+document.addEventListener('pointerdown',event=>{if(activeReportMenu&&!activeReportMenu.panel.contains(event.target)&&!activeReportMenu.button.contains(event.target))closeReportMenu();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeReportMenu)closeReportMenu();});
+function report(item,reportButton){
+ if(reportButton?.classList.contains('reported')){toast('Već si prijavio ovaj sadržaj.');return;}
+ if(activeReportMenu?.button===reportButton){closeReportMenu();return;}closeReportMenu();
+ const row=reportButton.closest('.story-actions,.comment-actions'),panel=node('div','report-menu');
+ panel.setAttribute('role','group');panel.setAttribute('aria-label','Razlog prijave');
+ const kind=reportButton.classList.contains('comment-report')?'comment':'confession';let sending=false;
+ async function sendReport(reason,details=''){
+  if(sending)return;sending=true;panel.querySelectorAll('button,textarea').forEach(el=>el.disabled=true);
+  try{await request('report',{id:item.id,reason,details:details.trim()});try{localStorage.setItem(reportStorageKey(item,kind),'1');}catch{}syncReportButton(reportButton,item,kind);closeReportMenu();toast('Prijava je zabeležena. Hvala.');}
+  catch(err){toast(err.message);panel.querySelectorAll('button,textarea').forEach(el=>el.disabled=false);sending=false;}
+ }
+ const hate=button('Govor mržnje',()=>sendReport('hate_speech'),'report-option');
+ const spam=button('Spam',()=>sendReport('spam'),'report-option');
+ const more=button('···',()=>{const custom=panel.querySelector('.report-custom');custom.hidden=!custom.hidden;if(!custom.hidden)custom.querySelector('textarea').focus();},'report-more');
+ const custom=node('form','report-custom');custom.hidden=true;
+ const detail=node('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni razlog prijave');
+ const send=button('Pošalji',()=>sendReport('other',detail.value),'report-send');
+ custom.append(detail,send);panel.append(hate,spam,more,custom);row.append(panel);reportButton.setAttribute('aria-expanded','true');activeReportMenu={panel,button:reportButton};
+}
 async function commentBranch(confessionId,parentId,container,refreshContext,confirmed,heading){
  let loaded=0;const rendered=new Set(),pending=new Map();
  const list=node('div'),sent=node('div'),more=button('Učitaj još komentara ↓',load,'load-more');
@@ -196,9 +218,9 @@ function dailyWinner(item,kind){
  }else{
   const card=node('article','story daily-comment-story');
   card.append(comment(item,item.confession_id,async()=>{},{readOnly:true}));
-  card.append(button('Pogledaj ispovijest',async()=>{
+  card.append(button('Pogledaj ispovest',async()=>{
    const result=await request('confession',{id:item.confession_id});
-   modal('Ispovijest',story(result.item));
+   modal('Ispovest',story(result.item));
   },'text-button daily-context'));
   section.append(card);
  }
@@ -216,7 +238,7 @@ function selectDailyView(kind){
  $('#feed-title').textContent=titles[currentView];
  $('#feed-subtitle').hidden=false;
  $('#feed-subtitle').textContent=kind==='confession'
-  ?'Najlajkovanija ispovijest za svaki od posljednjih sedam dana.'
+  ?'Najlajkovanija ispovest za svaki od posljednjih sedam dana.'
   :'Najlajkovaniji glavni komentar za svaki od posljednjih sedam dana.';
  load(true);
 }
@@ -239,18 +261,18 @@ async function load(reset=false){
    offset=result.items.length;
    $('#more').hidden=true;
   }else{
-   for(const item of result.items){if(currentView==='my_comments'){const entry=node('article','story');entry.append(metadata(item),node('p','body-text',item.body));entry.append(button('Otvori ispovijest',async()=>{
+   for(const item of result.items){if(currentView==='my_comments'){const entry=node('article','story');entry.append(metadata(item),node('p','body-text',item.body));entry.append(button('Otvori ispovest',async()=>{
       // Exact parent endpoint avoids searching only the first feed page.
-      const r=await request('confession',{id:item.confession_id});modal('Ispovijest',story(r.item));
+      const r=await request('confession',{id:item.confession_id});modal('Ispovest',story(r.item));
     }));feed.append(entry);}else feed.append(story(item));}
    offset+=result.items.length;
    $('#more').hidden=result.items.length<20;
   }
-  if(!offset)feed.append(node('p','empty',dailyKind?(dailyKind==='confession'?'Još nema ispovijesti za dnevni izbor.':'Još nema komentara za dnevni izbor.'):isList?'Ova privatna lista je još prazna.':'Još nema objavljenih ispovijesti.'));
+  if(!offset)feed.append(node('p','empty',dailyKind?(dailyKind==='confession'?'Još nema ispovesti za dnevni izbor.':'Još nema komentara za dnevni izbor.'):isList?'Ova privatna lista je još prazna.':'Još nema objavljenih ispovesti.'));
  }catch(err){if(version!==generation)return;if(reset)feed.replaceChildren(node('p','empty error',err.message));else toast(err.message);$('#more').hidden=false;}
  finally{if(version===generation){busy=false;$('#more').disabled=false;}}
 }
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-title').textContent=titles[currentView];$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mjesto.';load(true);});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-title').textContent=titles[currentView];$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mesto.';load(true);});
 $('#sidebar-compose').append(contentForm('confession',{},()=>{}));
 $('#more').onclick=()=>load();
 load(true);
