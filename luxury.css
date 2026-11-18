@@ -51,7 +51,7 @@ body{background:#0b0b0b;color:#eee}
 .replies,.comment-replies{border-left:1px solid rgba(214,177,94,.22)!important}
 .comments-area{border-top:1px solid rgba(214,177,94,.2)!important}
 button,.reply-button,.nav-button,.daily-tab,.load-more,.text-button,
-.icon-button,.comment-heart,.comment-report,.reaction-choice{
+.icon-button,.comment-heart,.comment-report{
  border:0!important;border-radius:0!important;outline-offset:4px;
  box-shadow:none!important;
 }
@@ -67,27 +67,6 @@ button:disabled{opacity:.55}
  box-shadow:none!important;text-shadow:none!important;font-size:19px!important;
 }
 .comment-report{color:var(--gold)!important;font-size:16px!important}
-.reaction-picker{
- display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%;
- margin-top:9px;padding:7px 0!important;border:0!important;border-radius:0!important;
- background:transparent!important;box-shadow:none!important;
-}
-.reaction-picker-label{flex-basis:100%;font-size:11px;color:#aaa}
-.reaction-choice{
- min-width:0!important;padding:3px 4px!important;margin:0!important;
- background:transparent!important;border:0!important;border-radius:0!important;
- filter:none!important;opacity:1!important;font-size:21px!important;
- box-shadow:none!important;text-shadow:none!important;
- transition:transform .16s ease,text-shadow .16s ease;
-}
-.reaction-choice:hover{background:transparent!important;transform:scale(1.08)}
-.reaction-choice.selected{
- background:transparent!important;border:0!important;
- box-shadow:none!important;opacity:1!important;
- text-shadow:0 0 5px rgba(255,255,255,.6),0 0 11px rgba(214,177,94,.52)!important;
- transform:scale(1.12);
-}
-.reaction-choice:disabled{opacity:.75!important}
 .daily-tabs{gap:18px!important;border-bottom:1px solid rgba(214,177,94,.22);padding-bottom:8px}
 .daily-tab{background:transparent!important;color:#aaa!important;padding:8px 2px!important}
 .daily-tab.active{color:var(--gold)!important;border-bottom:1px solid var(--gold)!important}
@@ -109,5 +88,4 @@ button:disabled{opacity:.55}
 .dialog-heading .icon-button{padding:0 5px!important}
 #toast{border:0!important;border-radius:3px!important;box-shadow:none!important}
 .preview{border:0!important;border-radius:0!important}
-@media(prefers-reduced-motion:reduce){.reaction-choice{transition:none}}
 
