@@ -75,3 +75,21 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 }
 .vote-controls{background:transparent!important;box-shadow:none!important;}
 .vote-controls > button:not(.selected){box-shadow:none!important;}
+
+/* Align favorite hearts with the vote icons; remove inherited button offset. */
+.story-actions > .action.favorite,
+.comment-actions > .comment-heart{
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ align-self:center!important;
+ min-width:0!important;
+ margin:0!important;
+ padding:4px 5px!important;
+ line-height:1!important;
+ vertical-align:middle!important;
+ border:0!important;
+ border-radius:0!important;
+ background:transparent!important;
+ box-shadow:none!important;
+}
