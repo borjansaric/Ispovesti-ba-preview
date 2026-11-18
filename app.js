@@ -4,9 +4,9 @@ import { request, isPreview, isLocal, prepareSubmission } from './api.js?v=room2
 const $ = s => document.querySelector(s);
 const feed = $('#feed'), dialog = $('#dialog');
 const dailyTabs={confession:$('#daily-confessions'),comment:$('#daily-comments')};
-let currentView='oldest',offset=0, generation=0, openMenu=null,openBranch=null,busy=false;
+let currentView='oldest',offset=0,generation=0,busy=false;
 // One batched state request per group of 20 cards, rather than 40 separate requests.
-const stateListeners=new Set(),branchViews=new WeakMap();let stateTimer;
+const stateListeners=new Set();let stateTimer;
 function watchState(id,type,element,render){stateListeners.add({id,type,element,render});clearTimeout(stateTimer);stateTimer=setTimeout(refreshStates,30);}
 async function refreshStates(){
  for(const entry of stateListeners)if(!entry.element.isConnected)stateListeners.delete(entry);
@@ -137,7 +137,7 @@ async function commentBranch(confessionId,parentId,container,refreshContext,conf
  // The comment composer stays directly under the confession, before the existing comments.
  container.replaceChildren(...(composer?[composer]:[]),...(heading?[heading]:[]),list,more,sent);
  function add(item){if(rendered.has(item.id)||pending.has(item.id))return;const entry=comment(item,confessionId,refreshContext);pending.set(item.id,entry);sent.append(entry);}
- branchViews.set(container,add);if(confirmed)add(confirmed);
+ if(confirmed)add(confirmed);
  async function load(){more.disabled=true;try{const r=await request('comments',{confession_id:confessionId,parent_id:parentId,offset:loaded});for(const item of r.items){pending.get(item.id)?.remove();pending.delete(item.id);if(!rendered.has(item.id)){rendered.add(item.id);list.append(comment(item,confessionId,refreshContext));}}loaded+=r.items.length;more.hidden=r.items.length<20;}finally{more.disabled=false;}}
  await load();
 }
