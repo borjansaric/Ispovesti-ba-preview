@@ -109,6 +109,6 @@ async function previewRequest(action, a) {
   if(action==='context') return{favorite:s.favorites.includes(id),comment_count:s.contents.some(c=>c.mine&&c.confession_id===id)?s.contents.filter(c=>c.confession_id===id&&visible(c)).length:null};
   if(action==='favorite'){s.favorites=s.favorites.filter(i=>i!==id);if(a.enabled)s.favorites.unshift(id);persist();return{success:true};}
   if(action==='read'){s.recent=[id,...s.recent.filter(i=>i!==id)].slice(0,100);persist();return{success:true};}
-  if(action==='report'){if(!s.reports.includes(id))s.reports.push(id);persist();return{success:true};}
+  if(action==='report'){const exists=s.reports.some(r=>String(typeof r==='object'&&r!==null?r.id:r)===id);if(!exists)s.reports.push({id,reason:a.reason||'other',details:a.details||''});persist();return{success:true};}
   throw new Error('Radnja nije dostupna u pregledu.');
 }
