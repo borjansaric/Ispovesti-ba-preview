@@ -399,3 +399,96 @@ button:disabled{opacity:.55}
 .comment-actions>.action.comment-report.reported{
   color:#ed5555!important;
 }
+
+
+/* FINAL FIX: keep the exclamation mark at the extreme right and remove vote-button frames. */
+.story-actions,.comment-actions{
+  display:flex!important;
+  align-items:center!important;
+  width:100%!important;
+  gap:12px!important;
+}
+.story-actions>.action-spacer,.comment-actions>.action-spacer{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  width:auto!important;
+  height:1px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+.story-actions>.action.report,.comment-actions>.action.comment-report{
+  display:inline-flex!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+  margin-left:0!important;
+  padding:4px 0 4px 8px!important;
+  position:static!important;
+  color:#d6b15e!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
+.story-actions>.action.report.reported,.comment-actions>.action.comment-report.reported{
+  color:#ed5555!important;
+}
+.story-actions>.action.report:hover,.comment-actions>.action.comment-report:hover{
+  color:#d6b15e!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
+/* The vote group and each like/dislike button are flat; only the selected vote keeps its glow. */
+.story-actions>.vote-controls,.comment-actions>.vote-controls,
+.story-actions .vote-controls,.comment-actions .vote-controls{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  padding:0!important;
+  margin:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+}
+.story-actions .vote-controls>.action,.comment-actions .vote-controls>.action,
+.vote-controls>button.action{
+  min-width:0!important;
+  padding:4px 5px!important;
+  background:transparent!important;
+  border:0!important;
+  border-style:none!important;
+  border-width:0!important;
+  border-radius:0!important;
+  outline:0!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+.story-actions .vote-controls>.action:not(.selected),
+.comment-actions .vote-controls>.action:not(.selected),
+.vote-controls>button.action:not(.selected){
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
+.story-actions .vote-controls>.action[aria-label="Pozitivan glas"].selected,
+.comment-actions .vote-controls>.action[aria-label="Pozitivan glas"].selected,
+.vote-controls>button.action[aria-label="Pozitivan glas"].selected{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:0!important;
+}
+.story-actions .vote-controls>.action[aria-label="Negativan glas"].selected,
+.comment-actions .vote-controls>.action[aria-label="Negativan glas"].selected,
+.vote-controls>button.action[aria-label="Negativan glas"].selected{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:0!important;
+}
