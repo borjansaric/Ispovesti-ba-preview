@@ -37,4 +37,4 @@
     .side-menu .panel h2{font-size:18px}
     .side-menu textarea{min-height:110px;font-size:14px}
     .side-menu .panel button{width:100%}
-    @media(max-width:480px){body{padding-left:10px;padding-right:10px}header{padding-top:66px}.panel,.story{padding:14px}.side-menu{padding-left:14px;padding-right:14px}}
+    @media(max-width:480px){body{padding-right:10px}header{padding-top:66px}.side-menu{padding-left:14px;padding-right:14px}}
