@@ -7,8 +7,7 @@
     main{width:100%;max-width:760px;margin:0 auto}
     .panel{margin-bottom:22px;overflow-wrap:anywhere}.story{overflow-wrap:anywhere}
     h2{color:var(--gold);font-size:21px;margin:0 0 12px}
-    textarea{display:block;width:100%;min-height:130px;resize:vertical;background:#101010;color:var(--text);border:1px solid #454545;border-radius:8px;padding:12px;font:inherit}
-    textarea:focus{outline:1px solid var(--gold);border-color:var(--gold)}
+    
     button{margin-top:10px;font-weight:bold;font-size:14px;cursor:pointer}
     button:disabled{cursor:wait}
     .hint{color:var(--muted);font-size:13px;margin:7px 0 0}
@@ -16,9 +15,9 @@
     .story-date,.comment-date{color:var(--muted);font-size:11px;margin-top:4px}
     .story-date{font-size:12px;margin-top:12px}
 
-    .comments{border-top:1px solid var(--border);margin-top:17px;padding-top:13px}
+    .comments{border-top:1px solid var(--border);margin-top:6px;padding-top:5px}
     .comment-title{color:var(--gold);font-size:16px;margin:0 0 10px}
-    .comment{margin:9px 0;min-width:0}
+    .comment{margin:3px 0;min-width:0}
     .comment-replies{margin-left:12px;padding-left:8px;border-left:1px solid #393939}
     .empty{color:var(--muted);text-align:center;padding:18px 5px}
     footer{max-width:760px;margin:28px auto 0;color:var(--muted);text-align:center;font-size:12px}
