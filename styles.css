@@ -78,6 +78,15 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 
 /* Nickname field and submit action share one row; the submit button sits to the right of the gold name underline. */
 .form .identity-row{display:flex;align-items:flex-end;gap:12px;margin-top:5px;min-width:0}
-.form .identity-row>label{flex:1 1 auto;min-width:0;margin:0}
-.form .identity-row input{width:100%;max-width:100%}
-.form .identity-row>button{flex:0 0 auto;margin:0 0 2px;white-space:nowrap}
+.form .identity-row>label{flex:0 1 45vw;width:45vw;max-width:45vw;min-width:0;margin:0}
+.form .identity-row input{width:100%;max-width:100%;margin-top:0;padding:3px 2px 5px}
+.form .identity-row>button{flex:0 0 auto;width:auto;margin:0 0 2px;white-space:nowrap}
+
+/* Compact entries on the private My Comments page only. */
+.my-comment-entry{padding:5px 0;margin-bottom:3px}
+.my-comment-entry .story-meta{margin:0 0 2px}
+.my-comment-entry>.body-text{margin:0 0 3px}
+.my-comment-entry>.open-confession{display:inline-block;width:auto;margin:0;padding:2px 0;line-height:1.35}
+
+/* A restrained gold highlight appears only on selected hearts. */
+.story-actions>.action.favorite.selected,.comment-actions>.comment-heart.selected{color:#f4d98f;text-shadow:0 0 7px rgba(244,217,143,.62)}
