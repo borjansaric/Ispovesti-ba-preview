@@ -1,6 +1,13 @@
-/* Ispovesti.ba — luxury background and restrained controls (test app only). */
-:root{--lux-gold:#c9a75b;--lux-gold-soft:rgba(201,167,91,.22);--lux-figure-size:clamp(420px,42vw,760px)}
-body{isolation:isolate;background:#090909!important;position:relative}
+/* Ispovesti.ba — isolated preview theme. One canonical rule per selector. */
+:root{
+ --lux-gold:#c9a75b;
+ --lux-gold-soft:rgba(201,167,91,.22);
+ --lux-figure-size:clamp(420px,42vw,760px);
+ --gold:#d6b15e;
+ --gold-soft:#f0d58e;
+ --red-glow:rgba(205,55,58,.58);
+}
+body{isolation:isolate;background:#090909!important;color:#eee;position:relative}
 body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;will-change:transform,background-position}
 body::before{
  background-image:
@@ -11,56 +18,39 @@ body::before{
   linear-gradient(72deg,transparent 0 42%,rgba(201,167,91,.07) 42.06%,transparent 42.16% 84%,rgba(201,167,91,.055) 84.06%,transparent 84.16%);
  background-size:var(--lux-figure-size) auto,var(--lux-figure-size) auto,100% 100%,100% 100%,100% 100%;
  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,no-repeat;
- background-position:
-  left -3vw top calc(2vh + var(--lux-scroll-y,0px)),
-  right -3vw top calc(2vh + var(--lux-scroll-y,0px)),
-  center,
-  center,
-  center;
- opacity:.88;transition:background-position .16s linear
+ background-position:left -3vw top calc(2vh + var(--lux-scroll-y,0px)),right -3vw top calc(2vh + var(--lux-scroll-y,0px)),center,center,center;
+ opacity:.88;transition:background-position .16s linear;
 }
 body::after{
  background:
   repeating-linear-gradient(128deg,transparent 0 145px,rgba(201,167,91,.105) 146px,transparent 147px 270px),
   repeating-linear-gradient(58deg,transparent 0 205px,rgba(201,167,91,.065) 206px,transparent 207px 360px);
  mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent);
- transform:translate3d(0,var(--lux-scroll-y,0px),0);opacity:.55
+ transform:translate3d(0,var(--lux-scroll-y,0px),0);opacity:.55;
 }
 .site-header,main,footer,.side-menu{position:relative;z-index:1}
 .site-header{background:transparent!important}
 .site-header h1{letter-spacing:.09em;text-shadow:0 0 24px rgba(201,167,91,.18)}
 .site-header p{letter-spacing:.025em}
-.panel,.story,.private-panel{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
-.story{padding:18px 3px!important;border-bottom:1px solid rgba(201,167,91,.16)!important;margin-bottom:15px!important}
-.comment,.replies,.comment-replies{background:transparent!important;border:0!important;border-radius:0!important}
-.comment{padding:9px 0!important}
-.replies,.comment-replies{padding-left:12px!important}
-.comments-area,.comments{border-top:1px solid rgba(201,167,91,.16)!important}
-
-/* Ispovesti.ba — restrained black/gold presentation for the isolated test app.
-   Functional controls remain accessible; decorative frames and tiles are removed. */
-:root{--gold:#d6b15e;--gold-soft:#f0d58e;--red-glow:rgba(205,55,58,.58)}
-body{background:#0b0b0b;color:#eee}
 .panel,.story,.private-panel{
  background:transparent!important;border:0!important;border-radius:0!important;
  box-shadow:none!important;padding:16px 0!important;
 }
 .story{border-bottom:1px solid rgba(214,177,94,.17)!important;margin-bottom:20px!important}
 .private-panel{margin:0 auto 22px!important}
-.comment{background:transparent!important;border:0!important;border-left:0!important;border-radius:0!important;padding:8px 0!important}
-.replies,.comment-replies{border-left:1px solid rgba(214,177,94,.22)!important}
-.comments-area{border-top:1px solid rgba(214,177,94,.2)!important}
+.comment,.replies,.comment-replies{background:transparent!important;border:0!important;border-radius:0!important}
+.comment{padding:8px 0!important}
+.replies,.comment-replies{padding-left:12px!important;border-left:1px solid rgba(214,177,94,.22)!important}
+.comments-area,.comments{border-top:1px solid rgba(214,177,94,.2)!important}
 button:not(.vote-controls>.action),.reply-button,.nav-button,.daily-tab,.load-more,.text-button,
 .icon-button,.comment-heart,.comment-report{
- border:0!important;border-radius:0!important;outline-offset:4px;
- box-shadow:none!important;
+ border:0!important;border-radius:0!important;outline-offset:4px;box-shadow:none!important;
 }
 button{background:transparent;color:var(--gold);padding:7px 5px}
 button:hover{color:var(--gold-soft);background:transparent}
 button:disabled{opacity:.55}
 .reply-button,.text-button,.icon-button,.comment-report,.comment-heart{
- background:transparent!important;color:var(--gold)!important;
- padding:5px 7px!important;margin:0!important;
+ background:transparent!important;color:var(--gold)!important;padding:5px 7px!important;margin:0!important;
 }
 .comment-heart,.comment-heart.selected{
  color:var(--gold)!important;background:transparent!important;
@@ -88,4 +78,3 @@ button:disabled{opacity:.55}
 .dialog-heading .icon-button{padding:0 5px!important}
 #toast{border:0!important;border-radius:3px!important;box-shadow:none!important}
 .preview{border:0!important;border-radius:0!important}
-
