@@ -49,7 +49,7 @@ document.addEventListener('keydown',event=>{
   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
  }
 });
-$('#close-dialog').onclick=()=>dialog.close();
+dialog.addEventListener('click',event=>{const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close();});
 $('#write').onclick=()=>modal('Podijeli svoju ispovijest',contentForm('confession',{},()=>{}));
 $('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledniku. Brisanje podataka preglednika može značiti gubitak privatnih lista i istorije. Nema javnih profila. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
 $('#footer-privacy').onclick=()=>$('#privacy').click();
