@@ -71,3 +71,26 @@ button:disabled{opacity:.55}
 .dialog-heading .icon-button{padding:0 5px}
 #toast{border:0;border-radius:3px;box-shadow:none}
 .preview{border:0;border-radius:0}
+
+/* Asymmetric fine-gold threads framing the masthead. */
+.site-header{isolation:isolate}
+.site-header::before{
+ content:"";position:absolute;z-index:-1;pointer-events:none;
+ left:50%;top:50%;width:min(620px,calc(100vw - 42px));height:112px;
+ transform:translate(-50%,-50%);
+ background:
+  linear-gradient(164deg,transparent 0 12%,rgba(255,218,104,.62) 12.18%,transparent 12.55% 100%),
+  linear-gradient(173deg,transparent 0 23%,rgba(201,167,91,.38) 23.14%,transparent 23.42% 100%),
+  linear-gradient(7deg,transparent 0 72%,rgba(255,218,104,.48) 72.16%,transparent 72.5% 100%),
+  linear-gradient(14deg,transparent 0 84%,rgba(201,167,91,.34) 84.12%,transparent 84.42% 100%);
+ opacity:.82;
+}
+.site-header::after{
+ content:"";position:absolute;pointer-events:none;left:50%;bottom:7px;
+ width:min(310px,58vw);height:7px;transform:translateX(-50%);
+ background:
+  radial-gradient(ellipse at 50% 50%,rgba(255,225,143,.78),transparent 12%),
+  linear-gradient(90deg,transparent,rgba(201,167,91,.48) 22%,rgba(255,218,104,.68) 50%,rgba(201,167,91,.38) 78%,transparent);
+ opacity:.72;
+}
+.site-header h1,.site-header p{position:relative;z-index:1}
