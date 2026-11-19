@@ -4,7 +4,7 @@ import { request, isPreview, isLocal, prepareSubmission } from './api.js?v=20261
 const $ = s => document.querySelector(s);
 const feed = $('#feed'), dialog = $('#dialog');
 const dailyTabs={confession:$('#daily-confessions'),comment:$('#daily-comments')};
-let currentView='oldest',offset=0,generation=0,busy=false;
+let currentView='new',offset=0,generation=0,busy=false;
 // One batched state request per group of 20 cards, rather than 40 separate requests.
 const stateListeners=new Set();let stateTimer;
 function watchState(id,type,element,render){stateListeners.add({id,type,element,render});clearTimeout(stateTimer);stateTimer=setTimeout(refreshStates,30);}
