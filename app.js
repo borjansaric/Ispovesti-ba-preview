@@ -88,6 +88,15 @@ function contentForm(kind,extra,done,onBack){
  return form;
 }
 function pulseHeart(b){if(b.getAttribute('aria-pressed')==='true'&&!matchMedia('(prefers-reduced-motion: reduce)').matches)b.animate([{transform:'scale(1)'},{transform:'scale(1.14)'},{transform:'scale(1)'}],{duration:200,easing:'ease-out'});}
+function heartStyleKey(kind,id){return 'ispovesti:heart-style:'+kind+':'+String(id);}
+function applyHeartStyle(btn,kind,id,selected){
+ const key=heartStyleKey(kind,id);
+ if(!selected){delete btn.dataset.heartStyle;try{localStorage.removeItem(key);}catch{}return;}
+ let style=0;
+ try{style=Number(localStorage.getItem(key));}catch{}
+ if(!Number.isInteger(style)||style<1||style>40){style=Math.floor(Math.random()*40)+1;try{localStorage.setItem(key,String(style));}catch{}}
+ btn.dataset.heartStyle=String(style);
+}
 function voteControls(item){
  const row=node('div','vote-controls');const buttons=[];
  for(const [value,symbol] of [[1,'👍'],[-1,'👎']]){
@@ -194,12 +203,12 @@ const commentMeta=new Set();let commentMetaTimer;
 function updateCommentMeta(){clearTimeout(commentMetaTimer);commentMetaTimer=setTimeout(async()=>{
  for(const x of commentMeta)if(!x.wrap.isConnected)commentMeta.delete(x);
  const ids=[...new Set([...commentMeta].map(x=>String(x.item.id)))];
- for(let i=0;i<ids.length;i+=50){try{const data=await chatRequest('comment_meta',{ids:ids.slice(i,i+50)});for(const x of commentMeta){const d=data[x.item.id];if(d){x.count.textContent=replyCounterText(d.replies);x.favorite.classList.toggle('selected',d.favorite);x.favorite.setAttribute('aria-pressed',String(d.favorite));x.favorite.textContent=d.favorite?'♥':'♡';}}}catch(err){toast(err.message);}}
+ for(let i=0;i<ids.length;i+=50){try{const data=await chatRequest('comment_meta',{ids:ids.slice(i,i+50)});for(const x of commentMeta){const d=data[x.item.id];if(d){x.count.textContent=replyCounterText(d.replies);x.favorite.classList.toggle('selected',d.favorite);x.favorite.setAttribute('aria-pressed',String(d.favorite));x.favorite.textContent=d.favorite?'♥':'♡';applyHeartStyle(x.favorite,'comment',x.item.id,d.favorite);}}}catch(err){toast(err.message);}}
  },40);}
 function comment(item,confessionId,refreshContext,focusOptions={}){
  const wrap=node('div','comment'),card=node('div','comment-card');card.append(metadata(item),node('p','body-text',item.body));
  const row=node('div','comment-actions');row.append(voteControls(item));
- const favorite=button('♡',async b=>{b.disabled=true;try{const enabled=b.getAttribute('aria-pressed')!=='true';await chatRequest('comment_favorite',{id:item.id,enabled});b.setAttribute('aria-pressed',String(enabled));b.classList.toggle('selected',enabled);b.textContent=enabled?'♥':'♡';pulseHeart(b);}finally{b.disabled=false;}},'comment-heart');favorite.setAttribute('aria-label','Sačuvaj komentar');row.append(favorite);
+ const favorite=button('♡',async b=>{b.disabled=true;try{const enabled=b.getAttribute('aria-pressed')!=='true';await chatRequest('comment_favorite',{id:item.id,enabled});b.setAttribute('aria-pressed',String(enabled));b.classList.toggle('selected',enabled);b.textContent=enabled?'♥':'♡';applyHeartStyle(b,'comment',item.id,enabled);pulseHeart(b);}finally{b.disabled=false;}},'comment-heart');favorite.setAttribute('aria-label','Sačuvaj komentar');row.append(favorite);
  const reportButton=button('!',()=>report(item,reportButton),'action comment-report');reportButton.setAttribute('aria-label','Prijavi komentar');reportButton.title='Prijavi komentar';syncReportButton(reportButton,item,'comment');
  const count=node('span','reply-count',''),arrow=node('span','reply-triangle');arrow.setAttribute('aria-hidden','true');
  const repliesButton=button('',()=>focusOptions.close?focusOptions.close():focusOptions.reply?focusOptions.reply(item):openReplies(item,confessionId,refreshContext,repliesButton),'reply-toggle');
@@ -233,7 +242,7 @@ function story(item){
  const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
  let commentsLoaded=false;const commentsToggle=button('Komentari',async b=>{commentsArea.hidden=!commentsArea.hidden;if(!commentsArea.hidden&&!commentsLoaded){b.disabled=true;try{await commentBranch(item.id,null,commentsList,refreshContext,null,comments);commentsLoaded=true;}catch(err){commentsList.textContent=err.message;}finally{b.disabled=false;}}b.setAttribute('aria-expanded',String(!commentsArea.hidden));},'text-button comments-toggle');commentsToggle.setAttribute('aria-expanded','false');
  const favorite=button('♡',async b=>{const enabled=b.getAttribute('aria-pressed')!=='true';const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);pulseHeart(b);},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
- function setFavorite(value,style){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);if(value&&Number.isInteger(Number(style))&&Number(style)>=1&&Number(style)<=40)favorite.dataset.heartStyle=String(style);else delete favorite.dataset.heartStyle;}
+ function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);applyHeartStyle(favorite,'confession',item.id,value);}
  async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
  watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);});
  const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,commentsToggle,node('span','action-spacer'),reportButton);article.append(row,commentsArea);
