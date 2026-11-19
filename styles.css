@@ -16,7 +16,7 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .captcha-check{max-width:100%;margin-top:8px}.admin #totp-qr{display:block;max-width:100%;height:auto;background:white;margin:12px 0}.admin #totp-open{display:block;width:fit-content;margin:12px 0}.admin #totp-secret{max-width:100%}.admin #logout{margin-bottom:16px}
 
 /* Daily winners: two equal-width tabs, preserving the existing black-and-gold theme. */
-.daily-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:0 0 8px}
+.daily-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:-6px 0 8px}
 .daily-tab{margin:0;font-size:14px;font-weight:bold;text-align:center}
 
 .daily-day-heading{margin:8px 0 4px;padding:0 0 3px;border-bottom:1px solid var(--border);color:var(--gold);font-size:14px;font-weight:bold;text-transform:capitalize}
