@@ -35,12 +35,12 @@ body::after{
 }
 .story{
  background:transparent;border:0;border-radius:0;
- box-shadow:none;padding:10px 0;
- border-bottom:1px solid rgba(214,177,94,.17);margin-bottom:4px;
+ box-shadow:none;padding:8px 0;
+ border-bottom:1px solid rgba(214,177,94,.17);margin-bottom:2px;
 }
 .private-panel{margin:0 auto 22px}
 .comment,.replies,.comment-replies{background:transparent;border:0;border-radius:0}
-.comment{padding:1px 0}
+.comment{padding:0}
 .replies,.comment-replies{padding-left:8px;border-left:1px solid rgba(214,177,94,.22)}
 .comments-area,.comments{border-top:1px solid rgba(214,177,94,.2)}
 button{background:transparent;color:var(--gold);padding:7px 5px;border:0;border-radius:0;outline-offset:4px;box-shadow:none}
