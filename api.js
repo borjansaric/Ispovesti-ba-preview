@@ -41,13 +41,22 @@ export async function request(action, args = {}, adminSession = null, captchaHos
   if(config.mode==='local')return localRequest(action,args);
   if (isPreview) return previewRequest(action, args);
   const headers = { apikey: config.publishableKey, 'Content-Type': 'application/json' };
-  if (!['feed', 'comments', 'confession', 'daily_highlights', 'captcha_config', 'activate_admin'].includes(action)) {
-    const authAt=performance.now();
-    const s = adminSession || await session();
-    if(action==='submit')performance.measure('ispovesti-submit-session',{start:authAt,end:performance.now()});
-    headers.Authorization = 'Bearer ' + s.access_token;
-  }
-  if(action==='submit'){const at=performance.now();args={...args,captcha_token:await captchaToken({kind:args.kind,host:captchaHost})};performance.measure('ispovesti-submit-captcha',{start:at,end:performance.now()});}
+  const needsSession = !['feed', 'comments', 'confession', 'daily_highlights', 'captcha_config', 'activate_admin'].includes(action);
+  const authAt=performance.now(),captchaAt=performance.now();
+  const sessionTask = needsSession
+    ? (adminSession ? Promise.resolve(adminSession) : session()).then(s => {
+        if(action==='submit')performance.measure('ispovesti-submit-session',{start:authAt,end:performance.now()});
+        headers.Authorization = 'Bearer ' + s.access_token;
+        return s;
+      })
+    : Promise.resolve(null);
+  const captchaTask = action==='submit'
+    ? captchaToken({kind:args.kind,host:captchaHost}).then(token => {
+        args={...args,captcha_token:token};
+        performance.measure('ispovesti-submit-captcha',{start:captchaAt,end:performance.now()});
+      })
+    : Promise.resolve();
+  await Promise.all([sessionTask,captchaTask]);
   const networkAt=performance.now();
   const response = await fetch(config.supabaseUrl + '/functions/v1/community-test-api?forceFunctionRegion=eu-central-1', {
     method: 'POST', headers, body: JSON.stringify({ action, args }), signal: AbortSignal.timeout(20000), cache: 'no-store',
