@@ -16,8 +16,8 @@
     .story-date{font-size:12px;margin-top:12px}
 
     .comments{border-top:1px solid var(--border);margin-top:6px;padding-top:5px}
-    .comment-title{color:var(--gold);font-size:16px;margin:0 0 10px}
-    .comment{margin:3px 0;min-width:0}
+    .comment-title{color:var(--gold);font-size:16px;margin:0 0 5px}
+    .comment{margin:1px 0;min-width:0}
     .comment-replies{margin-left:12px;padding-left:8px;border-left:1px solid #393939}
     .empty{color:var(--muted);text-align:center;padding:18px 5px}
     footer{max-width:760px;margin:28px auto 0;color:var(--muted);text-align:center;font-size:12px}
