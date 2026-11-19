@@ -45,7 +45,7 @@ button:disabled{opacity:.55}
 .reply-button,.text-button,.icon-button,.comment-report,.comment-heart{
  background:transparent;color:var(--gold);padding:5px 7px;margin:0;
 }
-.comment-heart,.comment-heart.selected{
+.comment-heart{
  color:var(--gold);background:transparent;
  box-shadow:none;text-shadow:none;font-size:19px;
 }
