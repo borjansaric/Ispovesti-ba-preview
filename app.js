@@ -240,8 +240,8 @@ function story(item){
  const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
  const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
  let commentsLoaded=false,commentsLoading=false;
- async function openComments(){if(!commentsArea.hidden||commentsLoading)return;commentsArea.hidden=false;if(commentsLoaded)return;commentsLoading=true;try{await commentBranch(item.id,null,commentsList,refreshContext,null,comments);commentsLoaded=true;}catch(err){commentsList.textContent=err.message;}finally{commentsLoading=false;}}
- article.querySelector('.story-content').addEventListener('click',openComments);
+ async function toggleComments(){if(commentsLoading)return;commentsArea.hidden=!commentsArea.hidden;if(commentsArea.hidden||commentsLoaded)return;commentsLoading=true;try{await commentBranch(item.id,null,commentsList,refreshContext,null,comments);commentsLoaded=true;}catch(err){commentsList.textContent=err.message;}finally{commentsLoading=false;}}
+ article.querySelector('.story-content').addEventListener('click',toggleComments);
  const favorite=button('♡',async b=>{const enabled=b.getAttribute('aria-pressed')!=='true';const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);pulseHeart(b);},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);applyHeartStyle(favorite,'confession',item.id,value);}
  async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
