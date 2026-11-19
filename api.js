@@ -84,7 +84,7 @@ async function previewRequest(action, a) {
   const visible = c => c && c.state === 'published';
   if (action==='feed') {
     const rows=s.contents.filter(c=>c.kind==='confession'&&visible(c));
-    rows.sort((x,y)=>a.sort==='new'?Date.parse(y.published_at)-Date.parse(x.published_at):Date.parse(x.published_at)-Date.parse(y.published_at));
+    rows.sort((x,y)=>Date.parse(y.published_at||y.created_at)-Date.parse(x.published_at||x.created_at));
     return { items:rows.slice(offset,offset+20).map(safe) };
   }
   if (action==='comments') return { items:s.contents.filter(c=>c.confession_id===String(a.confession_id)&&c.parent_id===(a.parent_id?String(a.parent_id):null)&&visible(c)).slice(offset,offset+20).map(c=>({...safe(c),has_replies:s.contents.some(r=>r.parent_id===c.id&&visible(r))})) };
