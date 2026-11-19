@@ -342,7 +342,7 @@ dailyTabs.confession.onclick=()=>selectDailyView('confession');
 dailyTabs.comment.onclick=()=>selectDailyView('comment');
 async function load(reset=false){
  if(busy&&!reset)return;busy=true;const version=reset?++generation:generation;
- if(reset){offset=0;feed.replaceChildren(node('p','empty','Učitavam priče…'));}
+ if(reset){offset=0;feed.replaceChildren();}
  $('#more').disabled=true;
  try{
   const dailyKind=currentView==='daily_confessions'?'confession':currentView==='daily_comments'?'comment':null;
