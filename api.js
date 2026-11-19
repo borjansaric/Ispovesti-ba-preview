@@ -37,8 +37,46 @@ async function localRequest(action,args,retry=true){
  if(response.status===401&&protectedAction&&retry){localSessionReady=false;return localRequest(action,args,false);}
  const result=await response.json();if(!response.ok)throw new Error(result.error||'Lokalna provera nije uspela.');return result;
 }
+const readCacheActions=new Set(['feed','comments','confession','daily_highlights']);
+const readCacheDb='ispovesti-read-cache-v1';
+let readCacheDbPromise;
+function openReadCache(){
+ if(!('indexedDB' in window))return Promise.resolve(null);
+ if(!readCacheDbPromise)readCacheDbPromise=new Promise(resolve=>{
+  const req=indexedDB.open(readCacheDb,1);
+  req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('responses'))req.result.createObjectStore('responses',{keyPath:'key'});};
+  req.onsuccess=()=>resolve(req.result);req.onerror=()=>resolve(null);req.onblocked=()=>resolve(null);
+ });
+ return readCacheDbPromise;
+}
+async function getReadCache(key){
+ try{const db=await openReadCache();if(!db)return null;return await new Promise(resolve=>{const req=db.transaction('responses','readonly').objectStore('responses').get(key);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>resolve(null);});}catch{return null;}
+}
+async function putReadCache(key,value){
+ try{const db=await openReadCache();if(!db)return;await new Promise(resolve=>{const tx=db.transaction('responses','readwrite');tx.objectStore('responses').put({key,value,savedAt:Date.now()});tx.oncomplete=tx.onerror=tx.onabort=()=>resolve();});}catch{}
+}
+function readCacheKey(action,args){return action+':'+JSON.stringify(args||{});}
+async function cachedRead(action,args,network){
+ const key=readCacheKey(action,args),cached=await getReadCache(key);
+ if(cached){
+  // Serve the last successful public snapshot immediately; refresh it quietly for the next visit.
+  void network().then(async fresh=>{
+   if(JSON.stringify(fresh)!==JSON.stringify(cached.value)){
+    await putReadCache(key,fresh);
+    window.dispatchEvent(new CustomEvent('ispovesti:read-cache-updated',{detail:{action,args,result:fresh}}));
+   }
+  }).catch(()=>{});
+  return cached.value;
+ }
+ const fresh=await network();await putReadCache(key,fresh);return fresh;
+}
 export async function request(action, args = {}, adminSession = null, captchaHost = null) {
   if(config.mode==='local')return localRequest(action,args);
+  if(readCacheActions.has(action)&&!adminSession)return cachedRead(action,args,()=>networkRequest(action,args,adminSession,captchaHost));
+  return networkRequest(action,args,adminSession,captchaHost);
+}
+async function networkRequest(action, args = {}, adminSession = null, captchaHost = null) {
+
   if (isPreview) return previewRequest(action, args);
   const headers = { apikey: config.publishableKey, 'Content-Type': 'application/json' };
   const needsSession = !['feed', 'comments', 'confession', 'daily_highlights', 'captcha_config', 'activate_admin'].includes(action);
