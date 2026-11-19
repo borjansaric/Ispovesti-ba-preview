@@ -55,6 +55,9 @@ async function getReadCache(key){
 async function putReadCache(key,value){
  try{const db=await openReadCache();if(!db)return;await new Promise(resolve=>{const tx=db.transaction('responses','readwrite');tx.objectStore('responses').put({key,value,savedAt:Date.now()});tx.oncomplete=tx.onerror=tx.onabort=()=>resolve();});}catch{}
 }
+async function clearReadCache(action){
+ try{const db=await openReadCache();if(!db)return;await new Promise(resolve=>{const tx=db.transaction('responses','readwrite'),store=tx.objectStore('responses'),req=store.openCursor();req.onsuccess=()=>{const cursor=req.result;if(!cursor)return;if(cursor.key.startsWith(action+':'))cursor.delete();cursor.continue();};tx.oncomplete=tx.onerror=tx.onabort=()=>resolve();});}catch{}
+}
 function readCacheKey(action,args){return action+':'+JSON.stringify(args||{});}
 async function cachedRead(action,args,network){
  const key=readCacheKey(action,args),cached=await getReadCache(key);
@@ -73,7 +76,9 @@ async function cachedRead(action,args,network){
 export async function request(action, args = {}, adminSession = null, captchaHost = null) {
   if(config.mode==='local')return localRequest(action,args);
   if(readCacheActions.has(action)&&!adminSession)return cachedRead(action,args,()=>networkRequest(action,args,adminSession,captchaHost));
-  return networkRequest(action,args,adminSession,captchaHost);
+  const result=await networkRequest(action,args,adminSession,captchaHost);
+  if(action==='submit'&&result?.success){if(args.kind==='confession')await clearReadCache('feed');else await clearReadCache('comments');}
+  return result;
 }
 async function networkRequest(action, args = {}, adminSession = null, captchaHost = null) {
 
