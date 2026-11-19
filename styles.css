@@ -88,5 +88,5 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .my-comment-entry>.body-text{margin:0 0 3px}
 .my-comment-entry>.open-confession{display:inline-block;width:auto;margin:0;padding:2px 0;line-height:1.35}
 
-/* A restrained gold highlight appears only on selected hearts. */
-.story-actions>.action.favorite.selected,.comment-actions>.comment-heart.selected{color:#f4d98f;text-shadow:0 0 7px rgba(244,217,143,.62)}
+/* Selected hearts use a darker, solid gold so the active state is clear without a glow. */
+.story-actions>.action.favorite.selected,.comment-actions>.comment-heart.selected{color:#9b762e;text-shadow:none}
