@@ -107,7 +107,7 @@ async function previewRequest(action, a) {
     let v=s.votes[id];if(action==='vote'&&(!v||Date.now()<v.at+600000)){v=s.votes[id]={value:a.value,at:v?.at||Date.now()};persist();}
     return{my_vote:v?.value??null,...(v&&Date.now()>=v.at+600000?{likes:v.value===1?1:0,dislikes:v.value===-1?1:0}:{})};
   }
-  if(action==='context') return{favorite:s.favorites.includes(id),favorite_style:s.favorite_styles[id]??null,comment_count:s.contents.some(c=>c.mine&&c.confession_id===id)?s.contents.filter(c=>c.confession_id===id&&visible(c)).length:null};
+  if(action==='context'){const favorite=s.favorites.includes(id);if(favorite&&!s.favorite_styles[id]){s.favorite_styles[id]=Math.floor(Math.random()*40)+1;persist();}return{favorite,favorite_style:s.favorite_styles[id]??null,comment_count:s.contents.some(c=>c.mine&&c.confession_id===id)?s.contents.filter(c=>c.confession_id===id&&visible(c)).length:null};}
   if(action==='favorite'){s.favorites=s.favorites.filter(i=>i!==id);if(a.enabled){s.favorites.unshift(id);s.favorite_styles[id]=Math.floor(Math.random()*40)+1;}else{delete s.favorite_styles[id];}persist();return{success:true,favorite_style:s.favorite_styles[id]??null};}
   if(action==='read'){s.recent=[id,...s.recent.filter(i=>i!==id)].slice(0,100);persist();return{success:true};}
   if(action==='report'){const exists=s.reports.some(r=>String(typeof r==='object'&&r!==null?r.id:r)===id);if(!exists)s.reports.push({id,reason:a.reason||'other',details:a.details||''});persist();return{success:true};}
