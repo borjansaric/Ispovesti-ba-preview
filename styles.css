@@ -88,5 +88,12 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .my-comment-entry>.body-text{margin:0 0 3px}
 .my-comment-entry>.open-confession{display:inline-block;width:auto;margin:0;padding:2px 0;line-height:1.35}
 
-/* Selected hearts use a darker, solid gold so the active state is clear without a glow. */
-.story-actions>.action.favorite.selected,.comment-actions>.comment-heart.selected{color:#9b762e;text-shadow:none}
+/* Temporary side-by-side heart finish comparison; remove after the preferred style is chosen. */
+.heart-style-preview{display:flex;justify-content:center;align-items:flex-end;gap:clamp(22px,8vw,48px);margin:8px 0 18px;padding:10px 8px 12px;border-bottom:1px solid rgba(214,177,94,.16)}
+.heart-style-option{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:48px}
+.heart-style-sample{display:block;font-family:Arial,sans-serif;font-size:31px;line-height:1;color:#9b762e}
+.heart-style-option:nth-child(1) .heart-style-sample{color:#9b762e;text-shadow:0 0 3px rgba(201,157,65,.5),0 0 9px rgba(201,157,65,.32)}
+.heart-style-option:nth-child(2) .heart-style-sample{color:#b58d42;text-shadow:0 0 4px rgba(210,170,83,.24)}
+.heart-style-option:nth-child(3) .heart-style-sample{color:#d4ad5c;text-shadow:0 0 3px #f5d98c,0 0 9px rgba(230,188,91,.88),0 0 19px rgba(214,164,55,.62),0 0 30px rgba(191,139,34,.35)}
+.heart-style-label{font-size:10px;line-height:1.25;color:var(--muted);text-align:center;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.heart-style-sample{text-shadow:none!important}}
