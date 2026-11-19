@@ -35,4 +35,4 @@
     .side-menu .private-panel{padding:0;margin:0;border:0;background:transparent}
     .side-menu .panel{padding:13px;margin:0 0 20px;border-radius:10px}
     .side-menu .panel h2{font-size:18px}
-    @media(max-width:480px){body{padding-right:10px}header{padding-top:66px}.side-menu{padding-left:14px;padding-right:14px}}
+    @media(max-width:480px){body{padding-right:10px}header{padding-top:10px}.side-menu{padding-left:14px;padding-right:14px}}
