@@ -105,7 +105,7 @@ async function previewRequest(action, a) {
   if(!visible(item))throw new Error('Sadržaj nije dostupan.');
   if(action==='vote'||action==='vote_status') {
     let v=s.votes[id];if(action==='vote'&&(!v||Date.now()<v.at+600000)){v=s.votes[id]={value:a.value,at:v?.at||Date.now()};persist();}
-    return{my_vote:v?.value??null,...(v&&Date.now()>=v.at+600000?{likes:v.value===1?1:0,dislikes:v.value===-1?1:0}:{})};
+    return{my_vote:v?.value??null,can_change:!v||Date.now()<v.at+600000,likes:v?.value===1?1:0,dislikes:v?.value===-1?1:0};
   }
   if(action==='context'){const favorite=s.favorites.includes(id);if(favorite&&!s.favorite_styles[id]){s.favorite_styles[id]=Math.floor(Math.random()*40)+1;persist();}return{favorite,favorite_style:s.favorite_styles[id]??null,comment_count:s.contents.some(c=>c.mine&&c.confession_id===id)?s.contents.filter(c=>c.confession_id===id&&visible(c)).length:null};}
   if(action==='favorite'){s.favorites=s.favorites.filter(i=>i!==id);if(a.enabled){s.favorites.unshift(id);s.favorite_styles[id]=Math.floor(Math.random()*40)+1;}else{delete s.favorite_styles[id];}persist();return{success:true,favorite_style:s.favorite_styles[id]??null};}
