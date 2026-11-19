@@ -380,10 +380,10 @@ async function initializeFeed(){
   for(const [key,tab] of Object.entries(dailyTabs)){const active=currentView===(key==='confession'?'daily_confessions':'daily_comments');tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',String(active));}
  }
  await load(true);
- if(['new','popular'].includes(currentView))void preloadAllConfessions();
  if(saved&&Number.isFinite(Number(saved.offset))&&Number(saved.offset)>offset&&!$('#more').hidden){
   while(offset<Number(saved.offset)&&!$('#more').hidden){const previous=offset;await load();if(offset===previous)break;}
  }
  if(saved&&Number.isFinite(Number(saved.scrollY)))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,Number(saved.scrollY))));
+ if(['new','popular'].includes(currentView))void preloadAllConfessions();
 }
 initializeFeed();
