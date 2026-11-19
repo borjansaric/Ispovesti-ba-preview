@@ -151,7 +151,8 @@ function report(item,reportButton){
 }
 async function commentBranch(confessionId,parentId,container,refreshContext,confirmed,heading){
  const allItems=[];let expanded=false;
- const list=node('div','comment-list'),more=button('Prikaži još komentara',showMore,'load-more');
+ const list=node('div','comment-list'),more=button('↓',showMore,'load-more');
+ more.setAttribute('aria-label','Prikaži još komentara');more.title='Prikaži još komentara';
  const composer=!parentId?contentForm('comment',{confession_id:confessionId},async(item,context)=>{allItems.push(item);await renderItems();refreshContext(context).catch(err=>toast(err.message));}):null;
  container.replaceChildren(...(composer?[composer]:[]),...(heading?[heading]:[]),list,more);
  function newest(a,b){return Date.parse(b.created_at||b.published_at||0)-Date.parse(a.created_at||a.published_at||0);}
