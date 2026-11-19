@@ -62,8 +62,8 @@ function readCacheKey(action,args){return action+':'+JSON.stringify(args||{});}
 async function cachedRead(action,args,network){
  const key=readCacheKey(action,args),cached=await getReadCache(key);
  if(cached){
-  // Serve the last successful public snapshot immediately; refresh it quietly for the next visit.
-  void network().then(async fresh=>{
+  // Keep fresh snapshots quiet; only revalidate older entries to avoid duplicate network traffic.
+  if(Date.now()-Number(cached.savedAt||0)>15000)void network().then(async fresh=>{
    if(JSON.stringify(fresh)!==JSON.stringify(cached.value)){
     await putReadCache(key,fresh);
     window.dispatchEvent(new CustomEvent('ispovesti:read-cache-updated',{detail:{action,args,result:fresh}}));
