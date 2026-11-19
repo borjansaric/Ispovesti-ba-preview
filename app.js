@@ -248,7 +248,30 @@ async function openReplies(item,confessionId,refreshContext,trigger){
  }
  try{await collectReplies(request,confessionId,item.id,renderBatch,()=>closed||!thread.isConnected);if(closed)return;thread.dataset.loadedMs=String(Math.round(performance.now()-startedAt));notice.remove();}catch(e){if(!closed)notice.textContent=e.message;}
 }
+const commentWarmQueue=[];const commentWarmIds=new Set();let commentWarmActive=0;
+function warmComments(confessionId){
+ const id=String(confessionId);if(commentWarmIds.has(id))return;commentWarmIds.add(id);commentWarmQueue.push(id);runCommentWarmQueue();
+}
+function runCommentWarmQueue(){
+ while(commentWarmActive<4&&commentWarmQueue.length){
+  const id=commentWarmQueue.shift();commentWarmActive++;
+  request('comments',{confession_id:id,parent_id:null,offset:0}).catch(()=>{}).finally(()=>{commentWarmActive--;runCommentWarmQueue();});
+ }
+}
+let allFeedPreloading=false;
+async function preloadAllConfessions(){
+ if(allFeedPreloading||!['new','popular'].includes(currentView))return;
+ allFeedPreloading=true;const view=currentView;
+ try{
+  // Continue fetching every page in the background; each page is rendered as soon as it arrives.
+  while(view===currentView&&!$('#more').hidden){
+   const before=offset;await load();
+   if(offset===before)break;
+  }
+ }finally{allFeedPreloading=false;}
+}
 function story(item){
+ warmComments(item.id);
  const article=node('article','story');if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
  const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
  const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
@@ -335,7 +358,7 @@ async function load(reset=false){
  }catch(err){if(version!==generation)return;if(reset)feed.replaceChildren(node('p','empty error',err.message));else toast(err.message);$('#more').hidden=false;}
  finally{if(version===generation){busy=false;$('#more').disabled=false;}}
 }
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mesto.';load(true);});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mesto.';load(true).then(()=>{if(['new','popular'].includes(currentView))void preloadAllConfessions();});});
 $('#sidebar-compose').append(contentForm('confession',{},()=>{}));
 $('#more').onclick=()=>load();
 async function openDirectConfession(id){
@@ -357,6 +380,7 @@ async function initializeFeed(){
   for(const [key,tab] of Object.entries(dailyTabs)){const active=currentView===(key==='confession'?'daily_confessions':'daily_comments');tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',String(active));}
  }
  await load(true);
+ if(['new','popular'].includes(currentView))void preloadAllConfessions();
  if(saved&&Number.isFinite(Number(saved.offset))&&Number(saved.offset)>offset&&!$('#more').hidden){
   while(offset<Number(saved.offset)&&!$('#more').hidden){const previous=offset;await load();if(offset===previous)break;}
  }
