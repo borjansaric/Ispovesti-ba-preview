@@ -88,48 +88,47 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .my-comment-entry>.body-text{margin:0 0 3px}
 .my-comment-entry>.open-confession{display:inline-block;width:auto;margin:0;padding:2px 0;line-height:1.35}
 
-/* Temporary palette comparison: first row uses selected shades 21–24; remaining rows are variations of the same four yellow tones. Row six has the strongest glow. */
+/* Temporary palette comparison: all forty samples have visible glow; sample 03 is the saved favorite. Each row uses distinct shades, with no duplicated row. Row six has the strongest glow. */
 .heart-style-preview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px 8px;align-items:center;justify-items:center;width:100%;max-width:420px;margin:10px auto 18px;padding:12px 8px 14px;border-bottom:1px solid rgba(214,177,94,.16);box-sizing:border-box}
 .heart-style-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0}
 .heart-style-sample{display:block;font-family:Arial,sans-serif;font-size:30px;line-height:1;color:var(--heart-color);text-shadow:var(--heart-glow)}
-.heart-style-label{font-size:10px;line-height:1.2;color:var(--muted);text-align:center}
-.heart-style-option:nth-child(1) .heart-style-sample{--heart-color:#fff0a8;--heart-glow:0 0 8px rgba(255,226,130,.95),0 0 17px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)}
-.heart-style-option:nth-child(2) .heart-style-sample{--heart-color:#ffe58a;--heart-glow:0 0 6px rgba(255,226,130,.95),0 0 20px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)}
-.heart-style-option:nth-child(3) .heart-style-sample{--heart-color:#ffda68;--heart-glow:0 0 7px rgba(255,226,130,.95),0 0 23px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)}
-.heart-style-option:nth-child(4) .heart-style-sample{--heart-color:#ffedc2;--heart-glow:0 0 8px rgba(255,226,130,.95),0 0 26px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)}
-.heart-style-option:nth-child(5) .heart-style-sample{--heart-color:#f8e79a;--heart-glow:0 0 2px rgba(255,224,135,0.38),0 0 7px rgba(255,199,75,0.24)}
-.heart-style-option:nth-child(6) .heart-style-sample{--heart-color:#f6dc83;--heart-glow:0 0 3px rgba(255,224,135,0.38),0 0 9px rgba(255,199,75,0.24)}
-.heart-style-option:nth-child(7) .heart-style-sample{--heart-color:#f4d16a;--heart-glow:0 0 4px rgba(255,224,135,0.38),0 0 11px rgba(255,199,75,0.24)}
-.heart-style-option:nth-child(8) .heart-style-sample{--heart-color:#faedc8;--heart-glow:0 0 5px rgba(255,224,135,0.38),0 0 13px rgba(255,199,75,0.24)}
-.heart-style-option:nth-child(9) .heart-style-sample{--heart-color:#ffefb8;--heart-glow:0 0 2px rgba(255,224,135,0.46),0 0 7px rgba(255,199,75,0.29)}
-.heart-style-option:nth-child(10) .heart-style-sample{--heart-color:#ffe9a3;--heart-glow:0 0 3px rgba(255,224,135,0.46),0 0 9px rgba(255,199,75,0.29)}
-.heart-style-option:nth-child(11) .heart-style-sample{--heart-color:#ffdf87;--heart-glow:0 0 4px rgba(255,224,135,0.46),0 0 11px rgba(255,199,75,0.29)}
-.heart-style-option:nth-child(12) .heart-style-sample{--heart-color:#fff3d1;--heart-glow:0 0 5px rgba(255,224,135,0.46),0 0 13px rgba(255,199,75,0.29)}
-.heart-style-option:nth-child(13) .heart-style-sample{--heart-color:#f2d77d;--heart-glow:0 0 2px rgba(255,224,135,0.55),0 0 7px rgba(255,199,75,0.34)}
-.heart-style-option:nth-child(14) .heart-style-sample{--heart-color:#efcb65;--heart-glow:0 0 3px rgba(255,224,135,0.55),0 0 9px rgba(255,199,75,0.34)}
-.heart-style-option:nth-child(15) .heart-style-sample{--heart-color:#e9bd4e;--heart-glow:0 0 4px rgba(255,224,135,0.55),0 0 11px rgba(255,199,75,0.34)}
-.heart-style-option:nth-child(16) .heart-style-sample{--heart-color:#f7e4a9;--heart-glow:0 0 5px rgba(255,224,135,0.55),0 0 13px rgba(255,199,75,0.34)}
-.heart-style-option:nth-child(17) .heart-style-sample{--heart-color:#ffdf78;--heart-glow:0 0 2px rgba(255,224,135,0.62),0 0 7px rgba(255,199,75,0.38)}
-.heart-style-option:nth-child(18) .heart-style-sample{--heart-color:#ffd45f;--heart-glow:0 0 3px rgba(255,224,135,0.62),0 0 9px rgba(255,199,75,0.38)}
-.heart-style-option:nth-child(19) .heart-style-sample{--heart-color:#f8c94b;--heart-glow:0 0 4px rgba(255,224,135,0.62),0 0 11px rgba(255,199,75,0.38)}
-.heart-style-option:nth-child(20) .heart-style-sample{--heart-color:#ffe9a1;--heart-glow:0 0 5px rgba(255,224,135,0.62),0 0 13px rgba(255,199,75,0.38)}
-.heart-style-option:nth-child(21) .heart-style-sample{--heart-color:#fff0a8;--heart-glow:0 0 7px rgba(255,232,153,.98),0 0 19px rgba(255,205,70,.9),0 0 34px rgba(255,184,30,.58)}
-.heart-style-option:nth-child(22) .heart-style-sample{--heart-color:#ffe58a;--heart-glow:0 0 8px rgba(255,232,153,.98),0 0 22px rgba(255,205,70,.9),0 0 34px rgba(255,184,30,.58)}
-.heart-style-option:nth-child(23) .heart-style-sample{--heart-color:#ffda68;--heart-glow:0 0 9px rgba(255,232,153,.98),0 0 25px rgba(255,205,70,.9),0 0 34px rgba(255,184,30,.58)}
-.heart-style-option:nth-child(24) .heart-style-sample{--heart-color:#ffedc2;--heart-glow:0 0 10px rgba(255,232,153,.98),0 0 28px rgba(255,205,70,.9),0 0 34px rgba(255,184,30,.58)}
-.heart-style-option:nth-child(25) .heart-style-sample{--heart-color:#e9ca70;--heart-glow:0 0 2px rgba(255,224,135,0.34),0 0 7px rgba(255,199,75,0.21)}
-.heart-style-option:nth-child(26) .heart-style-sample{--heart-color:#e4bd58;--heart-glow:0 0 3px rgba(255,224,135,0.34),0 0 9px rgba(255,199,75,0.21)}
-.heart-style-option:nth-child(27) .heart-style-sample{--heart-color:#dbae43;--heart-glow:0 0 4px rgba(255,224,135,0.34),0 0 11px rgba(255,199,75,0.21)}
-.heart-style-option:nth-child(28) .heart-style-sample{--heart-color:#f1d995;--heart-glow:0 0 5px rgba(255,224,135,0.34),0 0 13px rgba(255,199,75,0.21)}
-.heart-style-option:nth-child(29) .heart-style-sample{--heart-color:#f9e9b1;--heart-glow:0 0 2px rgba(255,224,135,0.58),0 0 7px rgba(255,199,75,0.36)}
-.heart-style-option:nth-child(30) .heart-style-sample{--heart-color:#f6df98;--heart-glow:0 0 3px rgba(255,224,135,0.58),0 0 9px rgba(255,199,75,0.36)}
-.heart-style-option:nth-child(31) .heart-style-sample{--heart-color:#f2d47c;--heart-glow:0 0 4px rgba(255,224,135,0.58),0 0 11px rgba(255,199,75,0.36)}
-.heart-style-option:nth-child(32) .heart-style-sample{--heart-color:#fff0c9;--heart-glow:0 0 5px rgba(255,224,135,0.58),0 0 13px rgba(255,199,75,0.36)}
-.heart-style-option:nth-child(33) .heart-style-sample{--heart-color:#f0d27b;--heart-glow:0 0 2px rgba(255,224,135,0.42),0 0 7px rgba(255,199,75,0.26)}
-.heart-style-option:nth-child(34) .heart-style-sample{--heart-color:#ebc45e;--heart-glow:0 0 3px rgba(255,224,135,0.42),0 0 9px rgba(255,199,75,0.26)}
-.heart-style-option:nth-child(35) .heart-style-sample{--heart-color:#e1b448;--heart-glow:0 0 4px rgba(255,224,135,0.42),0 0 11px rgba(255,199,75,0.26)}
-.heart-style-option:nth-child(36) .heart-style-sample{--heart-color:#f5dfa0;--heart-glow:0 0 5px rgba(255,224,135,0.42),0 0 13px rgba(255,199,75,0.26)}
-.heart-style-option:nth-child(37) .heart-style-sample{--heart-color:#fff4c7;--heart-glow:0 0 2px rgba(255,224,135,0.68),0 0 7px rgba(255,199,75,0.42)}
-.heart-style-option:nth-child(38) .heart-style-sample{--heart-color:#ffebaa;--heart-glow:0 0 3px rgba(255,224,135,0.68),0 0 9px rgba(255,199,75,0.42)}
-.heart-style-option:nth-child(39) .heart-style-sample{--heart-color:#ffe18b;--heart-glow:0 0 4px rgba(255,224,135,0.68),0 0 11px rgba(255,199,75,0.42)}
-.heart-style-option:nth-child(40) .heart-style-sample{--heart-color:#fff7da;--heart-glow:0 0 5px rgba(255,224,135,0.68),0 0 13px rgba(255,199,75,0.42)}
+.heart-style-option:nth-child(1) .heart-style-sample{--heart-color:#fff0a8;--heart-glow:0 0 4px rgba(255,232,153,0.72),0 0 12px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(2) .heart-style-sample{--heart-color:#ffe58a;--heart-glow:0 0 6px rgba(255,232,153,0.72),0 0 12px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(3) .heart-style-sample{--heart-color:#ffda68;--heart-glow:0 0 7px rgba(255,226,130,.95),0 0 23px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)} /* FAVORITE: original sample 03 */
+.heart-style-option:nth-child(4) .heart-style-sample{--heart-color:#ffedc2;--heart-glow:0 0 10px rgba(255,232,153,0.72),0 0 12px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(5) .heart-style-sample{--heart-color:#f8e79a;--heart-glow:0 0 4px rgba(255,232,153,0.79),0 0 14px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(6) .heart-style-sample{--heart-color:#f6dc83;--heart-glow:0 0 6px rgba(255,232,153,0.79),0 0 14px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(7) .heart-style-sample{--heart-color:#f4d16a;--heart-glow:0 0 8px rgba(255,232,153,0.79),0 0 14px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(8) .heart-style-sample{--heart-color:#faedc8;--heart-glow:0 0 10px rgba(255,232,153,0.79),0 0 14px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(9) .heart-style-sample{--heart-color:#ffefb8;--heart-glow:0 0 4px rgba(255,232,153,0.86),0 0 16px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(10) .heart-style-sample{--heart-color:#ffe9a3;--heart-glow:0 0 6px rgba(255,232,153,0.86),0 0 16px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(11) .heart-style-sample{--heart-color:#ffdf87;--heart-glow:0 0 8px rgba(255,232,153,0.86),0 0 16px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(12) .heart-style-sample{--heart-color:#fff3d1;--heart-glow:0 0 10px rgba(255,232,153,0.86),0 0 16px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(13) .heart-style-sample{--heart-color:#f2d77d;--heart-glow:0 0 4px rgba(255,232,153,0.72),0 0 18px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(14) .heart-style-sample{--heart-color:#efcb65;--heart-glow:0 0 6px rgba(255,232,153,0.72),0 0 18px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(15) .heart-style-sample{--heart-color:#e9bd4e;--heart-glow:0 0 8px rgba(255,232,153,0.72),0 0 18px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(16) .heart-style-sample{--heart-color:#f7e4a9;--heart-glow:0 0 10px rgba(255,232,153,0.72),0 0 18px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(17) .heart-style-sample{--heart-color:#ffdf78;--heart-glow:0 0 4px rgba(255,232,153,0.79),0 0 20px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(18) .heart-style-sample{--heart-color:#ffd45f;--heart-glow:0 0 6px rgba(255,232,153,0.79),0 0 20px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(19) .heart-style-sample{--heart-color:#f8c94b;--heart-glow:0 0 8px rgba(255,232,153,0.79),0 0 20px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(20) .heart-style-sample{--heart-color:#ffe9a1;--heart-glow:0 0 10px rgba(255,232,153,0.79),0 0 20px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(21) .heart-style-sample{--heart-color:#fff5c7;--heart-glow:0 0 6px rgba(255,232,153,1.00),0 0 22px rgba(255,205,70,0.94),0 0 34px rgba(255,184,30,.72)}
+.heart-style-option:nth-child(22) .heart-style-sample{--heart-color:#ffd95a;--heart-glow:0 0 9px rgba(255,232,153,1.00),0 0 22px rgba(255,205,70,0.94),0 0 34px rgba(255,184,30,.72)}
+.heart-style-option:nth-child(23) .heart-style-sample{--heart-color:#f5c34c;--heart-glow:0 0 12px rgba(255,232,153,1.00),0 0 22px rgba(255,205,70,0.94),0 0 34px rgba(255,184,30,.72)}
+.heart-style-option:nth-child(24) .heart-style-sample{--heart-color:#fff0b0;--heart-glow:0 0 15px rgba(255,232,153,1.00),0 0 22px rgba(255,205,70,0.94),0 0 34px rgba(255,184,30,.72)}
+.heart-style-option:nth-child(25) .heart-style-sample{--heart-color:#e9ca70;--heart-glow:0 0 4px rgba(255,232,153,0.72),0 0 24px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(26) .heart-style-sample{--heart-color:#e4bd58;--heart-glow:0 0 6px rgba(255,232,153,0.72),0 0 24px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(27) .heart-style-sample{--heart-color:#dbae43;--heart-glow:0 0 8px rgba(255,232,153,0.72),0 0 24px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(28) .heart-style-sample{--heart-color:#f1d995;--heart-glow:0 0 10px rgba(255,232,153,0.72),0 0 24px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(29) .heart-style-sample{--heart-color:#f9e9b1;--heart-glow:0 0 4px rgba(255,232,153,0.79),0 0 26px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(30) .heart-style-sample{--heart-color:#f6df98;--heart-glow:0 0 6px rgba(255,232,153,0.79),0 0 26px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(31) .heart-style-sample{--heart-color:#f2d47c;--heart-glow:0 0 8px rgba(255,232,153,0.79),0 0 26px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(32) .heart-style-sample{--heart-color:#fff0c9;--heart-glow:0 0 10px rgba(255,232,153,0.79),0 0 26px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(33) .heart-style-sample{--heart-color:#f0d27b;--heart-glow:0 0 4px rgba(255,232,153,0.86),0 0 28px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(34) .heart-style-sample{--heart-color:#ebc45e;--heart-glow:0 0 6px rgba(255,232,153,0.86),0 0 28px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(35) .heart-style-sample{--heart-color:#e1b448;--heart-glow:0 0 8px rgba(255,232,153,0.86),0 0 28px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(36) .heart-style-sample{--heart-color:#f5dfa0;--heart-glow:0 0 10px rgba(255,232,153,0.86),0 0 28px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(37) .heart-style-sample{--heart-color:#fff4c7;--heart-glow:0 0 4px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(38) .heart-style-sample{--heart-color:#ffebaa;--heart-glow:0 0 6px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(39) .heart-style-sample{--heart-color:#ffe18b;--heart-glow:0 0 8px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+.heart-style-option:nth-child(40) .heart-style-sample{--heart-color:#fff7da;--heart-glow:0 0 10px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
