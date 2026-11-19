@@ -54,9 +54,9 @@ button:disabled{opacity:.55}
  box-shadow:none;text-shadow:none;font-size:19px;
 }
 .comment-report{color:var(--gold);font-size:16px}
-.daily-tabs{border-bottom:1px solid rgba(214,177,94,.22);padding-bottom:8px}
-.daily-tab{background:transparent;color:#aaa;padding:8px 2px}
-.daily-tab.active{color:var(--gold);border-bottom:1px solid var(--gold)}
+.daily-tabs{border-bottom:1px solid rgba(255,218,104,.24);padding-bottom:4px}
+.daily-tab{background:transparent;color:#ffdf86;padding:5px 2px;text-shadow:0 0 4px rgba(255,218,104,.72),0 0 10px rgba(255,190,54,.38)}
+.daily-tab.active{color:#fff0b0;border-bottom:1px solid #ffda68;text-shadow:0 0 5px rgba(255,226,130,.95),0 0 13px rgba(255,190,54,.62);box-shadow:0 2px 9px -5px rgba(255,218,104,.9)}
 .load-more{width:auto;display:block;margin:18px auto;background:transparent;color:var(--gold)}
 .menu-toggle{background:transparent;border:0;color:var(--gold);box-shadow:none}
 .menu-links button,.side-menu .private-actions button{
