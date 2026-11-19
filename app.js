@@ -118,8 +118,7 @@ function voteControls(item){
    b.setAttribute('aria-disabled',String(r.can_change===false));
    b.setAttribute('aria-pressed',String(r.my_vote===value));
    b.setAttribute('aria-label',i===0?'Pozitivan glas':'Negativan glas');
-   b.textContent=i===0?'👍':'👎';
-   if(r.likes!==undefined)b.textContent+=(i===0?' '+r.likes:' '+r.dislikes);
+   b.textContent=(i===0?'👍 ':'👎 ')+String(i===0?(r.likes??0):(r.dislikes??0));
   });
  }
  async function refreshVoteLock(){
@@ -131,7 +130,7 @@ function voteControls(item){
    });
   }catch{}
  }
- row.append(...buttons);render({});
+ row.append(...buttons);render({likes:0,dislikes:0});
  watchState(item.id,'vote',row,render);
  void refreshVoteLock();
  return row;
