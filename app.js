@@ -24,6 +24,15 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentVi
 const node=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
 const button=(text,fn,cls='action')=>{const b=node('button',cls,text);b.type='button';b.addEventListener('click',()=>Promise.resolve(fn(b)).catch(err=>toast(err.message)));return b;};
 const date=v=>v?new Date(v).toLocaleString('sr-Latn-RS',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+const FEED_STATE_KEY='ispovesti:feed-state:v1';
+let feedStateSaveTimer;
+function persistFeedState(){
+ if(new URLSearchParams(location.search).has('ispovest'))return;
+ try{sessionStorage.setItem(FEED_STATE_KEY,JSON.stringify({view:currentView,offset,scrollY:window.scrollY}));}catch{}
+}
+window.addEventListener('scroll',()=>{clearTimeout(feedStateSaveTimer);feedStateSaveTimer=setTimeout(persistFeedState,120);},{passive:true});
+window.addEventListener('pagehide',persistFeedState);
+
 const dailyDayLabel=value=>{const d=new Date(String(value)+'T12:00:00');return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString('sr-Latn-RS',{weekday:'long',day:'numeric',month:'long',year:'numeric'});};
 function toast(text){$('#toast').textContent=text;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').textContent='',6500);}
 function modal(title,content){$('#dialog-title').textContent=title;$('#dialog-body').replaceChildren(content);if(!dialog.open)dialog.showModal();}
@@ -250,7 +259,15 @@ function story(item){
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);applyHeartStyle(favorite,'confession',item.id,value);}
  async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
  watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);});
- const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,node('span','action-spacer'),reportButton);article.append(row,commentsArea);
+ const shareButton=button('Kopiraj link',async()=>{
+  const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('ispovest',String(item.id));
+  try{await navigator.clipboard.writeText(url.toString());toast('Direktni link ispovesti je kopiran.');}
+  catch{
+   const field=node('textarea');field.value=url.toString();field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.append(field);field.select();
+   const copied=document.execCommand('copy');field.remove();if(!copied)throw new Error('Kopiranje nije uspelo. Pokušaj ponovo.');toast('Direktni link ispovesti je kopiran.');
+  }
+ },'action share-story');shareButton.setAttribute('aria-label','Kopiraj direktni link do ispovesti');
+ const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,shareButton,node('span','action-spacer'),reportButton);article.append(row,commentsArea);
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
  const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!recorded){readTimer=setTimeout(()=>{recorded=true;request('read',{id:item.id}).catch(()=>{});observer.disconnect();},1500);}else clearTimeout(readTimer);},{threshold:.1});observer.observe(article);
@@ -320,4 +337,28 @@ async function load(reset=false){
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mesto.';load(true);});
 $('#sidebar-compose').append(contentForm('confession',{},()=>{}));
 $('#more').onclick=()=>load();
-load(true);
+async function openDirectConfession(id){
+ try{
+  const result=await request('confession',{id});
+  if(!result?.item)throw new Error('Ova ispovest trenutno nije dostupna.');
+  const back=button('← Nazad na ispovesti',()=>{window.location.assign(window.location.pathname);},'text-button direct-story-back');
+  feed.replaceChildren(back,story(result.item));$('#more').hidden=true;$('#feed-subtitle').hidden=true;
+  document.title='Ispovest | Ispovesti.ba';
+ }catch(err){feed.replaceChildren(node('p','empty error',err.message||'Ispovest nije pronađena.'));$('#more').hidden=true;}
+}
+async function initializeFeed(){
+ const directId=new URLSearchParams(location.search).get('ispovest');
+ if(directId){await openDirectConfession(directId);return;}
+ let saved=null;try{saved=JSON.parse(sessionStorage.getItem(FEED_STATE_KEY)||'null');}catch{}
+ if(saved?.view){
+  currentView=String(saved.view);
+  document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===currentView));
+  for(const [key,tab] of Object.entries(dailyTabs)){const active=currentView===(key==='confession'?'daily_confessions':'daily_comments');tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',String(active));}
+ }
+ await load(true);
+ if(saved&&Number.isFinite(Number(saved.offset))&&Number(saved.offset)>offset&&!$('#more').hidden){
+  while(offset<Number(saved.offset)&&!$('#more').hidden){const previous=offset;await load();if(offset===previous)break;}
+ }
+ if(saved&&Number.isFinite(Number(saved.scrollY)))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,Number(saved.scrollY))));
+}
+initializeFeed();
