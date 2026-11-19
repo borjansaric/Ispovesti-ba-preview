@@ -236,15 +236,27 @@ async function openReplies(item,confessionId,refreshContext,trigger){
  try{await collectReplies(request,confessionId,item.id,renderBatch,()=>closed||!thread.isConnected);if(closed)return;thread.dataset.loadedMs=String(Math.round(performance.now()-startedAt));notice.remove();}catch(e){if(!closed)notice.textContent=e.message;}
 }
 function story(item){
- const article=node('article','story');if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
- const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
- const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
- let commentsLoaded=false;const commentsToggle=button('Komentari',async b=>{commentsArea.hidden=!commentsArea.hidden;if(!commentsArea.hidden&&!commentsLoaded){b.disabled=true;try{await commentBranch(item.id,null,commentsList,refreshContext,null,comments);commentsLoaded=true;}catch(err){commentsList.textContent=err.message;}finally{b.disabled=false;}}b.setAttribute('aria-expanded',String(!commentsArea.hidden));},'text-button comments-toggle');commentsToggle.setAttribute('aria-expanded','false');
+ const article=node('article','story'),storyBody=node('div','story-content body-text',item.body);if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(storyBody);const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
+ const row=node('div','story-actions'),commentsArea=node('section','comments-area comments'),commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
+ let commentsLoaded=false,commentsLoading=false;
+ async function toggleComments(){
+  commentsArea.hidden=!commentsArea.hidden;
+  storyBody.setAttribute('aria-expanded',String(!commentsArea.hidden));
+  if(!commentsArea.hidden&&!commentsLoaded&&!commentsLoading){
+   commentsLoading=true;storyBody.setAttribute('aria-busy','true');
+   try{await commentBranch(item.id,null,commentsList,refreshContext,null,null);commentsLoaded=true;}
+   catch(err){commentsList.textContent=err.message;}
+   finally{commentsLoading=false;storyBody.removeAttribute('aria-busy');}
+  }
+ }
+ storyBody.setAttribute('role','button');storyBody.setAttribute('tabindex','0');storyBody.setAttribute('aria-label','Otvori komentare za ovu ispovest');storyBody.setAttribute('aria-expanded','false');
+ storyBody.addEventListener('click',toggleComments);
+ storyBody.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleComments();}});
  const favorite=button('♡',async b=>{const enabled=b.getAttribute('aria-pressed')!=='true';const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);pulseHeart(b);},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);applyHeartStyle(favorite,'confession',item.id,value);}
- async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
- watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);});
- const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,commentsToggle,node('span','action-spacer'),reportButton);article.append(row,commentsArea);
+ async function refreshContext(context){context ||= await request('context',{id:item.id});setFavorite(context.favorite,context.favorite_style);}
+ watchState(item.id,'context',row,context=>{setFavorite(context.favorite,context.favorite_style);});
+ const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,node('span','action-spacer'),reportButton);article.append(row,commentsArea);
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
  const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!recorded){readTimer=setTimeout(()=>{recorded=true;request('read',{id:item.id}).catch(()=>{});observer.disconnect();},1500);}else clearTimeout(readTimer);},{threshold:.1});observer.observe(article);
