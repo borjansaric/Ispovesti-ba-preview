@@ -1,4 +1,4 @@
-import {chatRequest} from './chat/client.mjs?v=room2';
+import {chatRequest} from './chat/client.mjs?v=room3';
 import {collectReplies,replyCounterText} from './chat/thread-model.mjs?v=progressive11';
 import { request, isPreview, isLocal, prepareSubmission } from './api.js?v=20261119-parallel-submit1';
 const $ = s => document.querySelector(s);
