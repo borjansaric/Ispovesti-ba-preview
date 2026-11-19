@@ -11,13 +11,12 @@ function watchState(id,type,element,render){stateListeners.add({id,type,element,
 async function refreshStates(){
  for(const entry of stateListeners)if(!entry.element.isConnected)stateListeners.delete(entry);
  const entries=[...stateListeners],ids=[...new Set(entries.map(e=>e.id))];
- for(let i=0;i<ids.length;i+=20){try{const result=await request('cards',{ids:ids.slice(i,i+20)});for(const e of entries){const data=result[e.id]?.[e.type];if(data)e.render(data);}}catch{}}
- await Promise.all(entries.map(async e=>{
+ for(let i=0;i<ids.length;i+=20){
   try{
-   const status=await request('reaction_status',{id:e.id});
-   if(status.can_change!==undefined)e.element.querySelectorAll('.vote-controls button').forEach(b=>{b.dataset.voteLocked=String(status.can_change===false);b.setAttribute('aria-disabled',String(status.can_change===false));});
+   const result=await request('cards',{ids:ids.slice(i,i+20)});
+   for(const e of entries){const data=result[e.id]?.[e.type];if(data)e.render(data);}
   }catch{}
- }));
+ }
 }
 setInterval(()=>{if(!document.hidden)refreshStates();},60000);
 setInterval(()=>{if(!document.hidden&&currentView.startsWith('daily_'))load(true);},60000);
@@ -121,18 +120,8 @@ function voteControls(item){
    b.textContent=(i===0?'👍 ':'👎 ')+String(i===0?(r.likes??0):(r.dislikes??0));
   });
  }
- async function refreshVoteLock(){
-  try{
-   const status=await request('reaction_status',{id:item.id});
-   if(status.can_change!==undefined)buttons.forEach(b=>{
-    b.dataset.voteLocked=String(status.can_change===false);
-    b.setAttribute('aria-disabled',String(status.can_change===false));
-   });
-  }catch{}
- }
  row.append(...buttons);render({likes:0,dislikes:0});
  watchState(item.id,'vote',row,render);
- void refreshVoteLock();
  return row;
 }
 function reportStorageKey(item,kind){return 'ispovesti:reported:'+kind+':'+String(item.id);}
@@ -177,22 +166,36 @@ async function commentBranch(confessionId,parentId,container,refreshContext,conf
   list.replaceChildren(...ordered.map(item=>comment(item,confessionId,refreshContext)));
   more.hidden=expanded||unique.length<=preview.length;
  }
- async function loadAll(){
-  let offset=0;
-  while(true){
-   const r=await request('comments',{confession_id:confessionId,parent_id:parentId,offset});
-   allItems.push(...r.items);
-   if(r.items.length<20)break;
-   offset+=r.items.length;
-  }
-  const ids=allItems.map(item=>String(item.id));
+ async function loadCardData(items){
+  const ids=items.map(item=>String(item.id));
   for(let i=0;i<ids.length;i+=50){
    try{
     const data=await request('cards',{ids:ids.slice(i,i+50)});
-    for(const item of allItems){const vote=data[item.id]?.vote;if(vote)item._reactionCount=Number(vote.likes??vote.reactions??vote.reaction_count??0)||0;}
+    for(const item of items){const vote=data[item.id]?.vote;if(vote)item._reactionCount=Number(vote.likes??vote.reactions??vote.reaction_count??0)||0;}
    }catch{}
   }
+ }
+ async function loadRemaining(offset){
+  try{
+   while(true){
+    const r=await request('comments',{confession_id:confessionId,parent_id:parentId,offset});
+    if(!r.items.length)break;
+    allItems.push(...r.items);
+    await loadCardData(r.items);
+    await renderItems();
+    offset+=r.items.length;
+    if(r.items.length<20)break;
+   }
+  }catch(err){toast('Dio komentara nije učitan: '+err.message);}
+ }
+ async function loadAll(){
+  const first=await request('comments',{confession_id:confessionId,parent_id:parentId,offset:0});
+  allItems.push(...first.items);
   await renderItems();
+  if(first.items.length){
+   void loadCardData(first.items).then(renderItems);
+   if(first.items.length===20)void loadRemaining(20);
+  }
  }
  async function showMore(){more.disabled=true;try{expanded=true;await renderItems();}finally{more.disabled=false;}}
  if(confirmed)allItems.push(confirmed);
