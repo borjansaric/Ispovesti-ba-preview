@@ -153,15 +153,42 @@ function report(item,reportButton){
  custom.append(detail,send);panel.append(hate,spam,more,custom);row.append(panel);reportButton.setAttribute('aria-expanded','true');activeReportMenu={panel,button:reportButton};
 }
 async function commentBranch(confessionId,parentId,container,refreshContext,confirmed,heading){
- let loaded=0;const rendered=new Set(),pending=new Map();
- const list=node('div'),sent=node('div'),more=button('Učitaj još komentara ↓',load,'load-more');
- const composer=!parentId?contentForm('comment',{confession_id:confessionId},(item,context)=>{add(item);refreshContext(context).catch(err=>toast(err.message));}):null;
- // The comment composer stays directly under the confession, before the existing comments.
- container.replaceChildren(...(composer?[composer]:[]),...(heading?[heading]:[]),list,more,sent);
- function add(item){if(rendered.has(item.id)||pending.has(item.id))return;const entry=comment(item,confessionId,refreshContext);pending.set(item.id,entry);sent.append(entry);}
- if(confirmed)add(confirmed);
- async function load(){more.disabled=true;try{const r=await request('comments',{confession_id:confessionId,parent_id:parentId,offset:loaded});for(const item of r.items){pending.get(item.id)?.remove();pending.delete(item.id);if(!rendered.has(item.id)){rendered.add(item.id);list.append(comment(item,confessionId,refreshContext));}}loaded+=r.items.length;more.hidden=r.items.length<20;}finally{more.disabled=false;}}
- await load();
+ const allItems=[];let expanded=false;
+ const list=node('div','comment-list'),more=button('Prikaži još komentara',showMore,'load-more');
+ const composer=!parentId?contentForm('comment',{confession_id:confessionId},async(item,context)=>{allItems.push(item);await renderItems();refreshContext(context).catch(err=>toast(err.message));}):null;
+ container.replaceChildren(...(composer?[composer]:[]),...(heading?[heading]:[]),list,more);
+ function newest(a,b){return Date.parse(b.created_at||b.published_at||0)-Date.parse(a.created_at||a.published_at||0);}
+ function reactionCount(item){return Number(item._reactionCount??item.likes??item.reactions??item.reaction_count??0)||0;}
+ async function renderItems(){
+  const unique=[...new Map(allItems.map(item=>[String(item.id),item])).values()];
+  const ranked=[...unique].sort((a,b)=>reactionCount(b)-reactionCount(a)||newest(a,b));
+  const first=ranked[0]||null,second=ranked[1]||null;
+  const latest=unique.filter(x=>x!==first&&x!==second).sort(newest)[0]||null;
+  const preview=[first,second,latest].filter(Boolean);
+  const ordered=expanded&&first?[first,...unique.filter(x=>x!==first).sort(newest)]:preview;
+  list.replaceChildren(...ordered.map(item=>comment(item,confessionId,refreshContext)));
+  more.hidden=expanded||unique.length<=preview.length;
+ }
+ async function loadAll(){
+  let offset=0;
+  while(true){
+   const r=await request('comments',{confession_id:confessionId,parent_id:parentId,offset});
+   allItems.push(...r.items);
+   if(r.items.length<20)break;
+   offset+=r.items.length;
+  }
+  const ids=allItems.map(item=>String(item.id));
+  for(let i=0;i<ids.length;i+=50){
+   try{
+    const data=await request('cards',{ids:ids.slice(i,i+50)});
+    for(const item of allItems){const vote=data[item.id]?.vote;if(vote)item._reactionCount=Number(vote.likes??vote.reactions??vote.reaction_count??0)||0;}
+   }catch{}
+  }
+  await renderItems();
+ }
+ async function showMore(){more.disabled=true;try{expanded=true;await renderItems();}finally{more.disabled=false;}}
+ if(confirmed)allItems.push(confirmed);
+ await loadAll();
 }
 const commentMeta=new Set();let commentMetaTimer;
 function updateCommentMeta(){clearTimeout(commentMetaTimer);commentMetaTimer=setTimeout(async()=>{
@@ -203,12 +230,13 @@ async function openReplies(item,confessionId,refreshContext,trigger){
 function story(item){
  const article=node('article','story');if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
  const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
- const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.append(commentsList);
+ const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
+ let commentsLoaded=false;const commentsToggle=button('Komentari',async b=>{commentsArea.hidden=!commentsArea.hidden;if(!commentsArea.hidden&&!commentsLoaded){b.disabled=true;try{await commentBranch(item.id,null,commentsList,refreshContext,null,comments);commentsLoaded=true;}catch(err){commentsList.textContent=err.message;}finally{b.disabled=false;}}b.setAttribute('aria-expanded',String(!commentsArea.hidden));},'text-button comments-toggle');commentsToggle.setAttribute('aria-expanded','false');
  const favorite=button('♡',async b=>{const enabled=b.getAttribute('aria-pressed')!=='true';const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);pulseHeart(b);},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
  function setFavorite(value,style){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);if(value&&Number.isInteger(Number(style))&&Number(style)>=1&&Number(style)<=40)favorite.dataset.heartStyle=String(style);else delete favorite.dataset.heartStyle;}
  async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
  watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);});
- const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,node('span','action-spacer'),reportButton);article.append(row,commentsArea);commentBranch(item.id,null,commentsList,refreshContext,null,comments).catch(err=>{commentsList.textContent=err.message;});
+ const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,commentsToggle,node('span','action-spacer'),reportButton);article.append(row,commentsArea);
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
  const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!recorded){readTimer=setTimeout(()=>{recorded=true;request('read',{id:item.id}).catch(()=>{});observer.disconnect();},1500);}else clearTimeout(readTimer);},{threshold:.1});observer.observe(article);
