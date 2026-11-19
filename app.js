@@ -180,6 +180,10 @@ function comment(item,confessionId,refreshContext,focusOptions={}){
  commentMeta.add({item,wrap,count,favorite});updateCommentMeta();return wrap;
 }
 const inlineThreads=new WeakMap();let activeInlineThread=null;
+document.addEventListener('click',event=>{
+ if(!activeInlineThread||event.target.closest('.inline-thread, .thread-active-comment'))return;
+ activeInlineThread.close();
+});
 async function openReplies(item,confessionId,refreshContext,trigger){
  const existing=inlineThreads.get(trigger);if(existing){existing.close();return;}
  activeInlineThread?.close(false);
