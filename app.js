@@ -56,7 +56,7 @@ $('#rules').onclick=()=>modal('Pravila zajednice',node('p','', 'Piši bez vređa
 if(isLocal)$('#preview').textContent='Lokalni test · bez veze sa živim sajtom';
 else if(window.ISPOVESTI_CONFIG?.mode==='live-test')$('#preview').textContent='TEST · prava baza, odvojeni probni podaci';
 else if(!isPreview)$('#preview').hidden=true;
-function metadata(item){const div=node('div','story-meta');div.append(node('span','author','Ms./Mr.'));const t=node('time','',date(item.published_at||item.created_at));t.dateTime=item.published_at||item.created_at||'';div.append(t);return div;}
+function metadata(item){const div=node('div','story-meta');const author=String(item.nickname||'').trim();if(author)div.append(node('span','author',author));const t=node('time','',date(item.published_at||item.created_at));t.dateTime=item.published_at||item.created_at||'';div.append(t);return div;}
 function contentForm(kind,extra,done,onBack){
  const form=node('form',kind==='confession'?'form':'form discussion-form'),label=node('label','',kind==='confession'?'Tvoja priča':'Tvoje reči'),text=node('textarea');text.addEventListener('focus',()=>prepareSubmission(kind,form));text.addEventListener('input',()=>prepareSubmission(kind,form));text.required=true;text.maxLength=kind==='confession'?10000:2000;text.classList.toggle('discussion-textarea',kind!=='confession');text.placeholder=kind==='confession'?'Napiši ono što želiš da podeliš...':kind==='comment'?'':'Napiši odgovor...';label.append(text);
  const nickLabel=node('label','','Ime autora'),nick=node('input');nick.maxLength=40;nick.autocomplete='off';nickLabel.append(nick);
@@ -236,7 +236,7 @@ async function openReplies(item,confessionId,refreshContext,trigger){
  try{await collectReplies(request,confessionId,item.id,renderBatch,()=>closed||!thread.isConnected);if(closed)return;thread.dataset.loadedMs=String(Math.round(performance.now()-startedAt));notice.remove();}catch(e){if(!closed)notice.textContent=e.message;}
 }
 function story(item){
- const article=node('article','story'),storyBody=node('div','story-content body-text',item.body);article.append(node('div','story-nickname','Ms./Mr.'));article.append(storyBody);const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
+ const article=node('article','story'),storyBody=node('div','story-content body-text',item.body);if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(storyBody);const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
  const row=node('div','story-actions'),commentsArea=node('section','comments-area comments'),commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
  let commentsLoaded=false,commentsLoading=false;
  async function toggleComments(){
