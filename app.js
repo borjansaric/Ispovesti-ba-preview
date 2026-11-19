@@ -1,6 +1,6 @@
 import {chatRequest} from './chat/client.mjs?v=room2';
 import {collectReplies,replyCounterText} from './chat/thread-model.mjs?v=progressive11';
-import { request, isPreview, isLocal, prepareSubmission } from './api.js?v=20261118-ekavian-report-menu3';
+import { request, isPreview, isLocal, prepareSubmission } from './api.js?v=20261119-random-favorite-hearts1';
 const $ = s => document.querySelector(s);
 const feed = $('#feed'), dialog = $('#dialog');
 const dailyTabs={confession:$('#daily-confessions'),comment:$('#daily-comments')};
@@ -200,10 +200,10 @@ function story(item){
  const article=node('article','story');if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
  const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
  const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.append(commentsList);
- const favorite=button('♡',async b=>{const enabled=b.getAttribute('aria-pressed')!=='true';await request('favorite',{id:item.id,enabled});setFavorite(enabled);pulseHeart(b);},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
- function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);}
- async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite);}
- watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite);});
+ const favorite=button('♡',async b=>{const enabled=b.getAttribute('aria-pressed')!=='true';const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);pulseHeart(b);},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
+ function setFavorite(value,style){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);if(value&&Number.isInteger(Number(style))&&Number(style)>=1&&Number(style)<=40)favorite.dataset.heartStyle=String(style);else delete favorite.dataset.heartStyle;}
+ async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
+ watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);});
  const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,node('span','action-spacer'),reportButton);article.append(row,commentsArea);commentBranch(item.id,null,commentsList,refreshContext,null,comments).catch(err=>{commentsList.textContent=err.message;});
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
