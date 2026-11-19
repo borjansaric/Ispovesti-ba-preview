@@ -88,12 +88,28 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .my-comment-entry>.body-text{margin:0 0 3px}
 .my-comment-entry>.open-confession{display:inline-block;width:auto;margin:0;padding:2px 0;line-height:1.35}
 
-/* Temporary side-by-side heart finish comparison; remove after the preferred style is chosen. */
-.heart-style-preview{display:flex;justify-content:center;align-items:flex-end;gap:clamp(22px,8vw,48px);margin:8px 0 18px;padding:10px 8px 12px;border-bottom:1px solid rgba(214,177,94,.16)}
-.heart-style-option{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:48px}
-.heart-style-sample{display:block;font-family:Arial,sans-serif;font-size:31px;line-height:1;color:#9b762e}
-.heart-style-option:nth-child(1) .heart-style-sample{color:#9b762e;text-shadow:0 0 3px rgba(201,157,65,.5),0 0 9px rgba(201,157,65,.32)}
-.heart-style-option:nth-child(2) .heart-style-sample{color:#b58d42;text-shadow:0 0 4px rgba(210,170,83,.24)}
-.heart-style-option:nth-child(3) .heart-style-sample{color:#d4ad5c;text-shadow:0 0 3px #f5d98c,0 0 9px rgba(230,188,91,.88),0 0 19px rgba(214,164,55,.62),0 0 30px rgba(191,139,34,.35)}
-.heart-style-label{font-size:10px;line-height:1.25;color:var(--muted);text-align:center;white-space:nowrap}
-@media(prefers-reduced-motion:reduce){.heart-style-sample{text-shadow:none!important}}
+/* Temporary palette comparison: twenty distinct heart colors in a compact mobile grid. */
+.heart-style-preview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px 8px;align-items:center;justify-items:center;width:100%;max-width:420px;margin:10px auto 18px;padding:12px 8px 14px;border-bottom:1px solid rgba(214,177,94,.16);box-sizing:border-box}
+.heart-style-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0}
+.heart-style-sample{display:block;font-family:Arial,sans-serif;font-size:30px;line-height:1;color:var(--heart-color);text-shadow:var(--heart-glow)}
+.heart-style-label{font-size:10px;line-height:1.2;color:var(--muted);text-align:center}
+.heart-style-option:nth-child(1) .heart-style-sample{--heart-color:#80612d;--heart-glow:0 0 2px rgba(180,140,60,.2)}
+.heart-style-option:nth-child(2) .heart-style-sample{--heart-color:#a47b36;--heart-glow:0 0 3px rgba(201,157,70,.35),0 0 7px rgba(201,157,70,.18)}
+.heart-style-option:nth-child(3) .heart-style-sample{--heart-color:#c49a45;--heart-glow:0 0 3px rgba(218,178,91,.4),0 0 9px rgba(218,178,91,.24)}
+.heart-style-option:nth-child(4) .heart-style-sample{--heart-color:#e0bc70;--heart-glow:0 0 4px rgba(240,210,145,.55),0 0 11px rgba(240,210,145,.3)}
+.heart-style-option:nth-child(5) .heart-style-sample{--heart-color:#f0d18a;--heart-glow:0 0 4px rgba(255,230,170,.65),0 0 13px rgba(240,205,125,.38)}
+.heart-style-option:nth-child(6) .heart-style-sample{--heart-color:#b69b65;--heart-glow:0 0 3px rgba(208,184,128,.35),0 0 8px rgba(208,184,128,.2)}
+.heart-style-option:nth-child(7) .heart-style-sample{--heart-color:#c8b27e;--heart-glow:0 0 3px rgba(224,207,158,.42),0 0 10px rgba(224,207,158,.26)}
+.heart-style-option:nth-child(8) .heart-style-sample{--heart-color:#e6d7b2;--heart-glow:0 0 4px rgba(255,240,205,.58),0 0 12px rgba(232,213,174,.3)}
+.heart-style-option:nth-child(9) .heart-style-sample{--heart-color:#9c603f;--heart-glow:0 0 3px rgba(190,117,75,.38),0 0 8px rgba(190,117,75,.2)}
+.heart-style-option:nth-child(10) .heart-style-sample{--heart-color:#b56f4a;--heart-glow:0 0 3px rgba(211,137,94,.42),0 0 9px rgba(211,137,94,.24)}
+.heart-style-option:nth-child(11) .heart-style-sample{--heart-color:#c9875c;--heart-glow:0 0 3px rgba(226,165,124,.48),0 0 10px rgba(226,165,124,.28)}
+.heart-style-option:nth-child(12) .heart-style-sample{--heart-color:#d5a07a;--heart-glow:0 0 4px rgba(240,194,160,.55),0 0 12px rgba(213,160,122,.32)}
+.heart-style-option:nth-child(13) .heart-style-sample{--heart-color:#a64f4f;--heart-glow:0 0 3px rgba(198,100,100,.4),0 0 9px rgba(198,100,100,.22)}
+.heart-style-option:nth-child(14) .heart-style-sample{--heart-color:#c45f66;--heart-glow:0 0 3px rgba(226,126,132,.46),0 0 10px rgba(226,126,132,.26)}
+.heart-style-option:nth-child(15) .heart-style-sample{--heart-color:#dc8790;--heart-glow:0 0 4px rgba(255,177,185,.55),0 0 12px rgba(220,135,144,.3)}
+.heart-style-option:nth-child(16) .heart-style-sample{--heart-color:#e7b4b8;--heart-glow:0 0 4px rgba(255,220,222,.62),0 0 13px rgba(231,180,184,.34)}
+.heart-style-option:nth-child(17) .heart-style-sample{--heart-color:#a879a5;--heart-glow:0 0 3px rgba(194,142,190,.4),0 0 9px rgba(194,142,190,.22)}
+.heart-style-option:nth-child(18) .heart-style-sample{--heart-color:#bd8bc5;--heart-glow:0 0 3px rgba(218,165,226,.46),0 0 10px rgba(189,139,197,.26)}
+.heart-style-option:nth-child(19) .heart-style-sample{--heart-color:#8b9fc5;--heart-glow:0 0 3px rgba(164,187,230,.42),0 0 10px rgba(139,159,197,.24)}
+.heart-style-option:nth-child(20) .heart-style-sample{--heart-color:#8db5aa;--heart-glow:0 0 3px rgba(168,218,204,.42),0 0 10px rgba(141,181,170,.24)}
