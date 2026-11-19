@@ -263,11 +263,14 @@ function warmComments(confessionId){
  const id=String(confessionId);if(commentWarmIds.has(id))return;commentWarmIds.add(id);commentWarmQueue.push(id);runCommentWarmQueue();
 }
 function runCommentWarmQueue(){
- while(commentWarmActive<4&&commentWarmQueue.length){
+ while(commentWarmActive<3&&commentWarmQueue.length){
   const id=commentWarmQueue.shift();commentWarmActive++;
   request('comments',{confession_id:id,parent_id:null,offset:0}).catch(()=>{}).finally(()=>{commentWarmActive--;runCommentWarmQueue();});
  }
 }
+const commentWarmObserver='IntersectionObserver' in window?new IntersectionObserver(entries=>{
+ for(const entry of entries)if(entry.isIntersecting){commentWarmObserver.unobserve(entry.target);warmComments(entry.target.dataset.confessionId);}
+},{rootMargin:'700px 0px',threshold:0}):null;
 let allFeedPreloading=false;
 async function preloadAllConfessions(){
  if(allFeedPreloading||!['new','popular'].includes(currentView))return;
@@ -281,8 +284,7 @@ async function preloadAllConfessions(){
  }finally{allFeedPreloading=false;}
 }
 function story(item){
- warmComments(item.id);
- const article=node('article','story');if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
+ const article=node('article','story');article.dataset.confessionId=String(item.id);if(commentWarmObserver)commentWarmObserver.observe(article);else warmComments(item.id);if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
  const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
  const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
  let commentsLoaded=false,commentsLoading=false;
