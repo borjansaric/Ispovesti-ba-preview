@@ -259,7 +259,7 @@ function story(item){
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);applyHeartStyle(favorite,'confession',item.id,value);}
  async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
  watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);});
- const shareButton=button('Kopiraj link',async()=>{
+ const shareButton=button('⧉',async()=>{
   persistFeedState();
   const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('ispovest',String(item.id));
   try{await navigator.clipboard.writeText(url.toString());toast('Direktni link ispovesti je kopiran.');}
@@ -267,7 +267,7 @@ function story(item){
    const field=node('textarea');field.value=url.toString();field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.append(field);field.select();
    const copied=document.execCommand('copy');field.remove();if(!copied)throw new Error('Kopiranje nije uspelo. Pokušaj ponovo.');toast('Direktni link ispovesti je kopiran.');
   }
- },'action share-story');shareButton.setAttribute('aria-label','Kopiraj direktni link do ispovesti');
+ },'action share-story-corner');shareButton.setAttribute('aria-label','Kopiraj direktni link do ispovesti');shareButton.setAttribute('title','Kopiraj link');
  const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,shareButton,node('span','action-spacer'),reportButton);article.append(row,commentsArea);
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
