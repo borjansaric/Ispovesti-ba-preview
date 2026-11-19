@@ -260,6 +260,7 @@ function story(item){
  async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
  watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);});
  const shareButton=button('Kopiraj link',async()=>{
+  persistFeedState();
   const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('ispovest',String(item.id));
   try{await navigator.clipboard.writeText(url.toString());toast('Direktni link ispovesti je kopiran.');}
   catch{
