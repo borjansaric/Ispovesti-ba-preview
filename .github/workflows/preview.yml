@@ -31,6 +31,9 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+          name: preview-pages-${{ github.run_id }}
       - name: Deploy preview only
         id: deployment
         uses: actions/deploy-pages@v5
+        with:
+          artifact_name: preview-pages-${{ github.run_id }}
