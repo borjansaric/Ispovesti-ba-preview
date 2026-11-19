@@ -88,28 +88,48 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .my-comment-entry>.body-text{margin:0 0 3px}
 .my-comment-entry>.open-confession{display:inline-block;width:auto;margin:0;padding:2px 0;line-height:1.35}
 
-/* Temporary palette comparison: twenty distinct heart colors in a compact mobile grid. */
+/* Temporary palette comparison: forty yellow/gold heart shades; row six has the strongest glow. */
 .heart-style-preview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px 8px;align-items:center;justify-items:center;width:100%;max-width:420px;margin:10px auto 18px;padding:12px 8px 14px;border-bottom:1px solid rgba(214,177,94,.16);box-sizing:border-box}
 .heart-style-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0}
 .heart-style-sample{display:block;font-family:Arial,sans-serif;font-size:30px;line-height:1;color:var(--heart-color);text-shadow:var(--heart-glow)}
 .heart-style-label{font-size:10px;line-height:1.2;color:var(--muted);text-align:center}
-.heart-style-option:nth-child(1) .heart-style-sample{--heart-color:#80612d;--heart-glow:0 0 2px rgba(180,140,60,.2)}
-.heart-style-option:nth-child(2) .heart-style-sample{--heart-color:#a47b36;--heart-glow:0 0 3px rgba(201,157,70,.35),0 0 7px rgba(201,157,70,.18)}
-.heart-style-option:nth-child(3) .heart-style-sample{--heart-color:#c49a45;--heart-glow:0 0 3px rgba(218,178,91,.4),0 0 9px rgba(218,178,91,.24)}
-.heart-style-option:nth-child(4) .heart-style-sample{--heart-color:#e0bc70;--heart-glow:0 0 4px rgba(240,210,145,.55),0 0 11px rgba(240,210,145,.3)}
-.heart-style-option:nth-child(5) .heart-style-sample{--heart-color:#f0d18a;--heart-glow:0 0 4px rgba(255,230,170,.65),0 0 13px rgba(240,205,125,.38)}
-.heart-style-option:nth-child(6) .heart-style-sample{--heart-color:#b69b65;--heart-glow:0 0 3px rgba(208,184,128,.35),0 0 8px rgba(208,184,128,.2)}
-.heart-style-option:nth-child(7) .heart-style-sample{--heart-color:#c8b27e;--heart-glow:0 0 3px rgba(224,207,158,.42),0 0 10px rgba(224,207,158,.26)}
-.heart-style-option:nth-child(8) .heart-style-sample{--heart-color:#e6d7b2;--heart-glow:0 0 4px rgba(255,240,205,.58),0 0 12px rgba(232,213,174,.3)}
-.heart-style-option:nth-child(9) .heart-style-sample{--heart-color:#9c603f;--heart-glow:0 0 3px rgba(190,117,75,.38),0 0 8px rgba(190,117,75,.2)}
-.heart-style-option:nth-child(10) .heart-style-sample{--heart-color:#b56f4a;--heart-glow:0 0 3px rgba(211,137,94,.42),0 0 9px rgba(211,137,94,.24)}
-.heart-style-option:nth-child(11) .heart-style-sample{--heart-color:#c9875c;--heart-glow:0 0 3px rgba(226,165,124,.48),0 0 10px rgba(226,165,124,.28)}
-.heart-style-option:nth-child(12) .heart-style-sample{--heart-color:#d5a07a;--heart-glow:0 0 4px rgba(240,194,160,.55),0 0 12px rgba(213,160,122,.32)}
-.heart-style-option:nth-child(13) .heart-style-sample{--heart-color:#a64f4f;--heart-glow:0 0 3px rgba(198,100,100,.4),0 0 9px rgba(198,100,100,.22)}
-.heart-style-option:nth-child(14) .heart-style-sample{--heart-color:#c45f66;--heart-glow:0 0 3px rgba(226,126,132,.46),0 0 10px rgba(226,126,132,.26)}
-.heart-style-option:nth-child(15) .heart-style-sample{--heart-color:#dc8790;--heart-glow:0 0 4px rgba(255,177,185,.55),0 0 12px rgba(220,135,144,.3)}
-.heart-style-option:nth-child(16) .heart-style-sample{--heart-color:#e7b4b8;--heart-glow:0 0 4px rgba(255,220,222,.62),0 0 13px rgba(231,180,184,.34)}
-.heart-style-option:nth-child(17) .heart-style-sample{--heart-color:#a879a5;--heart-glow:0 0 3px rgba(194,142,190,.4),0 0 9px rgba(194,142,190,.22)}
-.heart-style-option:nth-child(18) .heart-style-sample{--heart-color:#bd8bc5;--heart-glow:0 0 3px rgba(218,165,226,.46),0 0 10px rgba(189,139,197,.26)}
-.heart-style-option:nth-child(19) .heart-style-sample{--heart-color:#8b9fc5;--heart-glow:0 0 3px rgba(164,187,230,.42),0 0 10px rgba(139,159,197,.24)}
-.heart-style-option:nth-child(20) .heart-style-sample{--heart-color:#8db5aa;--heart-glow:0 0 3px rgba(168,218,204,.42),0 0 10px rgba(141,181,170,.24)}
+.heart-style-option:nth-child(1) .heart-style-sample{--heart-color:#f4d98f;--heart-glow:0 0 2px rgba(245,211,126,0.42),0 0 6px rgba(231,190,83,0.23)}
+.heart-style-option:nth-child(2) .heart-style-sample{--heart-color:#f0d18a;--heart-glow:0 0 3px rgba(245,211,126,0.46),0 0 8px rgba(231,190,83,0.26)}
+.heart-style-option:nth-child(3) .heart-style-sample{--heart-color:#f7dfaa;--heart-glow:0 0 4px rgba(245,211,126,0.51),0 0 10px rgba(231,190,83,0.28)}
+.heart-style-option:nth-child(4) .heart-style-sample{--heart-color:#e9c66e;--heart-glow:0 0 2px rgba(245,211,126,0.55),0 0 12px rgba(231,190,83,0.31)}
+.heart-style-option:nth-child(5) .heart-style-sample{--heart-color:#e8c45f;--heart-glow:0 0 3px rgba(245,211,126,0.42),0 0 6px rgba(231,190,83,0.23)}
+.heart-style-option:nth-child(6) .heart-style-sample{--heart-color:#f2d47d;--heart-glow:0 0 4px rgba(245,211,126,0.46),0 0 8px rgba(231,190,83,0.26)}
+.heart-style-option:nth-child(7) .heart-style-sample{--heart-color:#dfb94e;--heart-glow:0 0 2px rgba(245,211,126,0.51),0 0 10px rgba(231,190,83,0.28)}
+.heart-style-option:nth-child(8) .heart-style-sample{--heart-color:#f8e2a0;--heart-glow:0 0 3px rgba(245,211,126,0.55),0 0 12px rgba(231,190,83,0.31)}
+.heart-style-option:nth-child(9) .heart-style-sample{--heart-color:#dcae35;--heart-glow:0 0 4px rgba(245,211,126,0.42),0 0 6px rgba(231,190,83,0.23)}
+.heart-style-option:nth-child(10) .heart-style-sample{--heart-color:#e8bf4d;--heart-glow:0 0 2px rgba(245,211,126,0.46),0 0 8px rgba(231,190,83,0.26)}
+.heart-style-option:nth-child(11) .heart-style-sample{--heart-color:#f3d27a;--heart-glow:0 0 3px rgba(245,211,126,0.51),0 0 10px rgba(231,190,83,0.28)}
+.heart-style-option:nth-child(12) .heart-style-sample{--heart-color:#f9e8b9;--heart-glow:0 0 4px rgba(245,211,126,0.55),0 0 12px rgba(231,190,83,0.31)}
+.heart-style-option:nth-child(13) .heart-style-sample{--heart-color:#c99b2e;--heart-glow:0 0 2px rgba(245,211,126,0.42),0 0 6px rgba(231,190,83,0.23)}
+.heart-style-option:nth-child(14) .heart-style-sample{--heart-color:#d9ad3d;--heart-glow:0 0 3px rgba(245,211,126,0.46),0 0 8px rgba(231,190,83,0.26)}
+.heart-style-option:nth-child(15) .heart-style-sample{--heart-color:#e7c15b;--heart-glow:0 0 4px rgba(245,211,126,0.51),0 0 10px rgba(231,190,83,0.28)}
+.heart-style-option:nth-child(16) .heart-style-sample{--heart-color:#f0d98e;--heart-glow:0 0 2px rgba(245,211,126,0.55),0 0 12px rgba(231,190,83,0.31)}
+.heart-style-option:nth-child(17) .heart-style-sample{--heart-color:#f5df9d;--heart-glow:0 0 3px rgba(245,211,126,0.42),0 0 6px rgba(231,190,83,0.23)}
+.heart-style-option:nth-child(18) .heart-style-sample{--heart-color:#f8e8b5;--heart-glow:0 0 4px rgba(245,211,126,0.46),0 0 8px rgba(231,190,83,0.26)}
+.heart-style-option:nth-child(19) .heart-style-sample{--heart-color:#e2c77c;--heart-glow:0 0 2px rgba(245,211,126,0.51),0 0 10px rgba(231,190,83,0.28)}
+.heart-style-option:nth-child(20) .heart-style-sample{--heart-color:#d5b45b;--heart-glow:0 0 3px rgba(245,211,126,0.55),0 0 12px rgba(231,190,83,0.31)}
+.heart-style-option:nth-child(21) .heart-style-sample{--heart-color:#fff0a8;--heart-glow:0 0 8px rgba(255,226,130,.95),0 0 17px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)}
+.heart-style-option:nth-child(22) .heart-style-sample{--heart-color:#ffe58a;--heart-glow:0 0 6px rgba(255,226,130,.95),0 0 20px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)}
+.heart-style-option:nth-child(23) .heart-style-sample{--heart-color:#ffda68;--heart-glow:0 0 7px rgba(255,226,130,.95),0 0 23px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)}
+.heart-style-option:nth-child(24) .heart-style-sample{--heart-color:#ffedc2;--heart-glow:0 0 8px rgba(255,226,130,.95),0 0 26px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)}
+.heart-style-option:nth-child(25) .heart-style-sample{--heart-color:#d8b64f;--heart-glow:0 0 2px rgba(245,211,126,0.42),0 0 6px rgba(231,190,83,0.23)}
+.heart-style-option:nth-child(26) .heart-style-sample{--heart-color:#eacb72;--heart-glow:0 0 3px rgba(245,211,126,0.46),0 0 8px rgba(231,190,83,0.26)}
+.heart-style-option:nth-child(27) .heart-style-sample{--heart-color:#f5dfaa;--heart-glow:0 0 4px rgba(245,211,126,0.51),0 0 10px rgba(231,190,83,0.28)}
+.heart-style-option:nth-child(28) .heart-style-sample{--heart-color:#cfa83d;--heart-glow:0 0 2px rgba(245,211,126,0.55),0 0 12px rgba(231,190,83,0.31)}
+.heart-style-option:nth-child(29) .heart-style-sample{--heart-color:#e7c95f;--heart-glow:0 0 3px rgba(245,211,126,0.42),0 0 6px rgba(231,190,83,0.23)}
+.heart-style-option:nth-child(30) .heart-style-sample{--heart-color:#f4d982;--heart-glow:0 0 4px rgba(245,211,126,0.46),0 0 8px rgba(231,190,83,0.26)}
+.heart-style-option:nth-child(31) .heart-style-sample{--heart-color:#e2bc55;--heart-glow:0 0 2px rgba(245,211,126,0.51),0 0 10px rgba(231,190,83,0.28)}
+.heart-style-option:nth-child(32) .heart-style-sample{--heart-color:#f8e6ad;--heart-glow:0 0 3px rgba(245,211,126,0.55),0 0 12px rgba(231,190,83,0.31)}
+.heart-style-option:nth-child(33) .heart-style-sample{--heart-color:#caa13c;--heart-glow:0 0 4px rgba(245,211,126,0.42),0 0 6px rgba(231,190,83,0.23)}
+.heart-style-option:nth-child(34) .heart-style-sample{--heart-color:#dcb64f;--heart-glow:0 0 2px rgba(245,211,126,0.46),0 0 8px rgba(231,190,83,0.26)}
+.heart-style-option:nth-child(35) .heart-style-sample{--heart-color:#edcf78;--heart-glow:0 0 3px rgba(245,211,126,0.51),0 0 10px rgba(231,190,83,0.28)}
+.heart-style-option:nth-child(36) .heart-style-sample{--heart-color:#f6e2a5;--heart-glow:0 0 4px rgba(245,211,126,0.55),0 0 12px rgba(231,190,83,0.31)}
+.heart-style-option:nth-child(37) .heart-style-sample{--heart-color:#e8ce8b;--heart-glow:0 0 2px rgba(245,211,126,0.42),0 0 6px rgba(231,190,83,0.23)}
+.heart-style-option:nth-child(38) .heart-style-sample{--heart-color:#f1dda7;--heart-glow:0 0 3px rgba(245,211,126,0.46),0 0 8px rgba(231,190,83,0.26)}
+.heart-style-option:nth-child(39) .heart-style-sample{--heart-color:#d6b85f;--heart-glow:0 0 4px rgba(245,211,126,0.51),0 0 10px rgba(231,190,83,0.28)}
+.heart-style-option:nth-child(40) .heart-style-sample{--heart-color:#f9eac5;--heart-glow:0 0 2px rgba(245,211,126,0.55),0 0 12px rgba(231,190,83,0.31)}
