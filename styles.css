@@ -14,7 +14,14 @@
 .form label textarea:focus,.form input:focus{border-bottom-color:var(--gold-soft);outline:0}
 .form .row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:5px}.form .hint{margin:4px 0}
 .form select{display:block;width:65vw;max-width:100%;margin-top:3px;background:transparent;color:var(--gold);border:0;border-bottom:1px solid var(--gold);border-radius:0;padding:7px 2px;font:inherit}
-.side-menu .form>label:first-child{font-size:12px}.side-menu .form textarea{font-size:14px}
+/* Sidebar confession form: one intrinsic menu width, with all fields constrained to it. */
+#sidebar-compose{min-width:0;max-width:100%}
+#sidebar-compose .form{min-width:0;max-width:100%;margin:5px 0 8px}
+#sidebar-compose .form>label:first-child{display:block;min-width:0;width:100%;font-size:12px}
+#sidebar-compose .form>label:first-child textarea{box-sizing:border-box;width:100%;max-width:100%;min-width:0;font-size:14px}
+#sidebar-compose .form .identity-row{display:flex;align-items:flex-end;gap:8px;width:100%;min-width:0}
+#sidebar-compose .form .identity-row>label{flex:1 1 0;width:auto;max-width:100%;min-width:0;margin:0}
+#sidebar-compose .form .identity-row input{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
 .text-button{background:transparent;color:var(--gold);font-size:12px;font-weight:normal;padding:6px 0;margin:9px 12px 0 0}.error{color:#f3a29b}.preview{position:fixed;right:10px;bottom:8px;z-index:900;background:#191919e8;color:var(--muted);font-size:10px;padding:3px 8px;pointer-events:none}body.menu-open{overflow:hidden}
 dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;border:1px solid #625332;border-radius:12px;padding:22px;background:var(--panel);color:var(--text)}dialog::backdrop{background:#000b}.dialog-heading{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}.dialog-heading h2{margin:0}.icon-button{background:transparent;color:var(--muted);font-size:25px;font-weight:normal;margin:0;padding:0 6px}#toast{position:fixed;z-index:1100;bottom:26px;left:50%;transform:translateX(-50%);max-width:calc(100% - 28px);width:max-content;background:#302819;padding:12px 18px;color:var(--text);font-size:13px}#toast:empty{display:none}.admin{max-width:800px;margin:40px auto;padding:20px}.admin-tools{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.brand{font-size:30px;color:var(--gold);font-weight:bold;text-decoration:none}
 @media(prefers-reduced-motion:reduce){body::before,body::after,*,*::before,*::after{transition:none}}
@@ -90,12 +97,7 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .form .identity-row>button{flex:0 0 auto;width:auto;margin:0 0 2px;white-space:nowrap}
 .form .identity-row>button.send-confession{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.1;white-space:normal}
 
-/* Sidebar composer follows the menu's content width instead of viewport-based form widths. */
-#sidebar-compose{min-width:0;max-width:100%}
-#sidebar-compose .form{width:100%;max-width:100%;min-width:0}
-#sidebar-compose .form label textarea{box-sizing:border-box;width:100%;max-width:100%}
-#sidebar-compose .form .identity-row>label{flex:1 1 0;width:auto;max-width:100%;min-width:0}
-#sidebar-compose .form .identity-row input{box-sizing:border-box;width:100%;max-width:100%}
+
 
 /* Compact entries on the private My Comments page only. */
 .my-comment-entry{padding:5px 0;margin-bottom:3px}
