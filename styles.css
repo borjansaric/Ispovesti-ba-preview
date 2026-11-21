@@ -175,3 +175,10 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .menu-sort-option[data-feed-sort="random"]{font-size:12px;letter-spacing:.02em}
 .menu-sort-option:hover{border:0;background:transparent;color:var(--gold-soft);text-shadow:0 0 6px rgba(255,218,104,.28)}
 .menu-sort-option.active{border:0;background:transparent;color:var(--gold-soft);box-shadow:none;text-shadow:0 0 7px rgba(255,218,104,.55)}
+
+/* Reserved sidebar banner for a future Ispovesti.ba partner. */
+.partner-banner-placeholder{box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:calc(100% - 18px);min-height:88px;margin:14px auto 8px;padding:11px 9px;border:1px solid #d9b765;border-radius:7px;background:linear-gradient(112deg,#6e4b1e 0%,#b88b3e 16%,#f5dfa0 34%,#c79a49 52%,#fff0bd 67%,#9b702c 84%,#e6c779 100%);color:#211706;text-align:center;text-decoration:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.62),inset 0 -3px 7px rgba(76,45,7,.3),0 4px 14px rgba(0,0,0,.4);position:relative;overflow:hidden}
+.partner-banner-placeholder::before{content:"";position:absolute;inset:4px;border:1px solid rgba(255,248,220,.48);border-radius:4px;pointer-events:none}
+.partner-banner-kicker{font-size:9px;font-weight:900;letter-spacing:.24em;color:#4b3513}
+.partner-banner-title{font-size:16px;font-weight:900;line-height:1.15;text-shadow:0 1px 0 rgba(255,255,255,.45)}
+.partner-banner-note{font-size:9px;font-weight:700;letter-spacing:.03em;color:#493516}
