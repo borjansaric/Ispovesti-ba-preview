@@ -20,8 +20,10 @@ export async function openChat(){
   const frag=document.createDocumentFragment();for(const m of items){const own=m.sender===profile.id,row=el('article','chat-message '+(own?'own':'other'));row.dataset.id=m.id;
    const avatar=el('span','chat-avatar',avatars[m.avatar]||avatars.ghost);avatar.setAttribute('aria-hidden','true');row.append(avatar,el('p','chat-body',m.body));
    const actions=el('details','chat-message-menu'),more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
-   menu.append(button('Prijavi',async()=>{const reason=prompt('Razlog: abuse, threat, spam ili other','spam');if(reason){await chatRequest('report',{id:m.id,reason});status.textContent='Prijava je poslata.';actions.open=false;}}));
-   if(!own)menu.append(button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();}));
+   const reportButton=button('Prijavi',async()=>{const reason=prompt('Razlog: abuse, threat, spam ili other','spam');if(reason){await chatRequest('report',{id:m.id,reason});status.textContent='Prijava je poslata.';actions.open=false;}});
+   menu.append(reportButton);
+   if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
+   more.addEventListener('click',()=>{if(!actions.open)activeActionMenu=actions;});
    let outsideHandler=null;
    actions.addEventListener('toggle',()=>{
     if(actions.open){
@@ -45,9 +47,9 @@ export async function openChat(){
    actions.append(more,menu);row.append(actions);frag.append(row);
   }list.replaceChildren(frag);if(older)list.scrollTop=oldTop+list.scrollHeight-oldHeight;else if(atBottom)list.scrollTop=list.scrollHeight;else list.scrollTop=oldTop;initial=false;
  }
- async function refresh(older=false,initialHistory=null){if(stopped||polling||!profile?.active||document.hidden||activeActionMenu?.open)return;polling=true;
+ async function refresh(older=false,initialHistory=null){if(stopped||polling||!profile?.active||document.hidden||activeActionMenu)return;polling=true;
   try{const responses=[];if(initialHistory){responses.push(initialHistory);}else{for(const cursor of pages){responses.push(await chatRequest('history',cursor?{before:cursor}:{}));if(stopped)return;}}
-   if(activeActionMenu?.open)return;
+   if(activeActionMenu)return;
    const latest=responses[0],cutoff=Date.parse(latest.history_cutoff),seen=new Map();for(const r of responses)for(const m of r.items)if(Date.parse(m.created_at)>cutoff)seen.set(m.id,m);
    messages=[...seen.values()].sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)||(BigInt(a.id)<BigInt(b.id)?-1:1));
    if(pendingMessage&&!seen.has(pendingMessage.id))messages.push(pendingMessage);
