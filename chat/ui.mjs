@@ -17,7 +17,7 @@ export async function openChat(){
  const send=el('button','chat-send','➤');send.type='submit';send.setAttribute('aria-label','Pošalji poruku');form.append(text,send);form.hidden=true;root.append(top,status,list,form);
  function resetAccess(message){profile=null;messages=[];pages.splice(1);list.replaceChildren();form.hidden=true;status.textContent=message;clearInterval(timer);}
  function render(items,older=false){const atBottom=initial||list.scrollHeight-list.scrollTop-list.clientHeight<80,oldHeight=list.scrollHeight,oldTop=list.scrollTop;
-  const openId=list.querySelector('details[open]')?.closest('[data-id]')?.dataset.id;
+  for(const openMenu of list.querySelectorAll('details.chat-message-menu[open]'))openMenu.open=false;
   const frag=document.createDocumentFragment();for(const m of items){const own=m.sender===profile.id,row=el('article','chat-message '+(own?'own':'other'));row.dataset.id=m.id;
    const avatar=el('span','chat-avatar',avatars[m.avatar]||avatars.ghost);avatar.setAttribute('aria-hidden','true');row.append(avatar,el('p','chat-body',m.body));
    const actions=el('details','chat-message-menu'),more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
@@ -41,7 +41,7 @@ export async function openChat(){
      menu.removeAttribute('style');
     }
    });
-   actions.append(more,menu);if(m.id===openId)actions.open=true;row.append(actions);frag.append(row);
+   actions.append(more,menu);row.append(actions);frag.append(row);
   }list.replaceChildren(frag);if(older)list.scrollTop=oldTop+list.scrollHeight-oldHeight;else if(atBottom)list.scrollTop=list.scrollHeight;else list.scrollTop=oldTop;initial=false;
  }
  async function refresh(older=false){if(stopped||polling||!profile?.active||document.hidden)return;polling=true;
