@@ -86,7 +86,7 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 /* Nickname field and submit action share one row; the submit button sits to the right of the gold name underline. */
 .form .identity-row{display:flex;align-items:flex-end;gap:12px;margin-top:5px;min-width:0}
 .form .identity-row>label{flex:0 1 45vw;width:45vw;max-width:45vw;min-width:0;margin:0}
-.form .identity-row input{width:calc(100% * 13 / 14);max-width:100%;min-height:18px;height:18px;margin-top:0;padding:0 2px;line-height:14px}
+.form .identity-row input{box-sizing:border-box;width:92.857142857%;max-width:100%;min-height:18px;height:18px;margin-top:0;padding:0 2px;line-height:14px}
 .form .identity-row>button{flex:0 0 auto;width:auto;margin:0 0 2px;white-space:nowrap}
 
 /* Compact entries on the private My Comments page only. */
@@ -151,7 +151,7 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
  .form label textarea.discussion-textarea{width:100%;max-width:100%}
  .form .identity-row{gap:8px}
  .form .identity-row>label{flex:1 1 0;width:auto;max-width:none}
- .form .identity-row input{width:calc(100% * 13 / 14);min-height:28px;height:28px}
+ .form .identity-row input{box-sizing:border-box;width:92.857142857%;min-height:28px;height:28px}
  .form .identity-row>button{max-width:42%;white-space:normal}
  .form .row{flex-wrap:wrap}
  .daily-tab{font-size:13px}
