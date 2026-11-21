@@ -182,3 +182,9 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .partner-banner-kicker{font-size:9px;font-weight:900;letter-spacing:.24em;color:#4b3513}
 .partner-banner-title{font-size:16px;font-weight:900;line-height:1.15;text-shadow:0 1px 0 rgba(255,255,255,.45)}
 .partner-banner-note{font-size:9px;font-weight:700;letter-spacing:.03em;color:#493516}
+
+
+/* Dedicated confession view: retain the existing dark-and-gold atmosphere without adding a frame. */
+.direct-story{margin-top:2px}
+.direct-story-back{display:inline-block;margin:0 0 12px;padding:0;border:0;background:transparent;color:var(--gold);font-size:13px;font-weight:700;box-shadow:none}
+.direct-story-back:hover{background:transparent;color:var(--gold-soft)}
