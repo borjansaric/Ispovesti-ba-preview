@@ -6,7 +6,7 @@
  --red-glow:rgba(205,55,58,.58);
 }
 body{isolation:isolate;background:#090909;color:#eee;position:relative}
-body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;will-change:transform,background-position}
+body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;will-change:transform,background-position}
 body::before{
  background-image:
   radial-gradient(ellipse at 50% 38%,#17140e 0%,#0b0a08 48%,#090909 82%),
