@@ -45,8 +45,8 @@ export async function openChat(){
    actions.append(more,menu);row.append(actions);frag.append(row);
   }list.replaceChildren(frag);if(older)list.scrollTop=oldTop+list.scrollHeight-oldHeight;else if(atBottom)list.scrollTop=list.scrollHeight;else list.scrollTop=oldTop;initial=false;
  }
- async function refresh(older=false){if(stopped||polling||!profile?.active||document.hidden||activeActionMenu?.open)return;polling=true;
-  try{const responses=[];for(const cursor of pages){responses.push(await chatRequest('history',cursor?{before:cursor}:{}));if(stopped)return;}
+ async function refresh(older=false,initialHistory=null){if(stopped||polling||!profile?.active||document.hidden||activeActionMenu?.open)return;polling=true;
+  try{const responses=[];if(initialHistory){responses.push(initialHistory);}else{for(const cursor of pages){responses.push(await chatRequest('history',cursor?{before:cursor}:{}));if(stopped)return;}}
    if(activeActionMenu?.open)return;
    const latest=responses[0],cutoff=Date.parse(latest.history_cutoff),seen=new Map();for(const r of responses)for(const m of r.items)if(Date.parse(m.created_at)>cutoff)seen.set(m.id,m);
    messages=[...seen.values()].sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)||(BigInt(a.id)<BigInt(b.id)?-1:1));
@@ -56,10 +56,10 @@ export async function openChat(){
   }catch(e){if(stopped)return;if([401,403].includes(e.status))resetAccess(e.message);else status.textContent=e.message;}
   finally{polling=false;}
  }
- async function loadProfile(){try{profile=await chatRequest('profile');if(stopped)return;root.dataset.ownSide=profile.side||'left';
+ async function loadProfile(){try{const bootstrap=await chatRequest('bootstrap');if(stopped)return;profile=bootstrap.profile;root.dataset.ownSide=profile.side||'left';
    account.replaceChildren(el('p','hint','Tvoj anonimni chat ID: '+profile.id),el('p','hint',profile.active?(profile.plan==='free'?'Besplatan pristup':'Paket '+profile.plan+' · ističe '+new Date(profile.expires_at).toLocaleString('sr-Latn')):'Chat trenutno nije dostupan.'));
    blocked.replaceChildren();for(const [i,b]of (profile.blocked||[]).entries())blocked.append(button('Odblokiraj korisnika '+(i+1),async()=>{await chatRequest('unblock',{target:b.id});await loadProfile();}));
-   form.hidden=!profile.active;if(profile.active){status.textContent='';await refresh();clearInterval(timer);timer=setInterval(()=>refresh(),1500);}else status.textContent='Chat trenutno nije dostupan.';
+   form.hidden=!profile.active;if(profile.active){status.textContent='';await refresh(false,bootstrap.history);clearInterval(timer);timer=setInterval(()=>refresh(),1500);}else status.textContent='Chat trenutno nije dostupan.';
   }catch(e){resetAccess(e.message);}}
  list.addEventListener('scroll',async()=>{if(list.scrollTop>36||polling||noOlder||!messages.length)return;const cursor=messages[0].id;if(pages.includes(cursor))return;pages.push(cursor);await refresh(true);});
  form.onsubmit=async event=>{
