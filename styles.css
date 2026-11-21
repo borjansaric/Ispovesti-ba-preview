@@ -1,190 +1,450 @@
-/* Compact copy control in the confession card corner; icon matches the report mark size. */
-.story{position:relative}
-.story>.action.share-story-corner{position:absolute;top:4px;right:4px;z-index:3;display:inline-flex;align-items:center;justify-content:center;margin:0;padding:2px 4px;border:0;border-radius:0;background:transparent;color:var(--gold);font-family:Arial,sans-serif;font-size:13px;font-weight:normal;line-height:1;box-shadow:none}
-.story>.action.share-story-corner:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-
-/* Original site rules live verbatim in original.css. New functional controls only. */
-:root{color-scheme:dark}button,input,textarea,select{font-family:Arial,sans-serif}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}[hidden]{display:none}.load-more[hidden]{display:none}
-.body-text{white-space:pre-wrap;overflow-wrap:anywhere}.story .story-content{margin:0}.story-nickname{font-size:12px;color:var(--muted);margin-bottom:1px}
-
-.comment-card{display:block;text-align:left;width:100%;border:0;background:transparent;color:var(--text);font-weight:normal;padding:0;margin:0}.comment-card .body-text{margin:0}.story-meta{font-size:11px;color:var(--muted);margin:0 0 1px}.avatar{display:none}.story-meta time{margin-left:8px}.context-menu{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.replies{margin-left:12px;padding-left:8px}.comments-area{margin-top:2px;padding-top:2px}.comment-title{cursor:default}
-.form{margin:5px 0 8px}.form.discussion-form{width:calc(min(86vw,310px) - 20px);max-width:100%}.form label{display:block;font-size:12px;color:var(--gold);margin:0 0 2px}
-.form label textarea,.form input{display:block;margin-top:1px;background:transparent;color:var(--text);border:0;border-bottom:1px solid var(--gold);border-radius:0;box-shadow:none;padding:4px 2px;font:inherit;outline:0}
-.form label textarea:not(.discussion-textarea){display:block;box-sizing:border-box;width:calc(100% - 85px);max-width:100%;height:30px;min-height:30px;resize:none;overflow:hidden;appearance:none;-webkit-appearance:none}.form label textarea.discussion-textarea{width:65vw;max-width:100%;height:32px;min-height:32px;max-height:32px;resize:none;padding:1px 2px}.form input{width:45vw;max-width:100%;min-height:34px}
-.form label textarea:focus,.form input:focus{border-bottom-color:var(--gold-soft);outline:0}
-.form .row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:5px}.form .hint{margin:4px 0}
-.form select{display:block;width:65vw;max-width:100%;margin-top:3px;background:transparent;color:var(--gold);border:0;border-bottom:1px solid var(--gold);border-radius:0;padding:7px 2px;font:inherit}
-/* Sidebar actions: the confession composer opens in the shared dialog. */
-.side-menu .panel h2 .compose-trigger{display:block;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:var(--gold);font-size:18px;font-weight:bold;line-height:1.25;text-align:left;box-shadow:none}
-.side-menu .panel h2 .compose-trigger:hover{color:var(--gold-soft);background:transparent}
-.menu-footer-links{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px}
-.menu-footer-links .text-button{flex:1 1 0;min-width:0;margin:0;padding:5px 0;text-align:center;font-size:11px;white-space:nowrap}
-.side-menu .private-panel .chat-entry-button{display:block;width:calc(100% - 18px);margin:8px auto 0;padding:11px 8px;border:1px solid #e5c77d;border-radius:5px;background:linear-gradient(135deg,#8d6b2f 0%,#f7e4a4 17%,#c69d4b 38%,#fff1bd 52%,#b48735 73%,#f2d88f 100%);color:#17130a;font-size:14px;font-weight:900;letter-spacing:.16em;text-align:center;text-shadow:0 1px 0 rgba(255,255,255,.34);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 4px rgba(80,49,8,.28),0 4px 12px rgba(0,0,0,.42)}
-.side-menu .private-panel .chat-entry-button:hover{background:linear-gradient(135deg,#a17a37 0%,#ffedb2 17%,#d5ad5c 38%,#fff7d8 52%,#c19745 73%,#f9e3a0 100%);color:#090806}.error{color:#f3a29b}.preview{position:fixed;right:10px;bottom:8px;z-index:900;background:#191919e8;color:var(--muted);font-size:10px;padding:3px 8px;pointer-events:none}body.menu-open{overflow:hidden}
-dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;border:1px solid #625332;border-radius:12px;padding:22px;background:var(--panel);color:var(--text)}dialog::backdrop{background:#000b}.dialog-heading{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}.dialog-heading h2{margin:0}.icon-button{background:transparent;color:var(--muted);font-size:25px;font-weight:normal;margin:0;padding:0 6px}#toast{position:fixed;z-index:1100;bottom:26px;left:50%;transform:translateX(-50%);max-width:calc(100% - 28px);width:max-content;background:#302819;padding:12px 18px;color:var(--text);font-size:13px}#toast:empty{display:none}.admin{max-width:800px;margin:40px auto;padding:20px}.admin-tools{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.brand{font-size:30px;color:var(--gold);font-weight:bold;text-decoration:none}
-@media(prefers-reduced-motion:reduce){body::before,body::after,*,*::before,*::after{transition:none}}
-.captcha-check{max-width:100%;margin-top:8px}.admin #totp-qr{display:block;max-width:100%;height:auto;background:white;margin:12px 0}.admin #totp-open{display:block;width:fit-content;margin:12px 0}.admin #totp-secret{max-width:100%}.admin #logout{margin-bottom:16px}
-
-/* Daily winners: two equal-width tabs, preserving the existing black-and-gold theme. */
-.daily-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;margin:-6px 0 3px}
-.daily-tab{margin:0;font-size:14px;font-weight:bold;text-align:center}
-
-.daily-day-heading{margin:4px 0 2px;padding:0 0 2px;border-bottom:1px solid var(--border);color:var(--gold);font-size:14px;font-weight:bold;text-transform:capitalize}
-.daily-winner:first-child .daily-day-heading{margin-top:0}
-.daily-winner:first-child .story{padding-top:1px}
-#feed>.story:first-child{padding-top:4px}
-.daily-comment-story>.comment{margin:0}
-.daily-comment-story .daily-context{display:inline-block;margin:8px 0 0;padding:4px 0}
-
-/* Canonical feed vote/action styles. Keep all vote-button presentation here only. */
-.story-actions,.comment-actions{display:flex;align-items:center;gap:8px;width:100%;margin-top:5px;position:relative}
-.vote-controls{display:inline-flex;align-items:center;gap:12px;flex:0 0 auto;position:relative;z-index:2;background:transparent;box-shadow:none}
-.vote-controls>.action{
- display:inline-flex;align-items:center;justify-content:center;min-width:0;
- margin:0;padding:4px 5px;color:var(--gold);background:transparent;
- border:0;border-radius:0;outline:0;box-shadow:none;
- appearance:none;-webkit-appearance:none;position:relative;z-index:2;
- touch-action:manipulation;
- -webkit-tap-highlight-color:transparent;
- -webkit-focus-ring-color:transparent;
+import {chatRequest} from './chat/client.mjs?v=room3';
+import {collectReplies,replyCounterText} from './chat/thread-model.mjs?v=progressive11';
+import { request, isPreview, isLocal, prepareSubmission } from './api.js?v=20261119-instant-cache3';
+const $ = s => document.querySelector(s);
+const feed = $('#feed'), dialog = $('#dialog');
+const dailyTabs={confession:$('#daily-confessions'),comment:$('#daily-comments')};
+let currentView='new',offset=0,generation=0,busy=false;
+let detailGeneration=0;
+const feedSorts=new Set(['new','popular','likes','dislikes','comments','random']);
+let randomFeedSeed=crypto.randomUUID();
+// One batched state request per group of 20 cards, rather than 40 separate requests.
+const stateListeners=new Set();let stateTimer;
+function watchState(id,type,element,render){
+ try{const saved=JSON.parse(localStorage.getItem('ispovesti:card-state:'+String(id))||'null');if(saved&&Date.now()-Number(saved.savedAt||0)<604800000&&saved[type])render(saved[type]);}catch{}
+ stateListeners.add({id,type,element,render});clearTimeout(stateTimer);stateTimer=setTimeout(refreshStates,30);
 }
-.vote-controls>.action::after{
- content:"";position:absolute;left:50%;top:50%;width:max(100%,32px);height:max(100%,44px);
- transform:translate(-50%,-50%);
+async function refreshStates(){
+ for(const entry of stateListeners)if(!entry.element.isConnected)stateListeners.delete(entry);
+ const entries=[...stateListeners],ids=[...new Set(entries.map(e=>e.id))];
+ for(let i=0;i<ids.length;i+=20){
+  try{
+   const result=await request('cards',{ids:ids.slice(i,i+20)});
+   for(const id of ids){const data=result[id];if(data)try{localStorage.setItem('ispovesti:card-state:'+String(id),JSON.stringify({vote:data.vote||null,context:data.context||null,savedAt:Date.now()}));}catch{}}
+   for(const e of entries){const data=result[e.id]?.[e.type];if(data)e.render(data);}
+  }catch{}
+ }
 }
-.vote-controls>.action:focus,.vote-controls>.action:focus-visible{outline:0;border:0;box-shadow:none}
-.vote-controls>.action[aria-disabled="true"]{opacity:1;cursor:default}
-.vote-controls.has-vote>.action:not(.selected){color:#484848;text-shadow:none;box-shadow:none}
-.vote-controls:not(.has-vote)>.action{color:#aaa;text-shadow:none;box-shadow:none}
-.vote-controls>.action.selected{opacity:1}
-.vote-controls>.action[aria-label="Pozitivan glas"].selected{
- color:#f4d98f;background:transparent;border:0;box-shadow:none;
- text-shadow:0 0 7px rgba(244,217,143,.62);
+setInterval(()=>{if(!document.hidden)refreshStates();},60000);
+setInterval(()=>{if(!document.hidden&&currentView.startsWith('daily_'))load(true);},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentView.startsWith('daily_'))load(true);});
+const node=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
+const button=(text,fn,cls='action')=>{const b=node('button',cls,text);b.type='button';b.addEventListener('click',()=>Promise.resolve(fn(b)).catch(err=>toast(err.message)));return b;};
+const date=v=>v?new Date(v).toLocaleString('sr-Latn-RS',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+const FEED_STATE_KEY='ispovesti:feed-state:v1';
+let feedStateSaveTimer;
+function persistFeedState(){
+ if(new URLSearchParams(location.search).has('ispovest'))return;
+ try{sessionStorage.setItem(FEED_STATE_KEY,JSON.stringify({view:currentView,offset,scrollY:window.scrollY,seed:currentView==='random'?randomFeedSeed:null}));}catch{}
 }
-.vote-controls>.action[aria-label="Negativan glas"].selected{
- color:#ffd0d0;background:transparent;border:0;
- box-shadow:none;
- text-shadow:0 0 7px rgba(255,115,115,.72);
+window.addEventListener('scroll',()=>{clearTimeout(feedStateSaveTimer);feedStateSaveTimer=setTimeout(persistFeedState,120);},{passive:true});
+window.addEventListener('pagehide',persistFeedState);
+
+const dailyDayLabel=value=>{const d=new Date(String(value)+'T12:00:00');return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString('sr-Latn-RS',{weekday:'long',day:'numeric',month:'long',year:'numeric'});};
+function toast(text){$('#toast').textContent=text;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').textContent='',6500);}
+function modal(title,content){$('#dialog-title').textContent=title;$('#dialog-body').replaceChildren(content);if(!dialog.open)dialog.showModal();}
+const menuToggle=$('#menu-toggle'),sideMenu=$('#side-menu'),menuOverlay=$('#menu-overlay');
+function closeMenu(){setMenu(false);}
+function setMenu(open){
+ document.body.classList.toggle('menu-open',open);sideMenu.hidden=!open;menuOverlay.hidden=!open;
+ menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'Zatvori meni':'Otvori meni');menuToggle.textContent=open?'×':'›››';
+ for(const el of document.querySelectorAll('.site-header,main,footer'))el.inert=open;
+ if(open){sideMenu.querySelector('button')?.focus();requestAnimationFrame(()=>window.dispatchEvent(new Event('ispovesti:layout-visible')));}
 }
-.story-actions>.action.favorite,.comment-actions>.comment-heart{
- display:inline-flex;align-items:center;justify-content:center;align-self:center;min-width:0;
- margin:0;padding:4px 5px;line-height:1;vertical-align:middle;color:var(--gold);
- font-size:19px;font-family:Arial,sans-serif;font-weight:normal;
- border:0;border-radius:0;background:transparent;box-shadow:none;
+menuToggle.onclick=()=>{const open=sideMenu.hidden;setMenu(open);if(!open)menuToggle.focus();};
+menuOverlay.onclick=()=>{closeMenu();menuToggle.focus();};
+document.addEventListener('keydown',event=>{
+ if(sideMenu.hidden||dialog.open)return;
+ if(event.key==='Escape'){closeMenu();menuToggle.focus();}
+ if(event.key==='Tab'){
+  const items=[menuToggle,...sideMenu.querySelectorAll('button:not(:disabled),input,textarea,select,a[href]')];
+  const first=items[0],last=items.at(-1);
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+ }
+});
+$('#close-dialog').onclick=()=>dialog.close();
+$('#write').onclick=()=>modal('Ispovest',contentForm('confession',{},()=>{}));
+$('#sidebar-compose-open').onclick=()=>{closeMenu();modal('Ispovest',contentForm('confession',{},()=>{}));};
+$('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledaču. Brisanje podataka pregledača može značiti gubitak privatnih lista i istorije. Nema javnih profila. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
+$('#footer-privacy').onclick=()=>$('#privacy').click();
+$('#rules').onclick=()=>modal('Pravila zajednice',node('p','', 'Piši bez vređanja, uznemiravanja, pretnji i spama. Slike i linkovi nisu dozvoljeni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj. Čitanje, objavljivanje ispovesti, komentari, odgovori i glasanje su besplatni. Ispovesti čekaju red i objavljuje se najviše jedna na sat.'));
+if(isLocal)$('#preview').textContent='Lokalni test · bez veze sa živim sajtom';
+else if(window.ISPOVESTI_CONFIG?.mode==='live-test')$('#preview').textContent='TEST · prava baza, odvojeni probni podaci';
+else if(!isPreview)$('#preview').hidden=true;
+function metadata(item){const div=node('div','story-meta');const author=String(item.nickname||'').trim();if(author)div.append(node('span','author',author));const t=node('time','',date(item.published_at||item.created_at));t.dateTime=item.published_at||item.created_at||'';div.append(t);return div;}
+function contentForm(kind,extra,done,onBack){
+ const form=node('form',kind==='confession'?'form':'form discussion-form'),label=node('label','',kind==='confession'?'Ispovest':'Tvoje reči'),text=node('textarea');text.addEventListener('focus',()=>prepareSubmission(kind,form));text.addEventListener('input',()=>{prepareSubmission(kind,form);if(kind==='confession'){text.style.height='auto';text.style.height=Math.max(30,text.scrollHeight)+'px';}});text.required=true;text.maxLength=kind==='confession'?10000:2000;text.classList.toggle('discussion-textarea',kind!=='confession');text.placeholder=kind==='confession'?'Napiši ono što želiš da podeliš...':kind==='comment'?'':'Napiši odgovor...';label.append(text);
+ const nickLabel=node('label','','Potpis'),nick=node('input');nick.maxLength=40;nick.autocomplete='off';nickLabel.append(nick);
+ const status=node('p','hint'),send=node('button',kind==='confession'?'primary send-confession':'primary',kind==='confession'?'':'Pošalji');send.type='submit';const sendPrefix=kind==='confession'?node('span','send-prefix','Pošalji'):null;if(kind==='confession')send.append(sendPrefix,node('span','send-rest','ispovest'));
+ const identityRow=node('div','identity-row');identityRow.append(nickLabel,send);
+ const row=node('div','row'),back=onBack?button('← Nazad',()=>onBack(),'discussion-back'):null;if(back)row.append(back);
+ form.append(label,identityRow,...(back?[row]:[]),status);if(kind==='confession'){const syncUnderline=()=>{if(!form.isConnected||!form.getClientRects().length)return;const left=text.getBoundingClientRect().left,right=sendPrefix.getBoundingClientRect().right,width=right-left;if(width>0&&Math.abs(text.getBoundingClientRect().width-width)>0.5)text.style.width=`${width}px`;};requestAnimationFrame(syncUnderline);window.addEventListener('resize',syncUnderline,{passive:true});window.addEventListener('ispovesti:layout-visible',syncUnderline);}
+ let allowDuplicate=false,duplicateButton,sending=false,requestId=null,lastPayload=null;
+ form.onsubmit=async e=>{e.preventDefault();if(sending)return;sending=true;send.disabled=true;if(back)back.disabled=true;text.disabled=true;nick.disabled=true;const submittedAt=performance.now();status.className='hint';status.textContent='Šaljem…';
+  try{
+   const count=[...text.value.trim()].length,min=kind==='confession'?15:1,max=kind==='confession'?5000:1000;
+   if(count<min||count>max)throw new Error(`Tekst mora imati od ${min} do ${max} znakova.`);
+   const payload={kind,body:text.value,nickname:nick.value,...extra,allow_duplicate:allowDuplicate};
+   const fingerprint=JSON.stringify(payload);if(fingerprint!==lastPayload){requestId=crypto.randomUUID();lastPayload=fingerprint;}
+   const r=await request('submit',{...payload,request_id:requestId},null,form);
+   const confirmedAt=performance.now();
+   if(r.duplicate){requestId=null;lastPayload=null;status.textContent='Ovaj tekst si već poslao. Ako želiš, možeš ga poslati ponovo.';if(!duplicateButton){duplicateButton=button('Ipak pošalji',()=>{allowDuplicate=true;form.requestSubmit();});form.append(duplicateButton);}return;}
+   const confirmed=r.item||{id:r.id,body:text.value.trim(),nickname:nick.value.trim()||null,created_at:new Date().toISOString(),parent_id:extra.parent_id||null,has_replies:false};
+   requestId=null;lastPayload=null;status.textContent='';text.value='';nick.value='';allowDuplicate=false;duplicateButton?.remove();duplicateButton=null;
+   if(kind==='confession'){dialog.close();closeMenu();toast('Tvoja ispovest je uspešno poslata. Čeka svoj red za objavljivanje.');}
+   else{done(confirmed,r.context);toast(kind==='reply'?'Tvoj odgovor je poslat.':'Tvoj komentar je poslat.');}
+   requestAnimationFrame(()=>{performance.measure('ispovesti-submit-render',{start:confirmedAt,end:performance.now()});performance.measure('ispovesti-submit-total',{start:submittedAt,end:performance.now()});
+    const timings={};for(const name of ['session','captcha','network','render','total']){const measure=performance.getEntriesByName('ispovesti-submit-'+name).at(-1);if(measure)timings[name]=Math.round(measure.duration);}
+    form.dataset.submissionTiming=JSON.stringify(timings);
+    for(const name of ['session','captcha','network','render','total'])performance.clearMeasures('ispovesti-submit-'+name);});
+  }catch(err){status.textContent=err.message;status.className='hint error';}finally{sending=false;send.disabled=false;if(back)back.disabled=false;text.disabled=false;nick.disabled=false;}
+ };
+ text.addEventListener('input',()=>{allowDuplicate=false;duplicateButton?.remove();duplicateButton=null;});
+ return form;
 }
-.story-actions>.action.report,.comment-actions>.action.comment-report{
- flex:0 0 auto;margin:0 0 0 auto;color:var(--gold);background:transparent;
- border:0;border-radius:0;box-shadow:none;position:static;font-size:13px;
+function pulseHeart(b){if(b.getAttribute('aria-pressed')==='true'&&!matchMedia('(prefers-reduced-motion: reduce)').matches)b.animate([{transform:'scale(1)'},{transform:'scale(1.14)'},{transform:'scale(1)'}],{duration:200,easing:'ease-out'});}
+function heartStyleKey(kind,id){return 'ispovesti:heart-style:'+kind+':'+String(id);}
+function applyHeartStyle(btn,kind,id,selected){
+ const key=heartStyleKey(kind,id);
+ if(!selected){delete btn.dataset.heartStyle;try{localStorage.removeItem(key);}catch{}return;}
+ let style=0;
+ try{style=Number(localStorage.getItem(key));}catch{}
+ if(!Number.isInteger(style)||style<1||style>41){style=Math.random()<0.01?41:Math.floor(Math.random()*40)+1;try{localStorage.setItem(key,String(style));}catch{}}
+ btn.dataset.heartStyle=String(style);
 }
-.story-actions>.action.report.reported,.comment-actions>.action.comment-report.reported{color:#ed5555}
-.story-actions>.action-spacer,.comment-actions>.action-spacer{flex:1 1 auto;min-width:4px;height:1px;background:transparent;border:0;padding:0;margin:0}
-
-/* Inline report menu: gold and ivory highlights with readable dark text. */
-.report-menu{position:absolute;right:0;bottom:calc(100% + 5px);z-index:20;display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:124px;max-width:min(92vw,360px);padding:8px 12px;border:0;border-radius:8px;background:radial-gradient(ellipse at 14% 22%,rgba(255,248,218,.96) 0 7%,transparent 26%),radial-gradient(ellipse at 84% 76%,rgba(214,177,94,.9) 0 8%,transparent 31%),linear-gradient(118deg,#d9c58f 0%,#fff9e9 28%,#b99143 53%,#f6edda 78%,#c5a35c 100%);box-shadow:0 8px 22px rgba(0,0,0,.42);color:#17130a}
-.report-option,.report-more,.report-send{flex:0 0 auto;margin:0;padding:5px 3px;border:0;border-radius:0;background:transparent;color:#241b0a;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:none}
-.report-option:hover,.report-more:hover,.report-send:hover{background:transparent;color:#000}
-.report-more{font-size:17px;letter-spacing:2px}.report-custom{display:flex;align-items:center;gap:8px;min-width:0}.report-custom[hidden]{display:none}
-.report-custom textarea{width:min(34vw,150px);min-width:70px;min-height:28px;max-height:70px;resize:vertical;margin:0;padding:5px 2px;border:0;border-bottom:1px solid #6d5420;border-radius:0;background:transparent;color:#17130a;font:inherit;font-size:12px;outline:0}
-.report-custom textarea::placeholder{color:#493a1b;opacity:.8}.report-custom textarea:focus{border-bottom-color:#17130a;outline:0}.report-send{font-size:11px}
-
-
-/* Nickname field and submit action share one row; the submit button sits to the right of the gold name underline. */
-.form .identity-row{display:flex;align-items:flex-end;gap:12px;margin-top:5px;min-width:0}
-.form .identity-row>label{flex:0 1 45vw;width:45vw;max-width:45vw;min-width:0;margin:0}
-.form .identity-row input{box-sizing:border-box;width:92.857142857%;max-width:100%;min-height:18px;height:18px;margin-top:0;padding:0 2px;line-height:14px}
-.form .identity-row>button{flex:0 0 auto;width:auto;margin:0 0 2px;white-space:nowrap}
-.form .identity-row>button.send-confession{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.1;white-space:normal}
-
-
-
-/* Compact entries on the private My Comments page only. */
-.my-comment-entry{padding:5px 0;margin-bottom:3px}
-.my-comment-entry .story-meta{margin:0 0 2px}
-.my-comment-entry>.body-text{margin:0 0 3px}
-.my-comment-entry>.open-confession{display:inline-block;width:auto;margin:0;padding:2px 0;line-height:1.35}
-
-/* Random saved-heart styles, persisted per visitor and confession in the preview. */
-.story-actions>.action.favorite.selected{color:var(--heart-color,var(--gold));text-shadow:var(--heart-glow,0 0 7px rgba(244,217,143,.62))}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="1"]{--heart-color:#fff0a8;--heart-glow:0 0 4px rgba(255,232,153,0.72),0 0 12px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="2"]{--heart-color:#ffe58a;--heart-glow:0 0 6px rgba(255,232,153,0.72),0 0 12px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="3"]{--heart-color:#ffda68;--heart-glow:0 0 7px rgba(255,226,130,.95),0 0 23px rgba(255,207,76,.78),0 0 30px rgba(255,196,45,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="4"]{--heart-color:#ffedc2;--heart-glow:0 0 10px rgba(255,232,153,0.72),0 0 12px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="5"]{--heart-color:#f8e79a;--heart-glow:0 0 4px rgba(255,232,153,0.79),0 0 14px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="6"]{--heart-color:#f6dc83;--heart-glow:0 0 6px rgba(255,232,153,0.79),0 0 14px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="7"]{--heart-color:#f4d16a;--heart-glow:0 0 8px rgba(255,232,153,0.79),0 0 14px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="8"]{--heart-color:#faedc8;--heart-glow:0 0 10px rgba(255,232,153,0.79),0 0 14px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="9"]{--heart-color:#ffefb8;--heart-glow:0 0 4px rgba(255,232,153,0.86),0 0 16px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="10"]{--heart-color:#ffe9a3;--heart-glow:0 0 6px rgba(255,232,153,0.86),0 0 16px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="11"]{--heart-color:#ffdf87;--heart-glow:0 0 8px rgba(255,232,153,0.86),0 0 16px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="12"]{--heart-color:#fff3d1;--heart-glow:0 0 10px rgba(255,232,153,0.86),0 0 16px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="13"]{--heart-color:#f2d77d;--heart-glow:0 0 4px rgba(255,232,153,0.72),0 0 18px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="14"]{--heart-color:#efcb65;--heart-glow:0 0 6px rgba(255,232,153,0.72),0 0 18px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="15"]{--heart-color:#e9bd4e;--heart-glow:0 0 8px rgba(255,232,153,0.72),0 0 18px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="16"]{--heart-color:#f7e4a9;--heart-glow:0 0 10px rgba(255,232,153,0.72),0 0 18px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="17"]{--heart-color:#ffdf78;--heart-glow:0 0 4px rgba(255,232,153,0.79),0 0 20px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="18"]{--heart-color:#ffd45f;--heart-glow:0 0 6px rgba(255,232,153,0.79),0 0 20px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="19"]{--heart-color:#f8c94b;--heart-glow:0 0 8px rgba(255,232,153,0.79),0 0 20px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="20"]{--heart-color:#ffe9a1;--heart-glow:0 0 10px rgba(255,232,153,0.79),0 0 20px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="21"]{--heart-color:#fff5c7;--heart-glow:0 0 6px rgba(255,232,153,1.00),0 0 22px rgba(255,205,70,0.94),0 0 34px rgba(255,184,30,.72)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="22"]{--heart-color:#ffd95a;--heart-glow:0 0 9px rgba(255,232,153,1.00),0 0 22px rgba(255,205,70,0.94),0 0 34px rgba(255,184,30,.72)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="23"]{--heart-color:#f5c34c;--heart-glow:0 0 12px rgba(255,232,153,1.00),0 0 22px rgba(255,205,70,0.94),0 0 34px rgba(255,184,30,.72)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="24"]{--heart-color:#fff0b0;--heart-glow:0 0 15px rgba(255,232,153,1.00),0 0 22px rgba(255,205,70,0.94),0 0 34px rgba(255,184,30,.72)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="25"]{--heart-color:#e9ca70;--heart-glow:0 0 4px rgba(255,232,153,0.72),0 0 24px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="26"]{--heart-color:#e4bd58;--heart-glow:0 0 6px rgba(255,232,153,0.72),0 0 24px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="27"]{--heart-color:#dbae43;--heart-glow:0 0 8px rgba(255,232,153,0.72),0 0 24px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="28"]{--heart-color:#f1d995;--heart-glow:0 0 10px rgba(255,232,153,0.72),0 0 24px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="29"]{--heart-color:#f9e9b1;--heart-glow:0 0 4px rgba(255,232,153,0.79),0 0 26px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="30"]{--heart-color:#f6df98;--heart-glow:0 0 6px rgba(255,232,153,0.79),0 0 26px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="31"]{--heart-color:#f2d47c;--heart-glow:0 0 8px rgba(255,232,153,0.79),0 0 26px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="32"]{--heart-color:#fff0c9;--heart-glow:0 0 10px rgba(255,232,153,0.79),0 0 26px rgba(255,205,70,0.73),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="33"]{--heart-color:#f0d27b;--heart-glow:0 0 4px rgba(255,232,153,0.86),0 0 28px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="34"]{--heart-color:#ebc45e;--heart-glow:0 0 6px rgba(255,232,153,0.86),0 0 28px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="35"]{--heart-color:#e1b448;--heart-glow:0 0 8px rgba(255,232,153,0.86),0 0 28px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="36"]{--heart-color:#f5dfa0;--heart-glow:0 0 10px rgba(255,232,153,0.86),0 0 28px rgba(255,205,70,0.80),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="37"]{--heart-color:#fff4c7;--heart-glow:0 0 4px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="38"]{--heart-color:#ffebaa;--heart-glow:0 0 6px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="39"]{--heart-color:#ffe18b;--heart-glow:0 0 8px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="40"]{--heart-color:#fff7da;--heart-glow:0 0 10px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
-:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="41"]{color:transparent;background-image:linear-gradient(115deg,#ff3030 0%,#ff9d24 17%,#ffe34d 33%,#38c85a 50%,#2788ff 67%,#7650db 83%,#ef55c8 100%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 5px rgba(255,255,255,.72)) drop-shadow(0 0 10px rgba(125,91,255,.5))}
-
-/* Small-screen layout: keep discussion controls and composers inside the viewport. */
-@media(max-width:600px){
- body{padding-left:10px;padding-right:10px}
- #main,main,.story,.comment,.comment-card,.inline-thread,.thread-replies{min-width:0;max-width:100%}
- .story-actions,.comment-actions{gap:5px;flex-wrap:wrap}
- .vote-controls{gap:8px}
- 
- .form.discussion-form{width:calc(min(86vw,310px) - 18px)}
- .form label textarea:not(.discussion-textarea),
- .form label textarea.discussion-textarea{width:100%;max-width:100%}
- .form .identity-row{gap:8px}
- .form .identity-row>label{flex:1 1 0;width:auto;max-width:none}
- .form .identity-row input{box-sizing:border-box;width:92.857142857%;min-height:28px;height:28px}
- .form .identity-row>button{max-width:42%;white-space:normal}
- .form .row{flex-wrap:wrap}
- .daily-tab{font-size:13px}
- dialog{padding:16px}
+function voteControls(item){
+ const row=node('div','vote-controls');const buttons=[];let current={likes:0,dislikes:0,my_vote:null,can_change:true};
+ for(const [value,symbol] of [[1,'👍'],[-1,'👎']]){
+  const b=button(symbol,async btn=>{
+   if(btn.dataset.voteLocked==='true'||buttons.some(x=>x.dataset.pending==='true'))return;
+   const previous={...current},next={...current};
+   next.likes=Math.max(0,Number(current.likes||0)-(current.my_vote===1?1:0)+(value===1?1:0));
+   next.dislikes=Math.max(0,Number(current.dislikes||0)-(current.my_vote===-1?1:0)+(value===-1?1:0));
+   next.my_vote=value;render(next);
+   btn.dataset.pending='true';btn.disabled=true;
+   try{render(await request('vote',{id:item.id,value}));}
+   catch(error){render(previous);throw error;}
+   finally{delete btn.dataset.pending;btn.disabled=false;}
+  });
+  buttons.push(b);
+ }
+ function render(r){
+  current={...current,...r};
+  const hasVote=current.my_vote===1||current.my_vote===-1;
+  row.classList.toggle('has-vote',hasVote);
+  buttons.forEach((b,i)=>{
+   const value=i===0?1:-1;
+   b.classList.toggle('selected',current.my_vote===value);
+   b.dataset.voteLocked=String(current.can_change===false);
+   b.setAttribute('aria-disabled',String(current.can_change===false));
+   b.setAttribute('aria-pressed',String(current.my_vote===value));
+   b.setAttribute('aria-label',i===0?'Pozitivan glas':'Negativan glas');
+   b.textContent=(i===0?'👍 ':'👎 ')+String(i===0?(current.likes??0):(current.dislikes??0));
+  });
+ }
+ row.append(...buttons);render(current);
+ watchState(item.id,'vote',row,render);
+ return row;
 }
+function reportStorageKey(item,kind){return 'ispovesti:reported:'+kind+':'+String(item.id);}
+function syncReportButton(btn,item,kind){try{const done=localStorage.getItem(reportStorageKey(item,kind))==='1';btn.classList.toggle('reported',done);btn.setAttribute('aria-label',done?'Sadržaj je prijavljen':'Prijavi sadržaj');btn.title=done?'Već si prijavio ovaj sadržaj':'Prijavi sadržaj';}catch{}}
+let activeReportMenu=null;
+function closeReportMenu(){if(!activeReportMenu)return;activeReportMenu.panel.remove();activeReportMenu.button.setAttribute('aria-expanded','false');activeReportMenu=null;}
+document.addEventListener('pointerdown',event=>{if(activeReportMenu&&!activeReportMenu.panel.contains(event.target)&&!activeReportMenu.button.contains(event.target))closeReportMenu();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeReportMenu)closeReportMenu();});
+function report(item,reportButton){
+ if(reportButton?.classList.contains('reported')){toast('Već si prijavio ovaj sadržaj.');return;}
+ if(activeReportMenu?.button===reportButton){closeReportMenu();return;}closeReportMenu();
+ const row=reportButton.closest('.story-actions,.comment-actions'),panel=node('div','report-menu');
+ panel.setAttribute('role','group');panel.setAttribute('aria-label','Razlog prijave');
+ const kind=reportButton.classList.contains('comment-report')?'comment':'confession';let sending=false;
+ async function sendReport(reason,details=''){
+  if(sending)return;sending=true;panel.querySelectorAll('button,textarea').forEach(el=>el.disabled=true);
+  try{await request('report',{id:item.id,reason,details:details.trim()});try{localStorage.setItem(reportStorageKey(item,kind),'1');}catch{}syncReportButton(reportButton,item,kind);closeReportMenu();toast('Prijava je zabeležena. Hvala.');}
+  catch(err){toast(err.message);panel.querySelectorAll('button,textarea').forEach(el=>el.disabled=false);sending=false;}
+ }
+ const hate=button('Govor mržnje',()=>sendReport('hate_speech'),'report-option');
+ const spam=button('Spam',()=>sendReport('spam'),'report-option');
+ const more=button('···',()=>{const custom=panel.querySelector('.report-custom');custom.hidden=!custom.hidden;if(!custom.hidden)custom.querySelector('textarea').focus();},'report-more');
+ const custom=node('div','report-custom');custom.hidden=true;
+ const detail=node('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni razlog prijave');
+ const send=button('Pošalji',()=>sendReport('other',detail.value),'report-send');
+ custom.append(detail,send);panel.append(hate,spam,more,custom);row.append(panel);reportButton.setAttribute('aria-expanded','true');activeReportMenu={panel,button:reportButton};
+}
+async function commentBranch(confessionId,parentId,container,refreshContext,confirmed,heading){
+ const allItems=[];let expanded=false;
+ const list=node('div','comment-list'),more=button('↓',showMore,'load-more');
+ more.setAttribute('aria-label','Prikaži još komentara');more.title='Prikaži još komentara';
+ const composer=!parentId?contentForm('comment',{confession_id:confessionId},async(item,context)=>{allItems.push(item);await renderItems();refreshContext(context).catch(err=>toast(err.message));}):null;
+ container.replaceChildren(...(composer?[composer]:[]),...(heading?[heading]:[]),list,more);
+ function newest(a,b){return Date.parse(b.created_at||b.published_at||0)-Date.parse(a.created_at||a.published_at||0);}
+ function reactionCount(item){return Number(item._reactionCount??item.likes??item.reactions??item.reaction_count??0)||0;}
+ async function renderItems(){
+  const unique=[...new Map(allItems.map(item=>[String(item.id),item])).values()];
+  const ranked=[...unique].sort((a,b)=>reactionCount(b)-reactionCount(a)||newest(a,b));
+  const first=ranked[0]||null,second=ranked[1]||null;
+  const latest=unique.filter(x=>x!==first&&x!==second).sort(newest)[0]||null;
+  const preview=[first,second,latest].filter(Boolean);
+  const ordered=expanded&&first?[first,...unique.filter(x=>x!==first).sort(newest)]:preview;
+  list.replaceChildren(...ordered.map(item=>comment(item,confessionId,refreshContext)));
+  more.hidden=expanded||unique.length<=preview.length;
+ }
+ async function loadCardData(items){
+  const ids=items.map(item=>String(item.id));
+  for(let i=0;i<ids.length;i+=50){
+   try{
+    const data=await request('cards',{ids:ids.slice(i,i+50)});
+    for(const item of items){const vote=data[item.id]?.vote;if(vote)item._reactionCount=Number(vote.likes??vote.reactions??vote.reaction_count??0)||0;}
+   }catch{}
+  }
+ }
+ async function loadRemaining(offset){
+  try{
+   while(true){
+    const r=await request('comments',{confession_id:confessionId,parent_id:parentId,offset});
+    if(!r.items.length)break;
+    allItems.push(...r.items);
+    await loadCardData(r.items);
+    await renderItems();
+    offset+=r.items.length;
+    if(r.items.length<20)break;
+   }
+  }catch(err){toast('Dio komentara nije učitan: '+err.message);}
+ }
+ async function loadAll(){
+  const first=await request('comments',{confession_id:confessionId,parent_id:parentId,offset:0});
+  allItems.push(...first.items);
+  await renderItems();
+  if(first.items.length){
+   void loadCardData(first.items).then(renderItems);
+   if(first.items.length===20)void loadRemaining(20);
+  }
+ }
+ async function showMore(){more.disabled=true;try{expanded=true;await renderItems();}finally{more.disabled=false;}}
+ if(confirmed)allItems.push(confirmed);
+ await loadAll();
+}
+const commentMeta=new Set();let commentMetaTimer;
+function updateCommentMeta(){clearTimeout(commentMetaTimer);commentMetaTimer=setTimeout(async()=>{
+ for(const x of commentMeta)if(!x.wrap.isConnected)commentMeta.delete(x);
+ const ids=[...new Set([...commentMeta].map(x=>String(x.item.id)))];
+ for(let i=0;i<ids.length;i+=50){try{const data=await chatRequest('comment_meta',{ids:ids.slice(i,i+50)});for(const x of commentMeta){const d=data[x.item.id];if(d){x.count.textContent=replyCounterText(d.replies);x.favorite.classList.toggle('selected',d.favorite);x.favorite.setAttribute('aria-pressed',String(d.favorite));x.favorite.textContent=d.favorite?'♥':'♡';applyHeartStyle(x.favorite,'comment',x.item.id,d.favorite);}}}catch(err){toast(err.message);}}
+ },40);}
+function comment(item,confessionId,refreshContext,focusOptions={}){
+ const wrap=node('div','comment'),card=node('div','comment-card');card.append(metadata(item),node('p','body-text',item.body));
+ const row=node('div','comment-actions');row.append(voteControls(item));
+ const favorite=button('♡',async b=>{b.disabled=true;const previous=b.getAttribute('aria-pressed')==='true',enabled=!previous;const set=value=>{b.setAttribute('aria-pressed',String(value));b.classList.toggle('selected',value);b.textContent=value?'♥':'♡';applyHeartStyle(b,'comment',item.id,value);};set(enabled);pulseHeart(b);try{await chatRequest('comment_favorite',{id:item.id,enabled});}catch(error){set(previous);throw error;}finally{b.disabled=false;}},'comment-heart');favorite.setAttribute('aria-label','Sačuvaj komentar');row.append(favorite);
+ const reportButton=button('!',()=>report(item,reportButton),'action comment-report');reportButton.setAttribute('aria-label','Prijavi komentar');reportButton.title='Prijavi komentar';syncReportButton(reportButton,item,'comment');
+ const count=node('span','reply-count',''),arrow=node('span','reply-triangle');arrow.setAttribute('aria-hidden','true');
+ const repliesButton=button('',()=>focusOptions.close?focusOptions.close():focusOptions.reply?focusOptions.reply(item):openReplies(item,confessionId,refreshContext,repliesButton),'reply-toggle');
+ repliesButton.setAttribute('aria-label',focusOptions.close?'Zatvori odgovore':'Otvori ili napiši odgovore');repliesButton.append(count,arrow);if(!focusOptions.readOnly)row.append(repliesButton);row.append(node('span','action-spacer'),reportButton);wrap.append(card,row);
+ commentMeta.add({item,wrap,count,favorite});updateCommentMeta();return wrap;
+}
+const inlineThreads=new WeakMap();let activeInlineThread=null;
+document.addEventListener('click',event=>{
+ if(!activeInlineThread||event.target.closest('.inline-thread, .thread-active-comment'))return;
+ activeInlineThread.close();
+});
+async function openReplies(item,confessionId,refreshContext,trigger){
+ const existing=inlineThreads.get(trigger);if(existing){existing.close();return;}
+ activeInlineThread?.close(false);
+ const startedAt=performance.now(),top=window.scrollY,thread=node('section','inline-thread'),root=trigger.closest('.comment'),activeStory=trigger.closest('.story');thread.setAttribute('aria-label','Odgovori na komentar');
+ const replies=node('div','thread-replies'),formBox=node('div'),notice=node('p','hint','Učitavam odgovore…');
+ let sent=new Set(),closed=false;const replyNodes=new Map();
+ const close=(restore=true)=>{if(closed)return;closed=true;thread.remove();inlineThreads.delete(trigger);activeInlineThread=null;root.classList.remove('thread-active-comment');activeStory?.classList.remove('thread-active-story');document.body.classList.remove('inline-thread-open');trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-label','Otvori ili napiši odgovore');if(restore){window.scrollTo(0,top);trigger.focus({preventScroll:true});}updateCommentMeta();};
+ activeInlineThread={close};root.classList.add('thread-active-comment');activeStory?.classList.add('thread-active-story');document.body.classList.add('inline-thread-open');inlineThreads.set(trigger,{close});trigger.setAttribute('aria-expanded','true');trigger.setAttribute('aria-label','Zatvori odgovore');thread.append(replies,notice,formBox);trigger.closest('.comment').append(thread);
+ formBox.append(contentForm('reply',{confession_id:confessionId,parent_id:item.id},(created,context)=>{
+  if(!sent.has(String(created.id))){sent.add(String(created.id));const entry=comment(created,confessionId,refreshContext,{readOnly:true});entry.dataset.replyTime=created.created_at;entry.dataset.replyId=String(created.id);replyNodes.set(String(created.id),entry);replies.append(entry);}updateCommentMeta();refreshContext(context).catch(e=>toast(e.message));
+ },close));
+ function renderBatch(items){if(closed||!thread.isConnected)return;if(items.length&&!thread.dataset.firstReplyMs)thread.dataset.firstReplyMs=String(Math.round(performance.now()-startedAt));
+  for(const r of items){const id=String(r.id);if(!replyNodes.has(id)){sent.add(id);const entry=comment(r,confessionId,refreshContext,{readOnly:true});entry.dataset.replyTime=r.created_at;entry.dataset.replyId=id;replyNodes.set(id,entry);}}for(const entry of [...replyNodes.values()].sort((a,b)=>Date.parse(a.dataset.replyTime)-Date.parse(b.dataset.replyTime)||Number(a.dataset.replyId)-Number(b.dataset.replyId)))replies.append(entry);notice.textContent='Učitavam preostale odgovore…';updateCommentMeta();
+ }
+ try{await collectReplies(request,confessionId,item.id,renderBatch,()=>closed||!thread.isConnected);if(closed)return;thread.dataset.loadedMs=String(Math.round(performance.now()-startedAt));notice.remove();}catch(e){if(!closed)notice.textContent=e.message;}
+}
+const commentWarmQueue=[];const commentWarmIds=new Set();let commentWarmActive=0;
+function warmComments(confessionId){
+ const id=String(confessionId);if(commentWarmIds.has(id))return;commentWarmIds.add(id);commentWarmQueue.push(id);runCommentWarmQueue();
+}
+function runCommentWarmQueue(){
+ while(commentWarmActive<3&&commentWarmQueue.length){
+  const id=commentWarmQueue.shift();commentWarmActive++;
+  request('comments',{confession_id:id,parent_id:null,offset:0}).catch(()=>{}).finally(()=>{commentWarmActive--;runCommentWarmQueue();});
+ }
+}
+const commentWarmObserver='IntersectionObserver' in window?new IntersectionObserver(entries=>{
+ for(const entry of entries)if(entry.isIntersecting){commentWarmObserver.unobserve(entry.target);warmComments(entry.target.dataset.confessionId);}
+},{rootMargin:'700px 0px',threshold:0}):null;
+let allFeedPreloading=false;
+async function preloadAllConfessions(){
+ if(allFeedPreloading||!feedSorts.has(currentView))return;
+ allFeedPreloading=true;const view=currentView;
+ try{
+  // Continue fetching every page in the background; each page is rendered as soon as it arrives.
+  while(view===currentView&&!$('#more').hidden){
+   const before=offset;await load();
+   if(offset===before)break;
+  }
+ }finally{allFeedPreloading=false;}
+}
+function story(item,options={}){
+ const article=node('article','story');article.dataset.confessionId=String(item.id);if(commentWarmObserver)commentWarmObserver.observe(article);else warmComments(item.id);if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
+ const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
+ const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
+ if(!options.detail)article.addEventListener('click',event=>{
+  if(event.target.closest('.share-story-corner,.comments-area,button,a,input,textarea,select,label'))return;
+  navigateToConfession(item.id);
+ },true);
+ const favorite=button('♡',async b=>{const previous=b.getAttribute('aria-pressed')==='true',enabled=!previous;setFavorite(enabled);pulseHeart(b);try{const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);}catch(error){setFavorite(previous);throw error;}},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
+ function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);applyHeartStyle(favorite,'confession',item.id,value);}
+ async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
+ watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);});
+ const shareButton=button('⧉',async()=>{
+  persistFeedState();
+  const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('ispovest',String(item.id));
+  try{await navigator.clipboard.writeText(url.toString());toast('Direktni link ispovesti je kopiran.');}
+  catch{
+   const field=node('textarea');field.value=url.toString();field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.append(field);field.select();
+   const copied=document.execCommand('copy');field.remove();if(!copied)throw new Error('Kopiranje nije uspelo. Pokušaj ponovo.');toast('Direktni link ispovesti je kopiran.');
+  }
+ },'action share-story-corner');shareButton.setAttribute('aria-label','Kopiraj direktni link do ispovesti');shareButton.setAttribute('title','Kopiraj link');
+ const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,node('span','action-spacer'),reportButton);article.append(shareButton,row,commentsArea);
+ if(options.detail){commentsArea.hidden=false;void commentBranch(item.id,null,commentsArea,refreshContext,null,comments).catch(err=>{commentsArea.textContent=err.message;});}
+ // A story is marked read after a visible part has remained visible for 1.5 seconds.
+ let readTimer,recorded=false;
+ const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!recorded){readTimer=setTimeout(()=>{recorded=true;request('read',{id:item.id}).catch(()=>{});observer.disconnect();},1500);}else clearTimeout(readTimer);},{threshold:.1});observer.observe(article);
+ return article;
+}
+function dailyWinner(item,kind){
+ const section=node('section','daily-winner');
+ section.append(node('h3','daily-day-heading',dailyDayLabel(item.day)));
+ if(kind==='confession'){
+  section.append(story(item));
+ }else{
+  const card=node('article','story daily-comment-story');
+  card.append(comment(item,item.confession_id,async()=>{},{readOnly:true}));
+  card.append(button('Pogledaj ispovest',()=>navigateToConfession(item.confession_id),'text-button daily-context'));
+  section.append(card);
+ }
+ return section;
+}
+function selectDailyView(kind){
+ currentView=kind==='confession'?'daily_confessions':'daily_comments';
+ closeMenu();
+ document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));
+ for(const [key,tab] of Object.entries(dailyTabs)){
+  const active=key===kind;
+  tab.classList.toggle('active',active);
+  tab.setAttribute('aria-pressed',String(active));
+ }
+ $('#feed-subtitle').hidden=false;
+ $('#feed-subtitle').textContent=kind==='confession'
+  ?'Najlajkovanija ispovest za svaki od poslednjih sedam dana.'
+  :'Najlajkovaniji glavni komentar za svaki od poslednjih sedam dana.';
+ load(true);
+}
+dailyTabs.confession.onclick=()=>selectDailyView('confession');
+dailyTabs.comment.onclick=()=>selectDailyView('comment');
+async function load(reset=false){
+ if(busy&&!reset)return;busy=true;const version=reset?++generation:generation;
+ if(reset){offset=0;feed.replaceChildren();}
+ $('#more').disabled=true;
+ try{
+  const dailyKind=currentView==='daily_confessions'?'confession':currentView==='daily_comments'?'comment':null;
+  const isList=['favorites','recently_read','my_comments'].includes(currentView);
+  const result=dailyKind
+   ?await request('daily_highlights',{kind:dailyKind})
+   :await request(isList?'list':'feed',isList?{list:currentView,offset}:{sort:currentView,offset,...(currentView==='random'?{seed:randomFeedSeed}:{})});
+  if(version!==generation)return;
+  if(reset)feed.replaceChildren();
+  if(dailyKind){
+   for(const item of result.items)feed.append(dailyWinner(item,dailyKind));
+   offset=result.items.length;
+   $('#more').hidden=true;
+  }else{
+   for(const item of result.items){if(currentView==='my_comments'){const entry=node('article','story my-comment-entry');entry.append(metadata(item),node('p','body-text',item.body));entry.append(button('Otvori ispovest',()=>navigateToConfession(item.confession_id),'action open-confession'));feed.append(entry);}else feed.append(story(item));}
+   offset+=result.items.length;
+   $('#more').hidden=result.items.length<20;
+  }
+  if(!offset)feed.append(node('p','empty',dailyKind?(dailyKind==='confession'?'Još nema ispovesti za dnevni izbor.':'Još nema komentara za dnevni izbor.'):isList?'Ova privatna lista je još prazna.':'Još nema objavljenih ispovesti.'));
+ }catch(err){if(version!==generation)return;if(reset)feed.replaceChildren(node('p','empty error',err.message));else toast(err.message);$('#more').hidden=false;}
+ finally{if(version===generation){busy=false;$('#more').disabled=false;}}
+}
+document.querySelectorAll('[data-feed-sort]').forEach(b=>b.onclick=()=>{
+ currentView=b.dataset.feedSort;
+ if(currentView==='random')randomFeedSeed=crypto.randomUUID();
+ closeMenu();
+ document.querySelectorAll('[data-view]').forEach(n=>n.classList.remove('active'));
+ document.querySelectorAll('[data-feed-sort]').forEach(n=>{
+  const active=n===b;n.classList.toggle('active',active);n.setAttribute('aria-pressed',String(active));
+ });
+ for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}
+ const descriptions={likes:'Ispovesti sa najviše pozitivnih glasova.',dislikes:'Ispovesti sa najviše negativnih glasova.',comments:'Ispovesti sa najviše komentara.',random:'Nasumičan redosled ispovesti.'};
+ $('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=descriptions[currentView];
+ load(true).then(()=>void preloadAllConfessions());
+});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));document.querySelectorAll('[data-feed-sort]').forEach(n=>{n.classList.remove('active');n.setAttribute('aria-pressed','false');});for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mesto.';load(true).then(()=>{if(feedSorts.has(currentView))void preloadAllConfessions();});});
+
+$('#more').onclick=()=>load();
+function navigateToConfession(id){
+ const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('ispovest',String(id));
+ if(url.href===window.location.href)return;
+ persistFeedState();closeMenu();generation++;
+ window.history.pushState({ispovestiDetail:true},'',url);
+ void openDirectConfession(id);
+}
+function navigateToFeed(){
+ if(window.history.state?.ispovestiDetail){window.history.back();return;}
+ const url=new URL(window.location.href);url.searchParams.delete('ispovest');
+ window.history.replaceState(null,'',url.pathname+url.search+url.hash);
+ void initializeFeed();
+}
+async function openDirectConfession(id){
+ const requestVersion=++detailGeneration;
+ try{
+  const result=await request('confession',{id});
+  if(requestVersion!==detailGeneration)return;
+  if(!result?.item)throw new Error('Ova ispovest trenutno nije dostupna.');
+  const back=button('← Nazad na ispovesti',navigateToFeed,'text-button direct-story-back');
+  const detail=story(result.item,{detail:true});detail.classList.add('direct-story');
+  feed.replaceChildren(back,detail);$('#more').hidden=true;$('#feed-subtitle').hidden=true;
+  document.querySelector('.daily-tabs').hidden=true;
+  document.title='Ispovest | Ispovesti.ba';
+ }catch(err){feed.replaceChildren(node('p','empty error',err.message||'Ispovest nije pronađena.'));$('#more').hidden=true;}
+}
+async function initializeFeed(){
+ const directId=new URLSearchParams(location.search).get('ispovest');
+ if(directId){await openDirectConfession(directId);return;}
+ detailGeneration++;
+ document.title='Ispovesti.ba — Reci šta ti je na duši.';
+ document.querySelector('.daily-tabs').hidden=false;
+ $('#feed-subtitle').hidden=false;
+ let saved=null;try{saved=JSON.parse(sessionStorage.getItem(FEED_STATE_KEY)||'null');}catch{}
+ if(saved?.view){
+  currentView=String(saved.view);
+  if(currentView==='random')randomFeedSeed=/^[0-9a-f-]{36}$/i.test(saved.seed||'')?saved.seed:crypto.randomUUID();
+  document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===currentView));
+  document.querySelectorAll('[data-feed-sort]').forEach(b=>{const active=b.dataset.feedSort===currentView;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
+  for(const [key,tab] of Object.entries(dailyTabs)){const active=currentView===(key==='confession'?'daily_confessions':'daily_comments');tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',String(active));}
+ }
+ const descriptions={new:'Svaka priča ima svoje mesto.',popular:'Najpopularnije ispovesti.',likes:'Ispovesti sa najviše pozitivnih glasova.',dislikes:'Ispovesti sa najviše negativnih glasova.',comments:'Ispovesti sa najviše komentara.',random:'Nasumičan redosled ispovesti.',favorites:'Privatno · samo u tvojoj anonimnoj sesiji',recently_read:'Privatno · samo u tvojoj anonimnoj sesiji',my_comments:'Privatno · samo u tvojoj anonimnoj sesiji',daily_confessions:'Najlajkovanija ispovest za svaki od poslednjih sedam dana.',daily_comments:'Najlajkovaniji glavni komentar za svaki od poslednjih sedam dana.'};
+ $('#feed-subtitle').textContent=descriptions[currentView]||'Svaka priča ima svoje mesto.';
+ await load(true);
+ if(saved&&Number.isFinite(Number(saved.offset))&&Number(saved.offset)>offset&&!$('#more').hidden){
+  while(offset<Number(saved.offset)&&!$('#more').hidden){const previous=offset;await load();if(offset===previous)break;}
+ }
+ if(saved&&Number.isFinite(Number(saved.scrollY)))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,Number(saved.scrollY))));
+ if(feedSorts.has(currentView))void preloadAllConfessions();
+}
+window.addEventListener('popstate',()=>{
+ const id=new URLSearchParams(location.search).get('ispovest');
+ if(id)void openDirectConfession(id);
+ else void initializeFeed();
+});
+initializeFeed();
 
 
-/* Compact, borderless vertical feed sorting controls beneath the chat entry. */
-.menu-sort{width:calc(100% - 18px);margin:10px auto 0}
-.menu-sort-label{margin:0 0 5px;color:var(--gold);font-size:12px;line-height:1.3}
-.menu-sort-options{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
-.menu-sort-option{display:flex;align-items:center;justify-content:flex-start;min-width:0;min-height:30px;margin:0;padding:3px 0;border:0;border-radius:0;background:transparent;color:var(--gold);font-size:17px;line-height:1;box-shadow:none}
-.menu-sort-option[data-feed-sort="random"]{font-size:12px;letter-spacing:.02em}
-.menu-sort-option:hover{border:0;background:transparent;color:var(--gold-soft);text-shadow:0 0 6px rgba(255,218,104,.28)}
-.menu-sort-option.active{border:0;background:transparent;color:var(--gold-soft);box-shadow:none;text-shadow:0 0 7px rgba(255,218,104,.55)}
-
-/* Reserved sidebar banner for a future Ispovesti.ba partner. */
-.partner-banner-placeholder{box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:calc(100% - 18px);min-height:88px;margin:14px auto 8px;padding:11px 9px;border:1px solid #d9b765;border-radius:7px;background:linear-gradient(112deg,#6e4b1e 0%,#b88b3e 16%,#f5dfa0 34%,#c79a49 52%,#fff0bd 67%,#9b702c 84%,#e6c779 100%);color:#211706;text-align:center;text-decoration:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.62),inset 0 -3px 7px rgba(76,45,7,.3),0 4px 14px rgba(0,0,0,.4);position:relative;overflow:hidden}
-.partner-banner-placeholder::before{content:"";position:absolute;inset:4px;border:1px solid rgba(255,248,220,.48);border-radius:4px;pointer-events:none}
-.partner-banner-kicker{font-size:9px;font-weight:900;letter-spacing:.24em;color:#4b3513}
-.partner-banner-title{font-size:16px;font-weight:900;line-height:1.15;text-shadow:0 1px 0 rgba(255,255,255,.45)}
-.partner-banner-note{font-size:9px;font-weight:700;letter-spacing:.03em;color:#493516}
-
-
-/* Dedicated confession view: retain the existing dark-and-gold atmosphere without adding a frame. */
-.direct-story{margin-top:2px}
-.direct-story-back{display:inline-block;margin:0 0 12px;padding:0;border:0;background:transparent;color:var(--gold);font-size:13px;font-weight:700;box-shadow:none}
-.direct-story-back:hover{background:transparent;color:var(--gold-soft)}
+/* Darker anonymous atmosphere only while a single confession is open. */
+body.confession-detail-open{background:#030303}
+body.confession-detail-open::before{filter:brightness(.58);opacity:1}
+body.confession-detail-open::after{opacity:.24}
