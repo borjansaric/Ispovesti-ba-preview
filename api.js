@@ -1,8 +1,26 @@
-import { captchaToken, prepareCaptcha } from './captcha.js?v=room2';
+import { captchaToken, prepareCaptcha, releaseCaptcha } from './captcha.js?v=room2';
 const config = window.ISPOVESTI_CONFIG || {};
 export const isPreview = config.mode === 'preview';
 export const isLocal = config.mode === 'local';
-export function prepareSubmission(kind,host){if(!isPreview&&!isLocal){prepareCaptcha({kind,host});void session().catch(()=>{});}}
+let captchaClearancePromise;
+async function ensureCaptchaClearance(host=document.body){
+ if(isPreview||isLocal)return true;
+ if(!captchaClearancePromise)captchaClearancePromise=(async()=>{
+  const current=await networkRequest('captcha_init',{});
+  if(current.verified===true)return true;
+  if(current.required!==true)throw new Error('Sigurnosna provjera nije dostupna. Pokušaj kasnije.');
+  prepareCaptcha({kind:'entry',host,action:'app_entry'});
+  try{
+   const token=await captchaToken({kind:'entry',host,action:'app_entry'});
+   const result=await networkRequest('captcha_init',{captcha_token:token});
+   if(result.verified!==true)throw new Error('Sigurnosna provjera nije potvrđena. Pokušaj ponovo.');
+   return true;
+  }finally{releaseCaptcha(host);}
+ })().finally(()=>{captchaClearancePromise=null;});
+ return captchaClearancePromise;
+}
+export function initializeSecurity(){return ensureCaptchaClearance(document.body);}
+export function prepareSubmission(){if(!isPreview&&!isLocal)void ensureCaptchaClearance(document.body).catch(()=>{});}
 let client, sessionPromise;
 export function authClient(admin = false) {
   if (isPreview) throw new Error('Administracija je dostupna samo na povezanom testnom ili živom okruženju.');
@@ -83,9 +101,10 @@ export async function request(action, args = {}, adminSession = null, captchaHos
 async function networkRequest(action, args = {}, adminSession = null, captchaHost = null) {
 
   if (isPreview) return previewRequest(action, args);
+  if(action==='submit')await ensureCaptchaClearance(captchaHost||document.body);
   const headers = { apikey: config.publishableKey, 'Content-Type': 'application/json' };
   const needsSession = !['feed', 'comments', 'confession', 'daily_highlights', 'captcha_config', 'activate_admin'].includes(action);
-  const authAt=performance.now(),captchaAt=performance.now();
+  const authAt=performance.now();
   const sessionTask = needsSession
     ? (adminSession ? Promise.resolve(adminSession) : session()).then(s => {
         if(action==='submit')performance.measure('ispovesti-submit-session',{start:authAt,end:performance.now()});
@@ -93,13 +112,7 @@ async function networkRequest(action, args = {}, adminSession = null, captchaHos
         return s;
       })
     : Promise.resolve(null);
-  const captchaTask = action==='submit'
-    ? captchaToken({kind:args.kind,host:captchaHost}).then(token => {
-        args={...args,captcha_token:token};
-        performance.measure('ispovesti-submit-captcha',{start:captchaAt,end:performance.now()});
-      })
-    : Promise.resolve();
-  await Promise.all([sessionTask,captchaTask]);
+  await sessionTask;
   const networkAt=performance.now();
   const response = await fetch(config.supabaseUrl + '/functions/v1/community-test-api?forceFunctionRegion=eu-central-1', {
     method: 'POST', headers, body: JSON.stringify({ action, args }), signal: AbortSignal.timeout(20000), cache: 'no-store',
