@@ -188,3 +188,9 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .direct-story{margin-top:2px}
 .direct-story-back{display:inline-block;margin:0 0 12px;padding:0;border:0;background:transparent;color:var(--gold);font-size:13px;font-weight:700;box-shadow:none}
 .direct-story-back:hover{background:transparent;color:var(--gold-soft)}
+
+
+/* Darker anonymous atmosphere only while a single confession is open. */
+body.confession-detail-open{background:#030303}
+body.confession-detail-open::before{filter:brightness(.58);opacity:1}
+body.confession-detail-open::after{opacity:.24}

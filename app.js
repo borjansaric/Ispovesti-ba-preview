@@ -407,14 +407,16 @@ async function openDirectConfession(id){
   if(!result?.item)throw new Error('Ova ispovest trenutno nije dostupna.');
   const back=button('← Nazad na ispovesti',navigateToFeed,'text-button direct-story-back');
   const detail=story(result.item,{detail:true});detail.classList.add('direct-story');
+  document.body.classList.add('confession-detail-open');
   feed.replaceChildren(back,detail);$('#more').hidden=true;$('#feed-subtitle').hidden=true;
   document.querySelector('.daily-tabs').hidden=true;
   document.title='Ispovest | Ispovesti.ba';
- }catch(err){feed.replaceChildren(node('p','empty error',err.message||'Ispovest nije pronađena.'));$('#more').hidden=true;}
+ }catch(err){document.body.classList.remove('confession-detail-open');feed.replaceChildren(node('p','empty error',err.message||'Ispovest nije pronađena.'));$('#more').hidden=true;}
 }
 async function initializeFeed(){
  const directId=new URLSearchParams(location.search).get('ispovest');
  if(directId){await openDirectConfession(directId);return;}
+ document.body.classList.remove('confession-detail-open');
  detailGeneration++;
  document.title='Ispovesti.ba — Reci šta ti je na duši.';
  document.querySelector('.daily-tabs').hidden=false;
