@@ -286,17 +286,13 @@ async function preloadAllConfessions(){
   }
  }finally{allFeedPreloading=false;}
 }
-function story(item){
+function story(item,options={}){
  const article=node('article','story');article.dataset.confessionId=String(item.id);if(commentWarmObserver)commentWarmObserver.observe(article);else warmComments(item.id);if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
  const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
  const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
- let commentsLoaded=false,commentsLoading=false;
- async function toggleComments(){if(commentsLoading)return;commentsArea.hidden=!commentsArea.hidden;if(commentsArea.hidden||commentsLoaded)return;commentsLoading=true;try{await commentBranch(item.id,null,commentsList,refreshContext,null,comments);commentsLoaded=true;}catch(err){commentsList.textContent=err.message;}finally{commentsLoading=false;}}
- article.addEventListener('click',event=>{
-  // Capture the click before child elements can stop propagation. Every part of the story card,
-  // including the author and publication-date rows, opens comments; only controls and comments are excluded.
+ if(!options.detail)article.addEventListener('click',event=>{
   if(event.target.closest('.share-story-corner,.comments-area,button,a,input,textarea,select,label'))return;
-  toggleComments();
+  navigateToConfession(item.id);
  },true);
  const favorite=button('♡',async b=>{const previous=b.getAttribute('aria-pressed')==='true',enabled=!previous;setFavorite(enabled);pulseHeart(b);try{const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);}catch(error){setFavorite(previous);throw error;}},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);applyHeartStyle(favorite,'confession',item.id,value);}
@@ -312,6 +308,7 @@ function story(item){
   }
  },'action share-story-corner');shareButton.setAttribute('aria-label','Kopiraj direktni link do ispovesti');shareButton.setAttribute('title','Kopiraj link');
  const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,node('span','action-spacer'),reportButton);article.append(shareButton,row,commentsArea);
+ if(options.detail){commentsArea.hidden=false;void commentBranch(item.id,null,commentsArea,refreshContext,null,comments).catch(err=>{commentsArea.textContent=err.message;});}
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
  const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!recorded){readTimer=setTimeout(()=>{recorded=true;request('read',{id:item.id}).catch(()=>{});observer.disconnect();},1500);}else clearTimeout(readTimer);},{threshold:.1});observer.observe(article);
@@ -325,10 +322,7 @@ function dailyWinner(item,kind){
  }else{
   const card=node('article','story daily-comment-story');
   card.append(comment(item,item.confession_id,async()=>{},{readOnly:true}));
-  card.append(button('Pogledaj ispovest',async()=>{
-   const result=await request('confession',{id:item.confession_id});
-   modal('Ispovest',story(result.item));
-  },'text-button daily-context'));
+  card.append(button('Pogledaj ispovest',()=>navigateToConfession(item.confession_id),'text-button daily-context'));
   section.append(card);
  }
  return section;
@@ -367,10 +361,7 @@ async function load(reset=false){
    offset=result.items.length;
    $('#more').hidden=true;
   }else{
-   for(const item of result.items){if(currentView==='my_comments'){const entry=node('article','story my-comment-entry');entry.append(metadata(item),node('p','body-text',item.body));entry.append(button('Otvori ispovest',async()=>{
-      // Exact parent endpoint avoids searching only the first feed page.
-      const r=await request('confession',{id:item.confession_id});modal('Ispovest',story(r.item));
-    },'action open-confession'));feed.append(entry);}else feed.append(story(item));}
+   for(const item of result.items){if(currentView==='my_comments'){const entry=node('article','story my-comment-entry');entry.append(metadata(item),node('p','body-text',item.body));entry.append(button('Otvori ispovest',()=>navigateToConfession(item.confession_id),'action open-confession'));feed.append(entry);}else feed.append(story(item));}
    offset+=result.items.length;
    $('#more').hidden=result.items.length<20;
   }
@@ -394,18 +385,36 @@ document.querySelectorAll('[data-feed-sort]').forEach(b=>b.onclick=()=>{
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));document.querySelectorAll('[data-feed-sort]').forEach(n=>{n.classList.remove('active');n.setAttribute('aria-pressed','false');});for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mesto.';load(true).then(()=>{if(feedSorts.has(currentView))void preloadAllConfessions();});});
 
 $('#more').onclick=()=>load();
+function navigateToConfession(id){
+ const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('ispovest',String(id));
+ if(url.href===window.location.href)return;
+ persistFeedState();
+ window.history.pushState({ispovestiDetail:true},'',url);
+ void openDirectConfession(id);
+}
+function navigateToFeed(){
+ if(window.history.state?.ispovestiDetail){window.history.back();return;}
+ const url=new URL(window.location.href);url.searchParams.delete('ispovest');
+ window.history.replaceState(null,'',url.pathname+url.search+url.hash);
+ void initializeFeed();
+}
 async function openDirectConfession(id){
  try{
   const result=await request('confession',{id});
   if(!result?.item)throw new Error('Ova ispovest trenutno nije dostupna.');
-  const back=button('← Nazad na ispovesti',()=>{window.location.assign(window.location.pathname);},'text-button direct-story-back');
-  feed.replaceChildren(back,story(result.item));$('#more').hidden=true;$('#feed-subtitle').hidden=true;
+  const back=button('← Nazad na ispovesti',navigateToFeed,'text-button direct-story-back');
+  const detail=story(result.item,{detail:true});detail.classList.add('direct-story');
+  feed.replaceChildren(back,detail);$('#more').hidden=true;$('#feed-subtitle').hidden=true;
+  document.querySelector('.daily-tabs').hidden=true;
   document.title='Ispovest | Ispovesti.ba';
  }catch(err){feed.replaceChildren(node('p','empty error',err.message||'Ispovest nije pronađena.'));$('#more').hidden=true;}
 }
 async function initializeFeed(){
  const directId=new URLSearchParams(location.search).get('ispovest');
  if(directId){await openDirectConfession(directId);return;}
+ document.title='Ispovesti.ba — Reci šta ti je na duši.';
+ document.querySelector('.daily-tabs').hidden=false;
+ $('#feed-subtitle').hidden=false;
  let saved=null;try{saved=JSON.parse(sessionStorage.getItem(FEED_STATE_KEY)||'null');}catch{}
  if(saved?.view){
   currentView=String(saved.view);
@@ -414,6 +423,8 @@ async function initializeFeed(){
   document.querySelectorAll('[data-feed-sort]').forEach(b=>{const active=b.dataset.feedSort===currentView;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
   for(const [key,tab] of Object.entries(dailyTabs)){const active=currentView===(key==='confession'?'daily_confessions':'daily_comments');tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',String(active));}
  }
+ const descriptions={new:'Svaka priča ima svoje mesto.',popular:'Najpopularnije ispovesti.',likes:'Ispovesti sa najviše pozitivnih glasova.',dislikes:'Ispovesti sa najviše negativnih glasova.',comments:'Ispovesti sa najviše komentara.',random:'Nasumičan redosled ispovesti.',favorites:'Privatno · samo u tvojoj anonimnoj sesiji',recently_read:'Privatno · samo u tvojoj anonimnoj sesiji',my_comments:'Privatno · samo u tvojoj anonimnoj sesiji',daily_confessions:'Najlajkovanija ispovest za svaki od poslednjih sedam dana.',daily_comments:'Najlajkovaniji glavni komentar za svaki od poslednjih sedam dana.'};
+ $('#feed-subtitle').textContent=descriptions[currentView]||'Svaka priča ima svoje mesto.';
  await load(true);
  if(saved&&Number.isFinite(Number(saved.offset))&&Number(saved.offset)>offset&&!$('#more').hidden){
   while(offset<Number(saved.offset)&&!$('#more').hidden){const previous=offset;await load();if(offset===previous)break;}
@@ -421,4 +432,9 @@ async function initializeFeed(){
  if(saved&&Number.isFinite(Number(saved.scrollY)))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,Number(saved.scrollY))));
  if(feedSorts.has(currentView))void preloadAllConfessions();
 }
+window.addEventListener('popstate',()=>{
+ const id=new URLSearchParams(location.search).get('ispovest');
+ if(id)void openDirectConfession(id);
+ else void initializeFeed();
+});
 initializeFeed();
