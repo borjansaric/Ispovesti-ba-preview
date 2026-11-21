@@ -23,7 +23,24 @@ export async function openChat(){
    const actions=el('details','chat-message-menu'),more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
    menu.append(button('Prijavi',async()=>{const reason=prompt('Razlog: abuse, threat, spam ili other','spam');if(reason){await chatRequest('report',{id:m.id,reason});status.textContent='Prijava je poslata.';actions.open=false;}}));
    if(!own)menu.append(button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();}));
-   actions.addEventListener('toggle',()=>{if(!actions.open)return;const anchor=more.getBoundingClientRect();const spaceAbove=anchor.top;const spaceBelow=window.innerHeight-anchor.bottom;actions.classList.toggle('opens-up',spaceBelow<150&&spaceAbove>spaceBelow);});
+   let outsideHandler=null;
+   actions.addEventListener('toggle',()=>{
+    if(actions.open){
+     const anchor=more.getBoundingClientRect();
+     document.body.append(menu);
+     const width=Math.max(110,Math.min(menu.scrollWidth||150,window.innerWidth-16));
+     const left=Math.max(8,Math.min(anchor.right-width,window.innerWidth-width-8));
+     const below=window.innerHeight-anchor.bottom;
+     const top=below>110?anchor.bottom+4:Math.max(8,anchor.top-82);
+     menu.style.position='fixed';menu.style.left=left+'px';menu.style.top=top+'px';menu.style.width=width+'px';menu.style.zIndex='99999';
+     outsideHandler=event=>{if(!actions.contains(event.target)&&!menu.contains(event.target))actions.open=false;};
+     document.addEventListener('pointerdown',outsideHandler,true);
+    }else{
+     if(outsideHandler){document.removeEventListener('pointerdown',outsideHandler,true);outsideHandler=null;}
+     if(menu.parentNode===document.body)actions.append(menu);
+     menu.removeAttribute('style');
+    }
+   });
    actions.append(more,menu);if(m.id===openId)actions.open=true;row.append(actions);frag.append(row);
   }list.replaceChildren(frag);if(older)list.scrollTop=oldTop+list.scrollHeight-oldHeight;else if(atBottom)list.scrollTop=list.scrollHeight;else list.scrollTop=oldTop;initial=false;
  }
