@@ -47,6 +47,7 @@ export async function openChat(){
  }
  async function refresh(older=false){if(stopped||polling||!profile?.active||document.hidden||activeActionMenu?.open)return;polling=true;
   try{const responses=[];for(const cursor of pages){responses.push(await chatRequest('history',cursor?{before:cursor}:{}));if(stopped)return;}
+   if(activeActionMenu?.open)return;
    const latest=responses[0],cutoff=Date.parse(latest.history_cutoff),seen=new Map();for(const r of responses)for(const m of r.items)if(Date.parse(m.created_at)>cutoff)seen.set(m.id,m);
    messages=[...seen.values()].sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)||(BigInt(a.id)<BigInt(b.id)?-1:1));
    if(pendingMessage&&!seen.has(pendingMessage.id))messages.push(pendingMessage);
