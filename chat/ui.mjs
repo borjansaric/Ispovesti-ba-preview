@@ -23,7 +23,7 @@ export async function openChat(){
    const actions=el('details','chat-message-menu'),more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
    menu.append(button('Prijavi',async()=>{const reason=prompt('Razlog: abuse, threat, spam ili other','spam');if(reason){await chatRequest('report',{id:m.id,reason});status.textContent='Prijava je poslata.';actions.open=false;}}));
    if(!own)menu.append(button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();}));
-   actions.addEventListener('toggle',()=>{if(!actions.open)return;const anchor=more.getBoundingClientRect();const spaceAbove=anchor.top;const spaceBelow=window.innerHeight-anchor.bottom;actions.classList.toggle('opens-down',spaceAbove<150&&spaceBelow>spaceAbove);});
+   actions.addEventListener('toggle',()=>{if(!actions.open)return;const anchor=more.getBoundingClientRect();const spaceAbove=anchor.top;const spaceBelow=window.innerHeight-anchor.bottom;actions.classList.toggle('opens-up',spaceBelow<150&&spaceAbove>spaceBelow);});
    actions.append(more,menu);if(m.id===openId)actions.open=true;row.append(actions);frag.append(row);
   }list.replaceChildren(frag);if(older)list.scrollTop=oldTop+list.scrollHeight-oldHeight;else if(atBottom)list.scrollTop=list.scrollHeight;else list.scrollTop=oldTop;initial=false;
  }
