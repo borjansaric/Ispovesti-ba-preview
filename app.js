@@ -72,10 +72,10 @@ function metadata(item){const div=node('div','story-meta');const author=String(i
 function contentForm(kind,extra,done,onBack){
  const form=node('form',kind==='confession'?'form':'form discussion-form'),label=node('label','',kind==='confession'?'Tvoja priča':'Tvoje reči'),text=node('textarea');text.addEventListener('focus',()=>prepareSubmission(kind,form));text.addEventListener('input',()=>{prepareSubmission(kind,form);if(kind==='confession'){text.style.height='auto';text.style.height=Math.max(30,text.scrollHeight)+'px';}});text.required=true;text.maxLength=kind==='confession'?10000:2000;text.classList.toggle('discussion-textarea',kind!=='confession');text.placeholder=kind==='confession'?'Napiši ono što želiš da podeliš...':kind==='comment'?'':'Napiši odgovor...';label.append(text);
  const nickLabel=node('label','','Ms./Mr.'),nick=node('input');nick.maxLength=40;nick.autocomplete='off';nickLabel.append(nick);
- const status=node('p','hint'),send=node('button','primary',kind==='confession'?'Pošalji ispovest':'Pošalji');send.type='submit';
+ const status=node('p','hint'),send=node('button','primary',kind==='confession'?'':'Pošalji');send.type='submit';const sendPrefix=kind==='confession'?node('span','send-prefix','Poš'):null;if(kind==='confession')send.append(sendPrefix,node('span','send-rest','alji ispovest'));
  const identityRow=node('div','identity-row');identityRow.append(nickLabel,send);
  const row=node('div','row'),back=onBack?button('← Nazad',()=>onBack(),'discussion-back'):null;if(back)row.append(back);
- form.append(label,identityRow,...(back?[row]:[]),status);
+ form.append(label,identityRow,...(back?[row]:[]),status);if(kind==='confession'){const syncUnderline=()=>{if(!form.isConnected)return;const left=text.getBoundingClientRect().left,right=sendPrefix.getBoundingClientRect().right;if(right>left)text.style.width=`${right-left}px`;};requestAnimationFrame(syncUnderline);window.addEventListener('resize',syncUnderline,{passive:true});}
  let allowDuplicate=false,duplicateButton,sending=false,requestId=null,lastPayload=null;
  form.onsubmit=async e=>{e.preventDefault();if(sending)return;sending=true;send.disabled=true;if(back)back.disabled=true;text.disabled=true;nick.disabled=true;const submittedAt=performance.now();status.className='hint';status.textContent='Šaljem…';
   try{
