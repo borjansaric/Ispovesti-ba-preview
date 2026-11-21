@@ -5,6 +5,7 @@ const $ = s => document.querySelector(s);
 const feed = $('#feed'), dialog = $('#dialog');
 const dailyTabs={confession:$('#daily-confessions'),comment:$('#daily-comments')};
 let currentView='new',offset=0,generation=0,busy=false;
+let detailGeneration=0;
 const feedSorts=new Set(['new','popular','likes','dislikes','comments','random']);
 let randomFeedSeed=crypto.randomUUID();
 // One batched state request per group of 20 cards, rather than 40 separate requests.
@@ -388,7 +389,7 @@ $('#more').onclick=()=>load();
 function navigateToConfession(id){
  const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('ispovest',String(id));
  if(url.href===window.location.href)return;
- persistFeedState();
+ persistFeedState();closeMenu();generation++;
  window.history.pushState({ispovestiDetail:true},'',url);
  void openDirectConfession(id);
 }
@@ -399,8 +400,10 @@ function navigateToFeed(){
  void initializeFeed();
 }
 async function openDirectConfession(id){
+ const requestVersion=++detailGeneration;
  try{
   const result=await request('confession',{id});
+  if(requestVersion!==detailGeneration)return;
   if(!result?.item)throw new Error('Ova ispovest trenutno nije dostupna.');
   const back=button('← Nazad na ispovesti',navigateToFeed,'text-button direct-story-back');
   const detail=story(result.item,{detail:true});detail.classList.add('direct-story');
@@ -412,6 +415,7 @@ async function openDirectConfession(id){
 async function initializeFeed(){
  const directId=new URLSearchParams(location.search).get('ispovest');
  if(directId){await openDirectConfession(directId);return;}
+ detailGeneration++;
  document.title='Ispovesti.ba — Reci šta ti je na duši.';
  document.querySelector('.daily-tabs').hidden=false;
  $('#feed-subtitle').hidden=false;
