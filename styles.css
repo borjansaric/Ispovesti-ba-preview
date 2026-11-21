@@ -88,6 +88,7 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .form .identity-row>label{flex:0 1 45vw;width:45vw;max-width:45vw;min-width:0;margin:0}
 .form .identity-row input{box-sizing:border-box;width:92.857142857%;max-width:100%;min-height:18px;height:18px;margin-top:0;padding:0 2px;line-height:14px}
 .form .identity-row>button{flex:0 0 auto;width:auto;margin:0 0 2px;white-space:nowrap}
+.form .identity-row>button.send-confession{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.1;white-space:normal}
 
 /* Compact entries on the private My Comments page only. */
 .my-comment-entry{padding:5px 0;margin-bottom:3px}
