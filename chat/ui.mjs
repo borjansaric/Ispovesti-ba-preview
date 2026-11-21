@@ -56,10 +56,10 @@ export async function openChat(){
    messages.push(pendingMessage);render(messages);text.value='';
   }
   const sendingMessage=pendingMessage;
-  sending=true;send.disabled=true;
+  sending=true;send.disabled=true;text.disabled=true;
   try{
    await chatRequest('send',{body:sendingMessage.body,request_id:sendingMessage.requestId});
-   pendingMessage=null;requestId=null;lastBody=null;
+   pendingMessage=null;requestId=null;lastBody=null;text.disabled=false;
    if(text.value.trim()===sendingMessage.body)text.value='';
    status.textContent='';await refresh();list.scrollTop=list.scrollHeight;
   }catch(e){
