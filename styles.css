@@ -137,6 +137,7 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 :is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="38"]{--heart-color:#ffebaa;--heart-glow:0 0 6px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
 :is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="39"]{--heart-color:#ffe18b;--heart-glow:0 0 8px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
 :is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="40"]{--heart-color:#fff7da;--heart-glow:0 0 10px rgba(255,232,153,0.72),0 0 30px rgba(255,205,70,0.66),0 0 24px rgba(255,184,30,.42)}
+:is(.story-actions>.action.favorite,.comment-actions>.comment-heart).selected[data-heart-style="41"]{color:transparent;background-image:linear-gradient(115deg,#ff3030 0%,#ff9d24 17%,#ffe34d 33%,#38c85a 50%,#2788ff 67%,#7650db 83%,#ef55c8 100%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 5px rgba(255,255,255,.72)) drop-shadow(0 0 10px rgba(125,91,255,.5))}
 
 /* Small-screen layout: keep discussion controls and composers inside the viewport. */
 @media(max-width:600px){
