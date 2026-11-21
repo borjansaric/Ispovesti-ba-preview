@@ -62,6 +62,9 @@ button:disabled{opacity:.55}
  background:transparent;border:0;border-radius:0;
  text-align:left;color:#ddd;padding:8px 0;
 }
+.side-menu .private-actions button{display:flex;align-items:center;gap:10px}
+.private-action-icon{display:inline-flex;flex:0 0 20px;width:20px;height:20px;align-items:center;justify-content:center;font-size:20px;line-height:1}
+.private-action-icon svg{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .menu-links button.active,.side-menu .private-actions button.active{
  color:var(--gold);background:transparent;border:0;
 }
