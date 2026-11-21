@@ -4,7 +4,7 @@ const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className
 const button=(label,run,cls='chat-small')=>{const b=el('button',cls,label);b.type='button';b.onclick=()=>Promise.resolve(run()).catch(e=>alert(e.message));return b;};
 export async function openChat(){
  const dialog=document.querySelector('#dialog'),root=el('section','chat-panel');let stopped=false,polling=false,timer,profile,sending=false,requestId,lastBody,pendingMessage=null,initial=true,noOlder=false,activeActionMenu=null;
- const pages=[null];let messages=[];
+ const pages=[null];let messages=[];const messageNodes=new Map();
  if(document.body.classList.contains('menu-open'))document.querySelector('#menu-toggle').click();
  dialog.classList.add('chat-room');document.body.classList.add('chat-open');document.querySelector('#dialog-title').textContent='Anonimni chat';document.querySelector('#dialog-body').replaceChildren(root);
  const close=document.querySelector('#close-dialog');close.setAttribute('aria-label','Vrati se na ispovesti');if(!dialog.open)dialog.showModal();
@@ -16,36 +16,52 @@ export async function openChat(){
  const form=el('form','chat-compose'),text=el('textarea');text.maxLength=2000;text.required=true;text.rows=1;text.placeholder='Napiši poruku…';text.setAttribute('aria-label','Poruka u zajedničkom chatu');
  const send=el('button','chat-send','➤');send.type='submit';send.setAttribute('aria-label','Pošalji poruku');form.append(text,send);form.hidden=true;root.append(top,status,list,form);
  function resetAccess(message){profile=null;messages=[];pages.splice(1);list.replaceChildren();form.hidden=true;status.textContent=message;clearInterval(timer);}
- function render(items,older=false){const atBottom=initial||list.scrollHeight-list.scrollTop-list.clientHeight<80,oldHeight=list.scrollHeight,oldTop=list.scrollTop;
-  const frag=document.createDocumentFragment();for(const m of items){const own=m.sender===profile.id,row=el('article','chat-message '+(own?'own':'other'));row.dataset.id=m.id;
-   const avatar=el('span','chat-avatar',avatars[m.avatar]||avatars.ghost);avatar.setAttribute('aria-hidden','true');row.append(avatar,el('p','chat-body',m.body));
-   const actions=el('details','chat-message-menu'),more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
-   const reportButton=button('Prijavi',async()=>{const reason=prompt('Razlog: abuse, threat, spam ili other','spam');if(reason){await chatRequest('report',{id:m.id,reason});status.textContent='Prijava je poslata.';actions.open=false;}});
-   menu.append(reportButton);
-   if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
-   more.addEventListener('click',()=>{if(!actions.open)activeActionMenu=actions;});
-   let outsideHandler=null;
-   actions.addEventListener('toggle',()=>{
-    if(actions.open){
-     activeActionMenu=actions;
-     const anchor=more.getBoundingClientRect();
-     document.body.append(menu);
-     const width=Math.max(110,Math.min(menu.scrollWidth||150,window.innerWidth-16));
-     const left=Math.max(8,Math.min(anchor.right-width,window.innerWidth-width-8));
-     const below=window.innerHeight-anchor.bottom;
-     const top=below>110?anchor.bottom+4:Math.max(8,anchor.top-82);
-     menu.style.position='fixed';menu.style.left=left+'px';menu.style.top=top+'px';menu.style.width=width+'px';menu.style.zIndex='99999';
-     outsideHandler=event=>{if(!actions.contains(event.target)&&!menu.contains(event.target))actions.open=false;};
-     document.addEventListener('pointerdown',outsideHandler,true);
-    }else{
-     if(activeActionMenu===actions)activeActionMenu=null;
-     if(outsideHandler){document.removeEventListener('pointerdown',outsideHandler,true);outsideHandler=null;}
-     if(menu.parentNode===document.body)actions.append(menu);
-     menu.removeAttribute('style');
-    }
-   });
-   actions.append(more,menu);row.append(actions);frag.append(row);
-  }list.replaceChildren(frag);if(older)list.scrollTop=oldTop+list.scrollHeight-oldHeight;else if(atBottom)list.scrollTop=list.scrollHeight;else list.scrollTop=oldTop;initial=false;
+ function render(items,older=false){
+  const atBottom=initial||list.scrollHeight-list.scrollTop-list.clientHeight<80,oldHeight=list.scrollHeight,oldTop=list.scrollTop;
+  const desired=[],wanted=new Set();
+  for(const m of items){
+   const id=String(m.id);wanted.add(id);let row=messageNodes.get(id);
+   if(!row){
+    const own=m.sender===profile.id;row=el('article','chat-message '+(own?'own':'other'));row.dataset.id=id;
+    const avatar=el('span','chat-avatar',avatars[m.avatar]||avatars.ghost);avatar.setAttribute('aria-hidden','true');const body=el('p','chat-body',m.body);row.append(avatar,body);
+    const actions=el('details','chat-message-menu'),more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
+    const reportButton=button('Prijavi',async()=>{const reason=prompt('Razlog: abuse, threat, spam ili other','spam');if(reason){await chatRequest('report',{id:m.id,reason});status.textContent='Prijava je poslata.';actions.open=false;}});
+    menu.append(reportButton);
+    if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
+    more.addEventListener('click',()=>{if(!actions.open)activeActionMenu=actions;});
+    let outsideHandler=null;
+    actions.addEventListener('toggle',()=>{
+     if(actions.open){
+      activeActionMenu=actions;
+      const anchor=more.getBoundingClientRect();
+      document.body.append(menu);
+      const width=Math.max(110,Math.min(menu.scrollWidth||150,window.innerWidth-16));
+      const left=Math.max(8,Math.min(anchor.right-width,window.innerWidth-width-8));
+      const below=window.innerHeight-anchor.bottom;
+      const top=below>110?anchor.bottom+4:Math.max(8,anchor.top-82);
+      menu.style.position='fixed';menu.style.left=left+'px';menu.style.top=top+'px';menu.style.width=width+'px';menu.style.zIndex='99999';
+      outsideHandler=event=>{if(!actions.contains(event.target)&&!menu.contains(event.target))actions.open=false;};
+      document.addEventListener('pointerdown',outsideHandler,true);
+     }else{
+      if(activeActionMenu===actions)activeActionMenu=null;
+      if(outsideHandler){document.removeEventListener('pointerdown',outsideHandler,true);outsideHandler=null;}
+      if(menu.parentNode===document.body)actions.append(menu);
+      menu.removeAttribute('style');
+     }
+    });
+    actions.append(more,menu);row.append(actions);messageNodes.set(id,row);
+   }else{
+    row.classList.toggle('own',m.sender===profile.id);row.classList.toggle('other',m.sender!==profile.id);
+    const avatar=row.querySelector('.chat-avatar'),body=row.querySelector('.chat-body');
+    if(avatar)avatar.textContent=avatars[m.avatar]||avatars.ghost;
+    if(body&&body.textContent!==m.body)body.textContent=m.body;
+   }
+   desired.push(row);
+  }
+  if(activeActionMenu&&!wanted.has(String(activeActionMenu.closest('.chat-message')?.dataset.id)))activeActionMenu.open=false;
+  for(let i=0;i<desired.length;i++){const current=list.children[i];if(current!==desired[i])list.insertBefore(desired[i],current||null);}
+  for(const child of [...list.children])if(!wanted.has(String(child.dataset.id))){messageNodes.delete(String(child.dataset.id));child.remove();}
+  if(older)list.scrollTop=oldTop+list.scrollHeight-oldHeight;else if(atBottom)list.scrollTop=list.scrollHeight;else list.scrollTop=oldTop;initial=false;
  }
  async function refresh(older=false,initialHistory=null){if(stopped||polling||!profile?.active||document.hidden||activeActionMenu)return;polling=true;
   try{const responses=[];if(initialHistory){responses.push(initialHistory);}else{for(const cursor of pages){responses.push(await chatRequest('history',cursor?{before:cursor}:{}));if(stopped)return;}}
