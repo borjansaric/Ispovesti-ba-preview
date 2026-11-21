@@ -23,15 +23,31 @@ jobs:
     steps:
       - name: Checkout preview repository
         uses: actions/checkout@v4
+
+      - name: Restore previous fingerprinted assets
+        uses: actions/cache@v4
+        with:
+          path: .asset-cache
+          key: preview-fingerprinted-assets-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            preview-fingerprinted-assets-
+
+      - name: Build preview with content-hashed assets
+        run: |
+          node --check scripts/build.mjs
+          node scripts/build.mjs
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
+
       - name: Upload preview files
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: ./dist
           name: preview-pages-${{ github.run_id }}-${{ github.run_attempt }}
+
       - name: Deploy preview only
         id: deployment
         uses: actions/deploy-pages@v5
