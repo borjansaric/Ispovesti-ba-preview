@@ -19,7 +19,7 @@
 .side-menu .panel h2 .compose-trigger:hover{color:var(--gold-soft);background:transparent}
 .menu-footer-links{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px}
 .menu-footer-links .text-button{flex:1 1 0;min-width:0;margin:0;padding:5px 0;text-align:center;font-size:11px;white-space:nowrap}
-.side-menu .private-panel .chat-entry-button{display:block;width:100%;margin:8px 0 0;padding:10px 8px;border:1px solid #e5c77d;border-radius:5px;background:linear-gradient(135deg,#8d6b2f 0%,#f7e4a4 17%,#c69d4b 38%,#fff1bd 52%,#b48735 73%,#f2d88f 100%);color:#17130a;font-size:14px;font-weight:900;letter-spacing:.16em;text-align:center;text-shadow:0 1px 0 rgba(255,255,255,.34);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 4px rgba(80,49,8,.28),0 4px 12px rgba(0,0,0,.42)}
+.side-menu .private-panel .chat-entry-button{display:block;width:calc(100% - 18px);margin:8px auto 0;padding:10px 8px;border:1px solid #e5c77d;border-radius:5px;background:linear-gradient(135deg,#8d6b2f 0%,#f7e4a4 17%,#c69d4b 38%,#fff1bd 52%,#b48735 73%,#f2d88f 100%);color:#17130a;font-size:14px;font-weight:900;letter-spacing:.16em;text-align:center;text-shadow:0 1px 0 rgba(255,255,255,.34);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 4px rgba(80,49,8,.28),0 4px 12px rgba(0,0,0,.42)}
 .side-menu .private-panel .chat-entry-button:hover{background:linear-gradient(135deg,#a17a37 0%,#ffedb2 17%,#d5ad5c 38%,#fff7d8 52%,#c19745 73%,#f9e3a0 100%);color:#090806}.error{color:#f3a29b}.preview{position:fixed;right:10px;bottom:8px;z-index:900;background:#191919e8;color:var(--muted);font-size:10px;padding:3px 8px;pointer-events:none}body.menu-open{overflow:hidden}
 dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;border:1px solid #625332;border-radius:12px;padding:22px;background:var(--panel);color:var(--text)}dialog::backdrop{background:#000b}.dialog-heading{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}.dialog-heading h2{margin:0}.icon-button{background:transparent;color:var(--muted);font-size:25px;font-weight:normal;margin:0;padding:0 6px}#toast{position:fixed;z-index:1100;bottom:26px;left:50%;transform:translateX(-50%);max-width:calc(100% - 28px);width:max-content;background:#302819;padding:12px 18px;color:var(--text);font-size:13px}#toast:empty{display:none}.admin{max-width:800px;margin:40px auto;padding:20px}.admin-tools{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.brand{font-size:30px;color:var(--gold);font-weight:bold;text-decoration:none}
 @media(prefers-reduced-motion:reduce){body::before,body::after,*,*::before,*::after{transition:none}}
@@ -165,3 +165,13 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
  .daily-tab{font-size:13px}
  dialog{padding:16px}
 }
+
+
+/* Compact, functional feed sorting controls beneath the chat entry. */
+.menu-sort{width:calc(100% - 18px);margin:10px auto 0}
+.menu-sort-label{margin:0 0 5px;color:var(--gold);font-size:12px;line-height:1.3}
+.menu-sort-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.menu-sort-option{display:flex;align-items:center;justify-content:center;min-width:0;height:34px;margin:0;padding:4px 2px;border:1px solid rgba(214,177,94,.35);border-radius:5px;background:#171717;color:var(--gold);font-size:16px;line-height:1;box-shadow:inset 0 1px 2px rgba(255,255,255,.04)}
+.menu-sort-option[data-feed-sort="random"]{font-size:11px;letter-spacing:.02em}
+.menu-sort-option:hover{border-color:#e5c77d;background:#211c12;color:var(--gold-soft)}
+.menu-sort-option.active{border-color:#e5c77d;background:linear-gradient(135deg,#d6b15e,#f5e3a7 50%,#b58a3e);color:#17130a;box-shadow:inset 0 1px 1px rgba(255,255,255,.6),0 2px 7px rgba(0,0,0,.35)}
