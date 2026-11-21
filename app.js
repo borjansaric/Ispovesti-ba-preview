@@ -46,7 +46,7 @@ function setMenu(open){
  document.body.classList.toggle('menu-open',open);sideMenu.hidden=!open;menuOverlay.hidden=!open;
  menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'Zatvori meni':'Otvori meni');menuToggle.textContent=open?'×':'›››';
  for(const el of document.querySelectorAll('.site-header,main,footer'))el.inert=open;
- if(open)sideMenu.querySelector('button')?.focus();
+ if(open){sideMenu.querySelector('button')?.focus();requestAnimationFrame(()=>window.dispatchEvent(new Event('ispovesti:layout-visible')));}
 }
 menuToggle.onclick=()=>{const open=sideMenu.hidden;setMenu(open);if(!open)menuToggle.focus();};
 menuOverlay.onclick=()=>{closeMenu();menuToggle.focus();};
@@ -75,7 +75,7 @@ function contentForm(kind,extra,done,onBack){
  const status=node('p','hint'),send=node('button','primary',kind==='confession'?'':'Pošalji');send.type='submit';const sendPrefix=kind==='confession'?node('span','send-prefix','Poš'):null;if(kind==='confession')send.append(sendPrefix,node('span','send-rest','alji ispovest'));
  const identityRow=node('div','identity-row');identityRow.append(nickLabel,send);
  const row=node('div','row'),back=onBack?button('← Nazad',()=>onBack(),'discussion-back'):null;if(back)row.append(back);
- form.append(label,identityRow,...(back?[row]:[]),status);if(kind==='confession'){const syncUnderline=()=>{if(!form.isConnected)return;const left=text.getBoundingClientRect().left,right=sendPrefix.getBoundingClientRect().right;if(right>left)text.style.width=`${right-left}px`;};requestAnimationFrame(syncUnderline);window.addEventListener('resize',syncUnderline,{passive:true});}
+ form.append(label,identityRow,...(back?[row]:[]),status);if(kind==='confession'){const syncUnderline=()=>{if(!form.isConnected||!form.getClientRects().length)return;const left=text.getBoundingClientRect().left,right=sendPrefix.getBoundingClientRect().right,width=right-left;if(width>0&&Math.abs(text.getBoundingClientRect().width-width)>0.5)text.style.width=`${width}px`;};requestAnimationFrame(syncUnderline);window.addEventListener('resize',syncUnderline,{passive:true});window.addEventListener('ispovesti:layout-visible',syncUnderline);}
  let allowDuplicate=false,duplicateButton,sending=false,requestId=null,lastPayload=null;
  form.onsubmit=async e=>{e.preventDefault();if(sending)return;sending=true;send.disabled=true;if(back)back.disabled=true;text.disabled=true;nick.disabled=true;const submittedAt=performance.now();status.className='hint';status.textContent='Šaljem…';
   try{
