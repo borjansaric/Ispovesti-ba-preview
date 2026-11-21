@@ -4,7 +4,7 @@ import { request, isPreview, isLocal, prepareSubmission } from './api.js?v=20261
 const $ = s => document.querySelector(s);
 const feed = $('#feed'), dialog = $('#dialog');
 const dailyTabs={confession:$('#daily-confessions'),comment:$('#daily-comments')};
-let currentView='new',offset=0,generation=0,busy=false;
+let currentView='new',offset=0,generation=0,busy=false;\nconst feedSorts=new Set(['new','popular','likes','dislikes','comments','random']);\nlet randomFeedSeed=crypto.randomUUID();
 // One batched state request per group of 20 cards, rather than 40 separate requests.
 const stateListeners=new Set();let stateTimer;
 function watchState(id,type,element,render){
@@ -32,7 +32,7 @@ const FEED_STATE_KEY='ispovesti:feed-state:v1';
 let feedStateSaveTimer;
 function persistFeedState(){
  if(new URLSearchParams(location.search).has('ispovest'))return;
- try{sessionStorage.setItem(FEED_STATE_KEY,JSON.stringify({view:currentView,offset,scrollY:window.scrollY}));}catch{}
+ try{sessionStorage.setItem(FEED_STATE_KEY,JSON.stringify({view:currentView,offset,scrollY:window.scrollY,seed:currentView==='random'?randomFeedSeed:null}));}catch{}
 }
 window.addEventListener('scroll',()=>{clearTimeout(feedStateSaveTimer);feedStateSaveTimer=setTimeout(persistFeedState,120);},{passive:true});
 window.addEventListener('pagehide',persistFeedState);
@@ -274,7 +274,7 @@ const commentWarmObserver='IntersectionObserver' in window?new IntersectionObser
 },{rootMargin:'700px 0px',threshold:0}):null;
 let allFeedPreloading=false;
 async function preloadAllConfessions(){
- if(allFeedPreloading||!['new','popular'].includes(currentView))return;
+ if(allFeedPreloading||!feedSorts.has(currentView))return;
  allFeedPreloading=true;const view=currentView;
  try{
   // Continue fetching every page in the background; each page is rendered as soon as it arrives.
@@ -357,7 +357,7 @@ async function load(reset=false){
   const isList=['favorites','recently_read','my_comments'].includes(currentView);
   const result=dailyKind
    ?await request('daily_highlights',{kind:dailyKind})
-   :await request(isList?'list':'feed',isList?{list:currentView,offset}:{sort:currentView,offset});
+   :await request(isList?'list':'feed',isList?{list:currentView,offset}:{sort:currentView,offset,...(currentView==='random'?{seed:randomFeedSeed}:{})});
   if(version!==generation)return;
   if(reset)feed.replaceChildren();
   if(dailyKind){
@@ -376,7 +376,20 @@ async function load(reset=false){
  }catch(err){if(version!==generation)return;if(reset)feed.replaceChildren(node('p','empty error',err.message));else toast(err.message);$('#more').hidden=false;}
  finally{if(version===generation){busy=false;$('#more').disabled=false;}}
 }
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mesto.';load(true).then(()=>{if(['new','popular'].includes(currentView))void preloadAllConfessions();});});
+document.querySelectorAll('[data-feed-sort]').forEach(b=>b.onclick=()=>{
+ currentView=b.dataset.feedSort;
+ if(currentView==='random')randomFeedSeed=crypto.randomUUID();
+ closeMenu();
+ document.querySelectorAll('[data-view]').forEach(n=>n.classList.remove('active'));
+ document.querySelectorAll('[data-feed-sort]').forEach(n=>{
+  const active=n===b;n.classList.toggle('active',active);n.setAttribute('aria-pressed',String(active));
+ });
+ for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}
+ const descriptions={likes:'Ispovesti sa najviše pozitivnih glasova.',dislikes:'Ispovesti sa najviše negativnih glasova.',comments:'Ispovesti sa najviše komentara.',random:'Nasumičan redosled ispovesti.'};
+ $('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=descriptions[currentView];
+ load(true).then(()=>void preloadAllConfessions());
+});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));document.querySelectorAll('[data-feed-sort]').forEach(n=>{n.classList.remove('active');n.setAttribute('aria-pressed','false');});for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mesto.';load(true).then(()=>{if(feedSorts.has(currentView))void preloadAllConfessions();});});
 
 $('#more').onclick=()=>load();
 async function openDirectConfession(id){
@@ -394,7 +407,9 @@ async function initializeFeed(){
  let saved=null;try{saved=JSON.parse(sessionStorage.getItem(FEED_STATE_KEY)||'null');}catch{}
  if(saved?.view){
   currentView=String(saved.view);
+  if(currentView==='random')randomFeedSeed=/^[0-9a-f-]{36}$/i.test(saved.seed||'')?saved.seed:crypto.randomUUID();
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===currentView));
+  document.querySelectorAll('[data-feed-sort]').forEach(b=>{const active=b.dataset.feedSort===currentView;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
   for(const [key,tab] of Object.entries(dailyTabs)){const active=currentView===(key==='confession'?'daily_confessions':'daily_comments');tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',String(active));}
  }
  await load(true);
@@ -402,6 +417,6 @@ async function initializeFeed(){
   while(offset<Number(saved.offset)&&!$('#more').hidden){const previous=offset;await load();if(offset===previous)break;}
  }
  if(saved&&Number.isFinite(Number(saved.scrollY)))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,Number(saved.scrollY))));
- if(['new','popular'].includes(currentView))void preloadAllConfessions();
+ if(feedSorts.has(currentView))void preloadAllConfessions();
 }
 initializeFeed();
