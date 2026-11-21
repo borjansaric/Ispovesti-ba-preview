@@ -44,7 +44,7 @@ jobs:
           enablement: true
 
       - name: Upload preview files
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist
           name: preview-pages-${{ github.run_id }}-${{ github.run_attempt }}
