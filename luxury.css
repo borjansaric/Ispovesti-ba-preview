@@ -46,8 +46,11 @@ body::after{
 button{background:transparent;color:var(--gold);padding:7px 5px;border:0;border-radius:0;outline-offset:4px;box-shadow:none}
 button:hover{color:var(--gold-soft);background:transparent}
 button:disabled{opacity:.55}
-.reply-button,.text-button,.icon-button,.comment-report,.comment-heart{
+.reply-button,.text-button,.comment-report,.comment-heart{
  background:transparent;color:var(--gold);padding:5px 7px;margin:0;
+}
+.icon-button{
+ color:var(--gold);padding:5px 7px;margin:0;
 }
 .comment-heart{
  color:var(--gold);background:transparent;
@@ -65,7 +68,10 @@ button:disabled{opacity:.55}
 .side-menu .private-actions button{display:flex;align-items:center;gap:10px}
 .private-action-icon{display:inline-flex;flex:0 0 20px;width:20px;height:20px;align-items:center;justify-content:center;font-size:20px;line-height:1;color:#ffda68;text-shadow:0 0 3px rgba(255,218,104,.95),0 0 7px rgba(255,196,65,.9),0 0 13px rgba(255,181,42,.72),0 0 21px rgba(255,170,25,.48);filter:drop-shadow(0 0 4px rgba(255,205,85,.75))}
 .private-action-icon svg{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 3px rgba(255,218,104,.95)) drop-shadow(0 0 8px rgba(255,181,42,.72))}
-.menu-links button.active,.side-menu .private-actions button.active{
+.menu-links button.active{
+ background:transparent;border:0;
+}
+.side-menu .private-actions button.active{
  color:var(--gold);background:transparent;border:0;
 }
 .side-menu{background:#101010;border-right:1px solid rgba(214,177,94,.18);box-shadow:none}
