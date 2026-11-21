@@ -106,7 +106,7 @@ function applyHeartStyle(btn,kind,id,selected){
  if(!selected){delete btn.dataset.heartStyle;try{localStorage.removeItem(key);}catch{}return;}
  let style=0;
  try{style=Number(localStorage.getItem(key));}catch{}
- if(!Number.isInteger(style)||style<1||style>40){style=Math.floor(Math.random()*40)+1;try{localStorage.setItem(key,String(style));}catch{}}
+ if(!Number.isInteger(style)||style<1||style>41){style=Math.random()<0.01?41:Math.floor(Math.random()*40)+1;try{localStorage.setItem(key,String(style));}catch{}}
  btn.dataset.heartStyle=String(style);
 }
 function voteControls(item){
