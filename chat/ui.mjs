@@ -17,7 +17,6 @@ export async function openChat(){
  const send=el('button','chat-send','➤');send.type='submit';send.setAttribute('aria-label','Pošalji poruku');form.append(text,send);form.hidden=true;root.append(top,status,list,form);
  function resetAccess(message){profile=null;messages=[];pages.splice(1);list.replaceChildren();form.hidden=true;status.textContent=message;clearInterval(timer);}
  function render(items,older=false){const atBottom=initial||list.scrollHeight-list.scrollTop-list.clientHeight<80,oldHeight=list.scrollHeight,oldTop=list.scrollTop;
-  for(const openMenu of list.querySelectorAll('details.chat-message-menu[open]'))openMenu.open=false;
   const frag=document.createDocumentFragment();for(const m of items){const own=m.sender===profile.id,row=el('article','chat-message '+(own?'own':'other'));row.dataset.id=m.id;
    const avatar=el('span','chat-avatar',avatars[m.avatar]||avatars.ghost);avatar.setAttribute('aria-hidden','true');row.append(avatar,el('p','chat-body',m.body));
    const actions=el('details','chat-message-menu'),more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
@@ -26,6 +25,7 @@ export async function openChat(){
    let outsideHandler=null;
    actions.addEventListener('toggle',()=>{
     if(actions.open){
+     activeActionMenu=actions;
      const anchor=more.getBoundingClientRect();
      document.body.append(menu);
      const width=Math.max(110,Math.min(menu.scrollWidth||150,window.innerWidth-16));
@@ -36,6 +36,7 @@ export async function openChat(){
      outsideHandler=event=>{if(!actions.contains(event.target)&&!menu.contains(event.target))actions.open=false;};
      document.addEventListener('pointerdown',outsideHandler,true);
     }else{
+     if(activeActionMenu===actions)activeActionMenu=null;
      if(outsideHandler){document.removeEventListener('pointerdown',outsideHandler,true);outsideHandler=null;}
      if(menu.parentNode===document.body)actions.append(menu);
      menu.removeAttribute('style');
@@ -44,7 +45,7 @@ export async function openChat(){
    actions.append(more,menu);row.append(actions);frag.append(row);
   }list.replaceChildren(frag);if(older)list.scrollTop=oldTop+list.scrollHeight-oldHeight;else if(atBottom)list.scrollTop=list.scrollHeight;else list.scrollTop=oldTop;initial=false;
  }
- async function refresh(older=false){if(stopped||polling||!profile?.active||document.hidden)return;polling=true;
+ async function refresh(older=false){if(stopped||polling||!profile?.active||document.hidden||activeActionMenu?.open)return;polling=true;
   try{const responses=[];for(const cursor of pages){responses.push(await chatRequest('history',cursor?{before:cursor}:{}));if(stopped)return;}
    const latest=responses[0],cutoff=Date.parse(latest.history_cutoff),seen=new Map();for(const r of responses)for(const m of r.items)if(Date.parse(m.created_at)>cutoff)seen.set(m.id,m);
    messages=[...seen.values()].sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)||(BigInt(a.id)<BigInt(b.id)?-1:1));
