@@ -290,10 +290,11 @@ function story(item){
  let commentsLoaded=false,commentsLoading=false;
  async function toggleComments(){if(commentsLoading)return;commentsArea.hidden=!commentsArea.hidden;if(commentsArea.hidden||commentsLoaded)return;commentsLoading=true;try{await commentBranch(item.id,null,commentsList,refreshContext,null,comments);commentsLoaded=true;}catch(err){commentsList.textContent=err.message;}finally{commentsLoading=false;}}
  article.addEventListener('click',event=>{
-  // Any tap/click inside the confession card opens its comments, except its action buttons and the comments themselves.
+  // Capture the click before child elements can stop propagation. Every part of the story card,
+  // including the author and publication-date rows, opens comments; only controls and comments are excluded.
   if(event.target.closest('.story-actions,.share-story-corner,.comments-area,button,a,input,textarea,select,label'))return;
   toggleComments();
- });
+ },true);
  const favorite=button('♡',async b=>{const previous=b.getAttribute('aria-pressed')==='true',enabled=!previous;setFavorite(enabled);pulseHeart(b);try{const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);}catch(error){setFavorite(previous);throw error;}},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);applyHeartStyle(favorite,'confession',item.id,value);}
  async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
