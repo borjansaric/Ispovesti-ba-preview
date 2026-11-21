@@ -28,27 +28,6 @@ export async function openChat(){
     const reportButton=button('Prijavi',async()=>{const reason=prompt('Razlog: abuse, threat, spam ili other','spam');if(reason){await chatRequest('report',{id:m.id,reason});status.textContent='Prijava je poslata.';actions.open=false;}});
     menu.append(reportButton);
     if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
-    more.addEventListener('click',()=>{if(!actions.open)activeActionMenu=actions;});
-    let outsideHandler=null;
-    actions.addEventListener('toggle',()=>{
-     if(actions.open){
-      activeActionMenu=actions;
-      const anchor=more.getBoundingClientRect();
-      document.body.append(menu);
-      const width=Math.max(110,Math.min(menu.scrollWidth||150,window.innerWidth-16));
-      const left=Math.max(8,Math.min(anchor.right-width,window.innerWidth-width-8));
-      const below=window.innerHeight-anchor.bottom;
-      const top=below>110?anchor.bottom+4:Math.max(8,anchor.top-82);
-      menu.style.position='fixed';menu.style.left=left+'px';menu.style.top=top+'px';menu.style.width=width+'px';menu.style.zIndex='99999';
-      outsideHandler=event=>{if(!actions.contains(event.target)&&!menu.contains(event.target))actions.open=false;};
-      document.addEventListener('pointerdown',outsideHandler,true);
-     }else{
-      if(activeActionMenu===actions)activeActionMenu=null;
-      if(outsideHandler){document.removeEventListener('pointerdown',outsideHandler,true);outsideHandler=null;}
-      if(menu.parentNode===document.body)actions.append(menu);
-      menu.removeAttribute('style');
-     }
-    });
     actions.append(more,menu);row.append(actions);messageNodes.set(id,row);
    }else{
     row.classList.toggle('own',m.sender===profile.id);row.classList.toggle('other',m.sender!==profile.id);
