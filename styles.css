@@ -190,7 +190,26 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .direct-story-back:hover{background:transparent;color:var(--gold-soft)}
 
 
-/* Clearly darker anonymous atmosphere only while a single confession is open. */
+/* Focus mode for a single confession: keep the confession crisp, soften the surrounding site. */
 body.confession-detail-open{background:#000}
-body.confession-detail-open::before{filter:brightness(.20);opacity:1}
+body.confession-detail-open::before{filter:brightness(.20) blur(1px);opacity:1}
 body.confession-detail-open::after{filter:brightness(.45);opacity:.12}
+body.confession-detail-open .site-header,
+body.confession-detail-open #menu-toggle,
+body.confession-detail-open #side-menu,
+body.confession-detail-open #menu-overlay,
+body.confession-detail-open #main > section > .daily-tabs,
+body.confession-detail-open #feed-subtitle,
+body.confession-detail-open #feed > .direct-story-back,
+body.confession-detail-open #more,
+body.confession-detail-open footer,
+body.confession-detail-open #preview{
+ filter:blur(4px) brightness(.48);
+ transition:filter .22s ease;
+ pointer-events:none;
+}
+body.confession-detail-open #feed > .direct-story{
+ position:relative;
+ z-index:2;
+ filter:none;
+}
