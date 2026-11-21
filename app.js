@@ -253,7 +253,7 @@ async function openReplies(item,confessionId,refreshContext,trigger){
  const replies=node('div','thread-replies'),formBox=node('div'),notice=node('p','hint','Učitavam odgovore…');
  let sent=new Set(),closed=false;const replyNodes=new Map();
  const close=(restore=true)=>{if(closed)return;closed=true;thread.remove();inlineThreads.delete(trigger);activeInlineThread=null;root.classList.remove('thread-active-comment');activeStory?.classList.remove('thread-active-story');document.body.classList.remove('inline-thread-open');trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-label','Otvori ili napiši odgovore');if(restore){window.scrollTo(0,top);trigger.focus({preventScroll:true});}updateCommentMeta();};
- activeInlineThread={close};root.classList.add('thread-active-comment');activeStory?.classList.add('thread-active-story');document.body.classList.add('inline-thread-open');inlineThreads.set(trigger,{close});trigger.setAttribute('aria-expanded','true');trigger.setAttribute('aria-label','Zatvori odgovore');thread.append(replies,notice,formBox);trigger.closest('.comment').append(thread);
+ activeInlineThread={close,historyUrl:window.location.href,historyState:window.history.state,scrollY:top};root.classList.add('thread-active-comment');activeStory?.classList.add('thread-active-story');document.body.classList.add('inline-thread-open');inlineThreads.set(trigger,{close});trigger.setAttribute('aria-expanded','true');trigger.setAttribute('aria-label','Zatvori odgovore');thread.append(replies,notice,formBox);trigger.closest('.comment').append(thread);
  formBox.append(contentForm('reply',{confession_id:confessionId,parent_id:item.id},(created,context)=>{
   if(!sent.has(String(created.id))){sent.add(String(created.id));const entry=comment(created,confessionId,refreshContext,{readOnly:true});entry.dataset.replyTime=created.created_at;entry.dataset.replyId=String(created.id);replyNodes.set(String(created.id),entry);replies.append(entry);}updateCommentMeta();refreshContext(context).catch(e=>toast(e.message));
  },close));
@@ -437,6 +437,13 @@ async function initializeFeed(){
  if(feedSorts.has(currentView))void preloadAllConfessions();
 }
 window.addEventListener('popstate',()=>{
+ if(activeInlineThread){
+  const thread=activeInlineThread;
+  thread.close(false);
+  window.history.pushState(thread.historyState,'',thread.historyUrl);
+  requestAnimationFrame(()=>window.scrollTo(0,thread.scrollY));
+  return;
+ }
  const id=new URLSearchParams(location.search).get('ispovest');
  if(id)void openDirectConfession(id);
  else void initializeFeed();
