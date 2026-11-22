@@ -2,7 +2,7 @@ name: Deploy isolated Ispovesti preview
 
 on:
   push:
-    branches: ["main", "admin-panel-v1.0-implementation"]
+    branches: ["main", "admin-panel-v1.0-implementation", "admin-panel-extension-phase1"]
   workflow_dispatch:
 
 permissions:
