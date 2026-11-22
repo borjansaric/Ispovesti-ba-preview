@@ -185,16 +185,15 @@ function report(item,reportButton){
  custom.append(detail,send);panel.append(hate,spam,more,custom);row.append(panel);reportButton.setAttribute('aria-expanded','true');activeReportMenu={panel,button:reportButton};
 }
 async function commentBranch(confessionId,parentId,container,refreshContext,confirmed,heading){
- const allItems=[];let expanded=false;
- const list=node('div','comment-list'),more=button('↓',showMore,'load-more');
- more.setAttribute('aria-label','Prikaži još komentara');more.title='Prikaži još komentara';
+ const allItems=[];
+ const list=node('div','comment-list');
  const composer=!parentId?contentForm('comment',{confession_id:confessionId},async(item,context,meta)=>{
    if(meta.phase==='optimistic')allItems.push(item);
    else if(meta.phase==='confirmed'){const index=allItems.findIndex(x=>String(x.id)===String(meta.pendingId));if(index>=0)allItems[index]=item;else allItems.push(item);}
    else if(meta.phase==='rollback'){const index=allItems.findIndex(x=>String(x.id)===String(meta.pendingId));if(index>=0)allItems.splice(index,1);}
    await renderItems();if(meta.phase==='confirmed'&&context)refreshContext(context).catch(err=>toast(err.message));
   }):null;
- container.replaceChildren(...(composer?[composer]:[]),...(heading?[heading]:[]),list,more);
+ container.replaceChildren(...(composer?[composer]:[]),...(heading?[heading]:[]),list);
  function newest(a,b){return Date.parse(b.created_at||b.published_at||0)-Date.parse(a.created_at||a.published_at||0);}
  function reactionCount(item){return Number(item._reactionCount??item.likes??item.reactions??item.reaction_count??0)||0;}
  async function renderItems(){
@@ -202,10 +201,8 @@ async function commentBranch(confessionId,parentId,container,refreshContext,conf
   const ranked=[...unique].sort((a,b)=>reactionCount(b)-reactionCount(a)||newest(a,b));
   const first=ranked[0]||null,second=ranked[1]||null;
   const latest=unique.filter(x=>x!==first&&x!==second).sort(newest)[0]||null;
-  const preview=[first,second,latest].filter(Boolean);
-  const ordered=expanded&&first?[first,...unique.filter(x=>x!==first).sort(newest)]:preview;
+  const ordered=first?[first,...unique.filter(x=>x!==first).sort(newest)]:[];
   list.replaceChildren(...ordered.map(item=>comment(item,confessionId,refreshContext)));
-  more.hidden=expanded||unique.length<=preview.length;
  }
  async function loadCardData(items){
   const ids=items.map(item=>String(item.id));
@@ -238,7 +235,7 @@ async function commentBranch(confessionId,parentId,container,refreshContext,conf
    if(first.items.length===20)void loadRemaining(20);
   }
  }
- async function showMore(){more.disabled=true;try{expanded=true;await renderItems();}finally{more.disabled=false;}}
+
  const cacheUpdate=event=>{
   if(!container.isConnected){window.removeEventListener('ispovesti:read-cache-updated',cacheUpdate);return;}
   const detail=event.detail||{},args=detail.args||{};
