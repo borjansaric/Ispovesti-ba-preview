@@ -53,15 +53,17 @@ function challenge({kind,host,sitekey,action}={}){
  return {prepare:()=>{void start().catch(()=>{});},take:async()=>{const value=await start();if(value){if(consumed)throw new Error('Slanje je već u toku.');consumed=true;token=null;cleanup();}return value;},dispose:()=>{disposed=true;fail('Obrazac je zatvoren.');}};
 }
 const forms=new WeakMap();
-export function prepareCaptcha({kind,host}={}){
+export function prepareCaptcha({kind,host,action}={}){
  if(!host||!kind)return;
+ const challengeAction=action||'submit_'+kind;
  let entry=forms.get(host);
- if(!entry||entry.kind!==kind){entry?.control.dispose();entry={kind,control:challenge({kind,host})};forms.set(host,entry);}
+ if(!entry||entry.kind!==kind||entry.action!==challengeAction){entry?.control.dispose();entry={kind,action:challengeAction,control:challenge({kind,host,action:challengeAction})};forms.set(host,entry);}
  entry.control.prepare();
 }
 export async function captchaToken(options={}){
  const entry=options.host&&forms.get(options.host);
- if(entry&&entry.kind===options.kind&&!options.sitekey&&!options.action)return entry.control.take();
+ const action=options.action||'submit_'+options.kind;
+ if(entry&&entry.kind===options.kind&&entry.action===action&&!options.sitekey)return entry.control.take();
  const control=challenge(options);try{return await control.take();}finally{control.dispose();}
 }
 export function releaseCaptcha(host){const entry=forms.get(host);entry?.control.dispose();forms.delete(host);}

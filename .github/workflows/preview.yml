@@ -33,9 +33,10 @@ jobs:
           restore-keys: |
             preview-fingerprinted-assets-
 
-      - name: Build preview with content-hashed assets
+      - name: Check JavaScript syntax and build preview
         run: |
           node --check scripts/build.mjs
+          while IFS= read -r -d '' file; do node --input-type=module --check < "$file"; done < <(find . -type f \( -name '*.js' -o -name '*.mjs' \) -not -path './.git/*' -print0)
           node scripts/build.mjs
 
       - name: Configure GitHub Pages
