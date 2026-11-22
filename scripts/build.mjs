@@ -73,9 +73,10 @@ async function buildModule(relativeSource) {
 
 const app = await buildModule('app.js');
 const chatUi = await buildModule('chat/ui.mjs');
-const adminModule = await buildModule('chat/admin.mjs');
-const [originalCss, stylesCss, luxuryCss, chatCss, configJs, supabaseJs] = await Promise.all([
-  copyHashed('original.css'), copyHashed('styles.css'), copyHashed('luxury.css'), copyHashed('chat/chat.css'),
+const chatAdminModule = await buildModule('chat/admin.mjs');
+const adminModule = await buildModule('admin/admin.mjs');
+const [originalCss, stylesCss, luxuryCss, chatCss, adminCss, configJs, supabaseJs] = await Promise.all([
+  copyHashed('original.css'), copyHashed('styles.css'), copyHashed('luxury.css'), copyHashed('chat/chat.css'), copyHashed('admin/admin.css'),
   copyHashed('config.js'), copyHashed('vendor/supabase.js'),
 ]);
 
@@ -105,8 +106,16 @@ function replaceAdminReference(attribute, original, replacement) {
 replaceAdminReference('href', 'chat/admin.css', await copyHashed('chat/admin.css'));
 replaceAdminReference('src', 'config.js', configJs);
 replaceAdminReference('src', 'vendor/supabase.js', supabaseJs);
-replaceAdminReference('src', 'chat/admin.mjs', adminModule.url);
+replaceAdminReference('src', 'chat/admin.mjs', chatAdminModule.url);
+
 await writeFile(path.join(dist, 'chat-admin.html'), adminHtml);
+
+let fullAdminHtml = await readFile(path.join(root, 'admin.html'), 'utf8');
+fullAdminHtml = fullAdminHtml.replace('href="admin/admin.css"', 'href="' + adminCss + '"');
+fullAdminHtml = fullAdminHtml.replace('src="config.js"', 'src="' + configJs + '"');
+fullAdminHtml = fullAdminHtml.replace('src="vendor/supabase.js"', 'src="' + supabaseJs + '"');
+fullAdminHtml = fullAdminHtml.replace('src="admin/admin.mjs"', 'src="' + adminModule.url + '"');
+await writeFile(path.join(dist, 'admin.html'), fullAdminHtml);
 await writeFile(path.join(dist, '.nojekyll'), '');
 for (const file of ['SUPABASE-LICENSE', 'VERSION.txt']) {
   try {
@@ -119,4 +128,4 @@ for (const file of ['SUPABASE-LICENSE', 'VERSION.txt']) {
 }
 await rm(assetCache, { recursive: true, force: true });
 await cp(assets, assetCache, { recursive: true });
-console.log('Built fingerprinted preview assets: ' + completed.size + ' modules, 4 stylesheets, config and Supabase client.');
+console.log('Built fingerprinted preview assets: ' + completed.size + ' modules, 5 stylesheets, config and Supabase client.');
