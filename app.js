@@ -326,15 +326,35 @@ async function preloadAllConfessions(){
 function story(item,options={}){
  const article=node('article','story');article.dataset.confessionId=String(item.id);if(commentWarmObserver)commentWarmObserver.observe(article);else warmComments(item.id);if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
  const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
- const comments=node('h3','comment-title','Komentari');const commentsList=node('div','comment-list');commentsArea.hidden=true;commentsArea.append(commentsList);
+ const comments=node('h3','comment-title','Komentari');commentsArea.hidden=true;
+ let commentsLoaded=false;
+ const commentsButton=button('💬 …',async b=>{
+  const opening=commentsArea.hidden;
+  commentsArea.hidden=!opening;
+  b.setAttribute('aria-expanded',String(opening));
+  if(opening&&!commentsLoaded){
+   commentsLoaded=true;
+   try{await commentBranch(item.id,null,commentsArea,refreshContext,null,comments);}
+   catch(error){commentsArea.replaceChildren(node('p','hint error',error.message));commentsLoaded=false;}
+  }
+ },'action comment-entry-button');
+ commentsButton.setAttribute('aria-expanded','false');
+ commentsButton.setAttribute('aria-label','Otvori komentare');
+ commentsButton.title='Otvori komentare';
  if(!options.detail)article.addEventListener('click',event=>{
   if(event.target.closest('.share-story-corner,.comments-area,button,a,input,textarea,select,label'))return;
   navigateToConfession(item.id);
  },true);
  const favorite=button('♡',async b=>{const previous=b.getAttribute('aria-pressed')==='true',enabled=!previous;setFavorite(enabled);pulseHeart(b);try{const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);}catch(error){setFavorite(previous);throw error;}},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
  function setFavorite(value){favorite.textContent=value?'♥':'♡';favorite.setAttribute('aria-pressed',String(value));favorite.classList.toggle('selected',value);applyHeartStyle(favorite,'confession',item.id,value);}
- async function refreshContext(context){context ||= await request('context',{id:item.id});comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);}
- watchState(item.id,'context',row,context=>{comments.textContent='Komentari'+(context.comment_count===null?'':' ('+context.comment_count+')');setFavorite(context.favorite,context.favorite_style);});
+ function updateCommentCount(context){
+  const count=context?.comment_count,label=count===null||count===undefined?'…':String(count);
+  comments.textContent='Komentari'+(label==='…'?'':' ('+label+')');
+  commentsButton.textContent='💬 '+label;
+  commentsButton.setAttribute('aria-label',label==='…'?'Otvori komentare':'Otvori komentare, broj komentara: '+label);
+ }
+ async function refreshContext(context){context ||= await request('context',{id:item.id});updateCommentCount(context);setFavorite(context.favorite,context.favorite_style);}
+ watchState(item.id,'context',row,context=>{updateCommentCount(context);setFavorite(context.favorite,context.favorite_style);});
  const shareButton=button('⧉',async()=>{
   persistFeedState();
   const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('ispovest',String(item.id));
@@ -344,8 +364,8 @@ function story(item,options={}){
    const copied=document.execCommand('copy');field.remove();if(!copied)throw new Error('Kopiranje nije uspelo. Pokušaj ponovo.');toast('Direktni link ispovesti je kopiran.');
   }
  },'action share-story-corner');shareButton.setAttribute('aria-label','Kopiraj direktni link do ispovesti');shareButton.setAttribute('title','Kopiraj link');
- const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,node('span','action-spacer'),reportButton);article.append(shareButton,row,commentsArea);
- if(options.detail){commentsArea.hidden=false;void commentBranch(item.id,null,commentsArea,refreshContext,null,comments).catch(err=>{commentsArea.textContent=err.message;});}
+ const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,commentsButton,node('span','action-spacer'),reportButton);article.append(shareButton,row,commentsArea);
+ if(options.detail){commentsArea.hidden=false;commentsLoaded=true;commentsButton.setAttribute('aria-expanded','true');void commentBranch(item.id,null,commentsArea,refreshContext,null,comments).catch(err=>{commentsArea.textContent=err.message;commentsLoaded=false;});}
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
  const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!recorded){readTimer=setTimeout(()=>{recorded=true;request('read',{id:item.id}).catch(()=>{});observer.disconnect();},1500);}else clearTimeout(readTimer);},{threshold:.1});observer.observe(article);
