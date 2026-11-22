@@ -13,7 +13,7 @@ export async function openChat(){
  const account=el('div','chat-account'),blocked=el('div');settings.append(account,blocked);privacy.append(summary,settings);top.append(privacy);
  const status=el('p','chat-status');status.setAttribute('role','status');
  const list=el('div','chat-messages');list.setAttribute('aria-label','Poruke u zajedničkoj sobi');list.setAttribute('role','log');list.setAttribute('aria-live','polite');
- const form=el('form','chat-compose'),text=el('textarea');text.maxLength=2000;text.required=true;text.rows=1;text.placeholder='Napiši poruku…';text.setAttribute('aria-label','Poruka u zajedničkom chatu');
+ const form=el('form','chat-compose'),text=el('textarea');text.maxLength=1000;text.required=true;text.rows=1;text.placeholder='Napiši poruku…';text.setAttribute('aria-label','Poruka u zajedničkom chatu');
  const send=el('button','chat-send','➤');send.type='submit';send.setAttribute('aria-label','Pošalji poruku');form.append(text,send);form.hidden=true;root.append(top,status,list,form);
  function resetAccess(message){profile=null;messages=[];pages.splice(1);list.replaceChildren();form.hidden=true;status.textContent=message;clearInterval(timer);}
  function render(items,older=false){
