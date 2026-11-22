@@ -31,3 +31,6 @@ button:disabled{opacity:.55;cursor:wait}
 .older{display:block;width:100%;margin:16px 0}
 [hidden]{display:none!important}
 @media(max-width:520px){.admin-shell{width:calc(100% - 20px);padding-top:20px}.toolbar{align-items:flex-start}.toolbar button{white-space:nowrap}.panel,.message{padding:12px}}
+
+#email-code-form{display:grid;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid #3b3529}
+#email-code{letter-spacing:.18em;font-size:20px;max-width:260px}
