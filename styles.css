@@ -203,3 +203,11 @@ body.menu-open #menu-toggle{letter-spacing:normal;font-size:23px}
 .story-actions>.comment-entry-button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .comment-compose-area:not([hidden]){margin-top:8px}
 .comment-compose-area .discussion-form{margin-top:0}
+
+ 
+/* Floating quick-compose control: visible only while the sidebar is closed. */
+#quick-compose{position:fixed;z-index:999;left:0;top:max(58px,calc(env(safe-area-inset-top) + 48px));display:flex;align-items:center;justify-content:center;width:32px;height:38px;margin:0;padding:6px;border:0;border-radius:0;background:transparent;color:var(--gold);box-shadow:none;touch-action:manipulation}
+#quick-compose svg{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#quick-compose:hover{background:transparent;color:var(--gold-soft)}
+#quick-compose:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+body.menu-open #quick-compose{display:none}
