@@ -434,7 +434,6 @@ function navigateToFeed(){
  const url=new URL(window.location.href);url.searchParams.delete('ispovest');
  window.history.replaceState(null,'',url.pathname+url.search+url.hash);
  void initializeFeed();
-void initializeSecurity().catch(error=>toast(error.message));
 }
 async function openDirectConfession(id){
  const requestVersion=++detailGeneration;
