@@ -15,7 +15,7 @@
 .form .row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:5px}.form .hint{margin:4px 0}
 .form select{display:block;width:65vw;max-width:100%;margin-top:3px;background:transparent;color:var(--gold);border:0;border-bottom:1px solid var(--gold);border-radius:0;padding:7px 2px;font:inherit}
 /* Sidebar actions: the confession composer opens in the shared dialog. */
-.side-menu .panel h2 .compose-trigger{display:block;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:var(--gold);font-size:18px;font-weight:bold;line-height:1.25;text-align:left;text-shadow:0 0 1.35px rgba(255,218,104,.567),0 0 4.05px rgba(255,196,65,.27);box-shadow:none}
+.side-menu .panel h2 .compose-trigger{display:block;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:var(--gold);font-size:18px;font-weight:bold;line-height:1.25;text-align:left;text-shadow:0 0 1.82px rgba(255,218,104,.765),0 0 5.47px rgba(255,196,65,.365);box-shadow:none}
 .side-menu .panel h2 .compose-trigger:hover{color:var(--gold-soft);background:transparent}
 .menu-footer-links{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px}
 .menu-footer-links .text-button{flex:1 1 0;min-width:0;margin:0;padding:5px 0;text-align:center;font-size:11px;white-space:nowrap}
