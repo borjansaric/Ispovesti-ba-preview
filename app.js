@@ -4,7 +4,7 @@ import { request, authClient, isPreview, isLocal, prepareSubmission, initializeS
 const $ = s => document.querySelector(s);
 const feed = $('#feed'), dialog = $('#dialog');
 const dailyTabs={confession:$('#daily-confessions'),comment:$('#daily-comments')};
-let currentView='new',offset=0,generation=0,busy=false;
+let currentView='new',offset=0,generation=0,busy=false,hasMoreFeed=true;
 let detailGeneration=0;
 const feedSorts=new Set(['new','popular','likes','dislikes','comments','random']);
 let randomFeedSeed=crypto.randomUUID();
@@ -315,7 +315,7 @@ async function preloadAllConfessions(){
  allFeedPreloading=true;const view=currentView;
  try{
   // Continue fetching every page in the background; each page is rendered as soon as it arrives.
-  while(view===currentView&&!$('#more').hidden){
+  while(view===currentView&&hasMoreFeed){
    const before=offset;await load();
    if(offset===before)break;
   }
@@ -405,7 +405,7 @@ dailyTabs.comment.onclick=()=>selectDailyView('comment');
 async function load(reset=false){
  if(busy&&!reset)return;busy=true;const version=reset?++generation:generation;
  if(reset){offset=0;feed.replaceChildren();}
- $('#more').disabled=true;
+ 
  try{
   const dailyKind=currentView==='daily_confessions'?'confession':currentView==='daily_comments'?'comment':null;
   const isList=['favorites','recently_read','my_comments'].includes(currentView);
@@ -417,15 +417,15 @@ async function load(reset=false){
   if(dailyKind){
    for(const item of result.items)feed.append(dailyWinner(item,dailyKind));
    offset=result.items.length;
-   $('#more').hidden=true;
+   hasMoreFeed=false;
   }else{
    for(const item of result.items){if(currentView==='my_comments'){const entry=node('article','story my-comment-entry');entry.append(metadata(item),node('p','body-text',item.body));entry.append(button('Otvori ispovest',()=>navigateToConfession(item.confession_id),'action open-confession'));feed.append(entry);}else feed.append(story(item));}
    offset+=result.items.length;
-   $('#more').hidden=result.items.length<20;
+   hasMoreFeed=result.items.length===20;
   }
   if(!offset)feed.append(node('p','empty',dailyKind?(dailyKind==='confession'?'Još nema ispovesti za dnevni izbor.':'Još nema komentara za dnevni izbor.'):isList?'Ova privatna lista je još prazna.':'Još nema objavljenih ispovesti.'));
- }catch(err){if(version!==generation)return;if(reset)feed.replaceChildren(node('p','empty error',err.message));else toast(err.message);$('#more').hidden=false;}
- finally{if(version===generation){busy=false;$('#more').disabled=false;}}
+ }catch(err){if(version!==generation)return;if(reset)feed.replaceChildren(node('p','empty error',err.message));else toast(err.message);hasMoreFeed=false;}
+ finally{if(version===generation)busy=false;}
 }
 document.querySelectorAll('[data-feed-sort]').forEach(b=>b.onclick=()=>{
  currentView=b.dataset.feedSort;
@@ -442,7 +442,7 @@ document.querySelectorAll('[data-feed-sort]').forEach(b=>b.onclick=()=>{
 });
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;closeMenu();document.querySelectorAll('[data-view]').forEach(n=>n.classList.toggle('active',n===b));document.querySelectorAll('[data-feed-sort]').forEach(n=>{n.classList.remove('active');n.setAttribute('aria-pressed','false');});for(const tab of Object.values(dailyTabs)){tab.classList.remove('active');tab.setAttribute('aria-pressed','false');}$('#feed-subtitle').hidden=false;$('#feed-subtitle').textContent=['favorites','recently_read','my_comments'].includes(currentView)?'Privatno · samo u tvojoj anonimnoj sesiji':'Svaka priča ima svoje mesto.';load(true).then(()=>{if(feedSorts.has(currentView))void preloadAllConfessions();});});
 
-$('#more').onclick=()=>load();
+
 function navigateToConfession(id){
  const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('ispovest',String(id));
  if(url.href===window.location.href)return;
@@ -464,10 +464,10 @@ async function openDirectConfession(id){
   if(!result?.item)throw new Error('Ova ispovest trenutno nije dostupna.');
   const back=button('← Nazad na ispovesti',navigateToFeed,'text-button direct-story-back');
   const detail=story(result.item,{detail:true});detail.classList.add('direct-story');
-  feed.replaceChildren(back,detail);$('#more').hidden=true;$('#feed-subtitle').hidden=true;
+  feed.replaceChildren(back,detail);hasMoreFeed=false;$('#feed-subtitle').hidden=true;
   document.querySelector('.daily-tabs').hidden=true;
   document.title='Ispovest | Ispovesti.ba';
- }catch(err){feed.replaceChildren(node('p','empty error',err.message||'Ispovest nije pronađena.'));$('#more').hidden=true;}
+ }catch(err){feed.replaceChildren(node('p','empty error',err.message||'Ispovest nije pronađena.'));hasMoreFeed=false;}
 }
 async function initializeFeed(){
  const directId=new URLSearchParams(location.search).get('ispovest');
@@ -487,8 +487,8 @@ async function initializeFeed(){
  const descriptions={new:'Svaka priča ima svoje mesto.',popular:'Najpopularnije ispovesti.',likes:'Ispovesti sa najviše pozitivnih glasova.',dislikes:'Ispovesti sa najviše negativnih glasova.',comments:'Ispovesti sa najviše komentara.',random:'Nasumičan redosled ispovesti.',favorites:'Privatno · samo u tvojoj anonimnoj sesiji',recently_read:'Privatno · samo u tvojoj anonimnoj sesiji',my_comments:'Privatno · samo u tvojoj anonimnoj sesiji',daily_confessions:'Najlajkovanija ispovest za svaki od poslednjih sedam dana.',daily_comments:'Najlajkovaniji glavni komentar za svaki od poslednjih sedam dana.'};
  $('#feed-subtitle').textContent=descriptions[currentView]||'Svaka priča ima svoje mesto.';
  await load(true);
- if(saved&&Number.isFinite(Number(saved.offset))&&Number(saved.offset)>offset&&!$('#more').hidden){
-  while(offset<Number(saved.offset)&&!$('#more').hidden){const previous=offset;await load();if(offset===previous)break;}
+ if(saved&&Number.isFinite(Number(saved.offset))&&Number(saved.offset)>offset&&hasMoreFeed){
+  while(offset<Number(saved.offset)&&hasMoreFeed){const previous=offset;await load();if(offset===previous)break;}
  }
  if(saved&&Number.isFinite(Number(saved.scrollY)))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,Number(saved.scrollY))));
  if(feedSorts.has(currentView))void preloadAllConfessions();
