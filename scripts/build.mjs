@@ -73,6 +73,7 @@ async function buildModule(relativeSource) {
 
 const app = await buildModule('app.js');
 const chatUi = await buildModule('chat/ui.mjs');
+const adminModule = await buildModule('chat/admin.mjs');
 const [originalCss, stylesCss, luxuryCss, chatCss, configJs, supabaseJs] = await Promise.all([
   copyHashed('original.css'), copyHashed('styles.css'), copyHashed('luxury.css'), copyHashed('chat/chat.css'),
   copyHashed('config.js'), copyHashed('vendor/supabase.js'),
@@ -92,6 +93,20 @@ for (const [source, target] of [
 ]) replaceReference(source.endsWith('.css') ? 'href' : 'src', source, target);
 
 await writeFile(path.join(dist, 'index.html'), html);
+
+let adminHtml = await readFile(path.join(root, 'chat-admin.html'), 'utf8');
+function replaceAdminReference(attribute, original, replacement) {
+  const escaped = original.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+  const pattern = new RegExp('(' + attribute + '=["\\x27])' + escaped + '(?:\\?[^"\\x27]*)?(["\\x27])', 'g');
+  const matches = [...adminHtml.matchAll(pattern)];
+  if (matches.length !== 1) throw new Error('Expected exactly one admin ' + attribute + ' reference to ' + original + '; found ' + matches.length);
+  adminHtml = adminHtml.replace(pattern, '$1' + replacement + '$2');
+}
+replaceAdminReference('href', 'chat/admin.css', await copyHashed('chat/admin.css'));
+replaceAdminReference('src', 'config.js', configJs);
+replaceAdminReference('src', 'vendor/supabase.js', supabaseJs);
+replaceAdminReference('src', 'chat/admin.mjs', adminModule.url);
+await writeFile(path.join(dist, 'chat-admin.html'), adminHtml);
 await writeFile(path.join(dist, '.nojekyll'), '');
 for (const file of ['SUPABASE-LICENSE', 'VERSION.txt']) {
   try {

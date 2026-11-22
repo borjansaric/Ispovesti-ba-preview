@@ -4,7 +4,7 @@ const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className
 const button=(label,run,cls='chat-small')=>{const b=el('button',cls,label);b.type='button';b.onclick=()=>Promise.resolve(run()).catch(e=>alert(e.message));return b;};
 export async function openChat(){
  const dialog=document.querySelector('#dialog'),root=el('section','chat-panel');let stopped=false,polling=false,timer,profile,sending=false,requestId,lastBody,pendingMessage=null,initial=true,noOlder=false,activeActionMenu=null;
- const pages=[null];let messages=[];const messageNodes=new Map();
+ let messages=[];const messageNodes=new Map();
  if(document.body.classList.contains('menu-open'))document.querySelector('#menu-toggle').click();
  dialog.classList.add('chat-room');document.body.classList.add('chat-open');document.querySelector('#dialog-title').textContent='Anonimni chat';document.querySelector('#dialog-body').replaceChildren(root);
  const close=document.querySelector('#close-dialog');close.setAttribute('aria-label','Vrati se na ispovesti');if(!dialog.open)dialog.showModal();
@@ -15,7 +15,7 @@ export async function openChat(){
  const list=el('div','chat-messages');list.setAttribute('aria-label','Poruke u zajedničkoj sobi');list.setAttribute('role','log');list.setAttribute('aria-live','polite');
  const form=el('form','chat-compose'),text=el('textarea');text.maxLength=1000;text.required=true;text.rows=1;text.placeholder='Napiši poruku…';text.setAttribute('aria-label','Poruka u zajedničkom chatu');
  const send=el('button','chat-send','➤');send.type='submit';send.setAttribute('aria-label','Pošalji poruku');form.append(text,send);form.hidden=true;root.append(top,status,list,form);
- function resetAccess(message){profile=null;messages=[];pages.splice(1);list.replaceChildren();form.hidden=true;status.textContent=message;clearInterval(timer);}
+ function resetAccess(message){profile=null;messages=[];list.replaceChildren();form.hidden=true;status.textContent=message;clearInterval(timer);}
  function render(items,older=false){
   const atBottom=initial||list.scrollHeight-list.scrollTop-list.clientHeight<80,oldHeight=list.scrollHeight,oldTop=list.scrollTop;
   const desired=[],wanted=new Set();
@@ -43,13 +43,13 @@ export async function openChat(){
   if(older)list.scrollTop=oldTop+list.scrollHeight-oldHeight;else if(atBottom)list.scrollTop=list.scrollHeight;else list.scrollTop=oldTop;initial=false;
  }
  async function refresh(older=false,initialHistory=null){if(stopped||polling||!profile?.active||document.hidden||activeActionMenu)return;polling=true;
-  try{const responses=[];if(initialHistory){responses.push(initialHistory);}else{for(const cursor of pages){responses.push(await chatRequest('history',cursor?{before:cursor}:{}));if(stopped)return;}}
+  try{const responses=[initialHistory||await chatRequest('history')];if(stopped)return;
    if(activeActionMenu)return;
    const latest=responses[0],cutoff=Date.parse(latest.history_cutoff),seen=new Map();for(const r of responses)for(const m of r.items)if(Date.parse(m.created_at)>cutoff)seen.set(m.id,m);
    messages=[...seen.values()].sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)||(BigInt(a.id)<BigInt(b.id)?-1:1));
    if(pendingMessage&&!seen.has(pendingMessage.id))messages.push(pendingMessage);
    root.dataset.ownSide=latest.side||profile.side||'left';
-   noOlder=responses.at(-1).items.length<100;render(messages,older);form.hidden=false;
+   noOlder=true;render(messages,older);form.hidden=false;
   }catch(e){if(stopped)return;if([401,403].includes(e.status))resetAccess(e.message);else status.textContent=e.message;}
   finally{polling=false;}
  }
@@ -58,7 +58,6 @@ export async function openChat(){
    blocked.replaceChildren();for(const [i,b]of (profile.blocked||[]).entries())blocked.append(button('Odblokiraj korisnika '+(i+1),async()=>{await chatRequest('unblock',{target:b.id});await loadProfile();}));
    form.hidden=!profile.active;if(profile.active){status.textContent='';await refresh(false,bootstrap.history);clearInterval(timer);timer=setInterval(()=>refresh(),1500);}else status.textContent='Chat trenutno nije dostupan.';
   }catch(e){resetAccess(e.message);}}
- list.addEventListener('scroll',async()=>{if(list.scrollTop>36||polling||noOlder||!messages.length)return;const cursor=messages[0].id;if(pages.includes(cursor))return;pages.push(cursor);await refresh(true);});
  form.onsubmit=async event=>{
   event.preventDefault();if(sending)return;
   const draft=text.value.trim();
