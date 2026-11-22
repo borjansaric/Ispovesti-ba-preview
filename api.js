@@ -2,19 +2,22 @@ import { captchaToken, prepareCaptcha, releaseCaptcha } from './captcha.js?v=roo
 const config = window.ISPOVESTI_CONFIG || {};
 export const isPreview = config.mode === 'preview';
 export const isLocal = config.mode === 'local';
-let captchaClearancePromise,captchaClearanceVerified=false;
+let captchaClearancePromise,captchaClearanceUid=null;
 async function ensureCaptchaClearance(host=document.body){
- if(isPreview||isLocal||captchaClearanceVerified)return true;
+ if(isPreview||isLocal)return true;
  if(!captchaClearancePromise)captchaClearancePromise=(async()=>{
+  const initialSession=await session(),initialUid=initialSession?.user?.id;
+  if(!initialUid)throw new Error('Anonimna sesija trenutno nije dostupna. Pokušaj kasnije.');
+  if(captchaClearanceUid===initialUid)return true;
   const current=await networkRequest('captcha_init',{});
-  if(current.verified===true){captchaClearanceVerified=true;return true;}
+  if(current.verified===true){captchaClearanceUid=(await session()).user.id;return true;}
   if(current.required!==true)throw new Error('Sigurnosna provjera nije dostupna. Pokušaj kasnije.');
   prepareCaptcha({kind:'entry',host,action:'app_entry'});
   try{
    const token=await captchaToken({kind:'entry',host,action:'app_entry'});
    const result=await networkRequest('captcha_init',{captcha_token:token});
    if(result.verified!==true)throw new Error('Sigurnosna provjera nije potvrđena. Pokušaj ponovo.');
-   captchaClearanceVerified=true;return true;
+   captchaClearanceUid=(await session()).user.id;return true;
   }finally{releaseCaptcha(host);}
  })().finally(()=>{captchaClearancePromise=null;});
  return captchaClearancePromise;
