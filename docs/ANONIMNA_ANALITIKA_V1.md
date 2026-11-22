@@ -7,7 +7,7 @@
 - Pregledač čuva nasumični UUID u first-party localStorage prostoru.
 - Testni Edge Function prima UUID, izračunava serverski zaštićeni SHA-256 sažetak i u bazu šalje samo sažetak.
 - U bazi se čuvaju samo sažetak i UTC datum; RLS je uključen, a direktan pristup anon/authenticated ulogama je ukinut.
-- Zapisi stariji od 180 dana brišu se prilikom novog upisa.
+- Zapisi stariji od 180 dana brišu se svakodnevnim `pg_cron` zadatkom; dodatno se čiste prilikom novog dnevnog upisa.
 
 ## Metrike
 - Jedinstveni pregledači u posljednjih 30 dana.
