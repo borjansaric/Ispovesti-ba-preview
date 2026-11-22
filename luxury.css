@@ -99,20 +99,3 @@ button:disabled{opacity:.55}
  opacity:.72;
 }
 .site-header h1,.site-header p{position:relative;z-index:1}
-
-
-/* Anonymous in-app reply notifications. */
-.side-menu .private-actions .notification-count{
- display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
- min-width:18px;height:18px;margin-left:auto;padding:0 5px;border-radius:999px;
- background:var(--gold);color:#17130a;font-size:10px;font-weight:800;line-height:1;
-}
-.side-menu .private-actions .notification-count[hidden]{display:none}
-.notification-panel{display:flex;flex-direction:column;gap:8px;min-width:0}
-.notification-mark-all{align-self:flex-start;margin:0 0 4px;padding:4px 0;color:var(--gold);font-size:12px}
-.notification-item{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:10px 0;border-bottom:1px solid var(--border)}
-.notification-item.unread{padding-left:10px;border-left:2px solid var(--gold)}
-.notification-text{color:var(--text);font-size:13px;line-height:1.4}
-.notification-time,.notification-retention{color:var(--muted);font-size:11px}
-.notification-open{margin:1px 0 0;padding:3px 0;color:var(--gold);font-size:12px}
-.notification-retention{margin:8px 0 0;line-height:1.4}
