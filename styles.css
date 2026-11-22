@@ -196,3 +196,8 @@ body{padding-left:max(32px,env(safe-area-inset-left))}
 body.menu-open #menu-toggle{letter-spacing:normal;font-size:23px}
 .comment.pending{opacity:.78}
 .comment-pending{color:var(--muted);font-size:11px}
+
+/* Compact comment-count control opens the discussion directly inside each feed card. */
+.story-actions>.comment-entry-button{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:0;margin:0;padding:4px 5px;border:0;border-radius:0;background:transparent;color:var(--gold);font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap;box-shadow:none}
+.story-actions>.comment-entry-button:hover,.story-actions>.comment-entry-button[aria-expanded="true"]{background:transparent;color:var(--gold-soft);text-shadow:0 0 6px rgba(255,218,104,.32)}
+.story-actions>.comment-entry-button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
