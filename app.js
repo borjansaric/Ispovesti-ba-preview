@@ -63,22 +63,21 @@ function setMenu(open){
 }
 menuToggle.onclick=()=>{const open=!document.body.classList.contains('menu-open');setMenu(open);if(!open)menuToggle.focus();};
 menuOverlay.onclick=()=>{closeMenu();menuToggle.focus();};
-// Touch gesture: swipe right from the left screen edge to open; swipe left on the open menu to close.
+// Touch gesture: swipe right from the left screen edge to open.
+// Closing remains available through the existing outside-click overlay and close button.
 let menuSwipeStart=null;
 document.addEventListener('pointerdown',event=>{
  if(event.pointerType!=='touch')return;
  const isOpen=document.body.classList.contains('menu-open');
- if((!isOpen&&event.clientX<=28)||(isOpen&&sideMenu.contains(event.target))){
-  menuSwipeStart={x:event.clientX,y:event.clientY,open:isOpen};
- }else menuSwipeStart=null;
+ if(!isOpen&&event.clientX<=28)menuSwipeStart={x:event.clientX,y:event.clientY};
+ else menuSwipeStart=null;
 },{passive:true});
 document.addEventListener('pointerup',event=>{
  if(!menuSwipeStart||event.pointerType!=='touch')return;
- const dx=event.clientX-menuSwipeStart.x,dy=event.clientY-menuSwipeStart.y,wasOpen=menuSwipeStart.open;
+ const dx=event.clientX-menuSwipeStart.x,dy=event.clientY-menuSwipeStart.y;
  menuSwipeStart=null;
  if(Math.abs(dy)>Math.abs(dx)*.8)return;
- if(!wasOpen&&dx>65)setMenu(true);
- else if(wasOpen&&dx< -65){setMenu(false);menuToggle.focus();}
+ if(dx>65)setMenu(true);
 },{passive:true});
 document.addEventListener('pointercancel',()=>{menuSwipeStart=null;},{passive:true});
 document.addEventListener('keydown',event=>{
