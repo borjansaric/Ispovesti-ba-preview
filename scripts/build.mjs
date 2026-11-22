@@ -96,8 +96,7 @@ await writeFile(path.join(dist, 'index.html'), html);
 
 let adminHtml = await readFile(path.join(root, 'chat-admin.html'), 'utf8');
 function replaceAdminReference(attribute, original, replacement) {
-  const escaped = original.replace(/[|\\{}()[\]^$+*?.]/g, '\\await writeFile(path.join(dist, 'index.html'), html);
-await writeFile(path.join(dist, '.nojekyll'), '');');
+  const escaped = original.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
   const pattern = new RegExp('(' + attribute + '=["\\x27])' + escaped + '(?:\\?[^"\\x27]*)?(["\\x27])', 'g');
   const matches = [...adminHtml.matchAll(pattern)];
   if (matches.length !== 1) throw new Error('Expected exactly one admin ' + attribute + ' reference to ' + original + '; found ' + matches.length);
