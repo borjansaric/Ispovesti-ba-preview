@@ -1,4 +1,4 @@
-:root{--bg:#111;--panel:#1c1c1c;--gold:#d6b15e;--text:#eee;--muted:#aaa;--border:#353535;--side-menu-padding:5px 10px 6px}
+:root{--bg:#111;--panel:#1c1c1c;--gold:#d6b15e;--text:#eee;--muted:#aaa;--border:#353535}
     *{box-sizing:border-box}
     body{margin:0;padding:0 14px 40px;font-family:Arial,sans-serif;line-height:1.6}
     header{text-align:center;padding:10px 10px 22px}
@@ -34,4 +34,4 @@
     .side-menu .private-panel{padding:0;margin:0;border:0;background:transparent}
     .side-menu .panel{padding:2px 0;margin:0 0 3px;border-radius:10px}
     .side-menu .panel h2{font-size:18px;margin-bottom:2px}
-    @media(max-width:480px){:root{--side-menu-padding:4px 9px 5px}.side-menu{padding:4px 0 5px 9px}}
+    @media(max-width:480px){.side-menu{padding:4px 0 5px 9px}}
