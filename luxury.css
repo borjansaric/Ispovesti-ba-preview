@@ -100,16 +100,16 @@ button:disabled{opacity:.55}
 }
 .site-header h1,.site-header p{position:relative;z-index:1}
 
-/* The user's own confession archive is the strongest private-menu entry. */
+/* Subtle gold emphasis for the user's own confession archive. */
 .side-menu .private-panel h2 .my-confessions-link{
  display:inline-flex;align-items:center;margin:0 0 8px;padding:0;border:0;background:transparent;
- color:#fff0b0;font-size:16px;font-weight:900;letter-spacing:.025em;text-align:left;
- text-shadow:0 0 4px rgba(255,226,130,1),0 0 10px rgba(255,196,65,.98),0 0 19px rgba(255,181,42,.82),0 0 30px rgba(255,170,25,.58);
+ color:#ead49a;font-size:16px;font-weight:800;letter-spacing:.015em;text-align:left;
+ text-shadow:0 0 2px rgba(255,218,104,.52),0 0 5px rgba(255,196,65,.22);
  box-shadow:none;
 }
 .side-menu .private-panel h2 .my-confessions-link:hover,
 .side-menu .private-panel h2 .my-confessions-link.active{
- color:#fff7d6;text-shadow:0 0 5px rgba(255,239,174,1),0 0 13px rgba(255,205,75,1),0 0 25px rgba(255,181,42,.9),0 0 38px rgba(255,170,25,.68);
+ color:#f5dfa2;text-shadow:0 0 3px rgba(255,218,104,.62),0 0 7px rgba(255,196,65,.3);
  background:transparent;
 }
 .side-menu .private-panel h2 .my-confessions-link:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
