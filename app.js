@@ -193,7 +193,7 @@ async function commentBranch(confessionId,parentId,container,refreshContext,conf
    else if(meta.phase==='confirmed'){const index=allItems.findIndex(x=>String(x.id)===String(meta.pendingId));if(index>=0)allItems[index]=item;else allItems.push(item);}
    else if(meta.phase==='rollback'){const index=allItems.findIndex(x=>String(x.id)===String(meta.pendingId));if(index>=0)allItems.splice(index,1);}
    await renderItems();if(meta.phase==='confirmed'&&context)refreshContext(context).catch(err=>toast(err.message));
-  }):null
+  }):null;
  container.replaceChildren(...(composer?[composer]:[]),...(heading?[heading]:[]),list,more);
  function newest(a,b){return Date.parse(b.created_at||b.published_at||0)-Date.parse(a.created_at||a.published_at||0);}
  function reactionCount(item){return Number(item._reactionCount??item.likes??item.reactions??item.reaction_count??0)||0;}
