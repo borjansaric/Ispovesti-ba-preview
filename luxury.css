@@ -104,12 +104,13 @@ button:disabled{opacity:.55}
 .side-menu .private-panel h2 .my-confessions-link{
  display:inline-flex;align-items:center;margin:0 0 8px;padding:0;border:0;background:transparent;
  color:#ead49a;font-size:16px;font-weight:800;letter-spacing:.015em;text-align:left;
- text-shadow:0 0 2px rgba(255,218,104,.52),0 0 5px rgba(255,196,65,.22);
+ -webkit-text-stroke:.12px rgba(234,212,154,.35);
+ text-shadow:0 0 1.4px rgba(255,218,104,.36),0 0 3.5px rgba(255,196,65,.15);
  box-shadow:none;
 }
 .side-menu .private-panel h2 .my-confessions-link:hover,
 .side-menu .private-panel h2 .my-confessions-link.active{
- color:#f5dfa2;text-shadow:0 0 3px rgba(255,218,104,.62),0 0 7px rgba(255,196,65,.3);
+ color:#f5dfa2;text-shadow:0 0 2.1px rgba(255,218,104,.43),0 0 4.9px rgba(255,196,65,.21);
  background:transparent;
 }
 .side-menu .private-panel h2 .my-confessions-link:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
