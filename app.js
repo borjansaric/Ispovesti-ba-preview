@@ -68,6 +68,7 @@ document.addEventListener('keydown',event=>{
 $('#close-dialog').onclick=()=>dialog.close();
 $('#write').onclick=()=>modal('Ispovest',contentForm('confession',{},()=>{}));
 $('#sidebar-compose-open').onclick=()=>{closeMenu();modal('Ispovest',contentForm('confession',{},()=>{}));};
+$('#quick-compose').onclick=()=>modal('Ispovest',contentForm('confession',{},()=>{}));
 $('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledaču. Za zbirnu statistiku povratka koristi se nasumični identifikator pregledača: analitička baza čuva samo njegov zaštićeni hash i datum posjete, bez povezivanja s anonimnom sesijom, IP adresom, putanjom stranice ili tekstom. Identifikator važi samo u istom pregledaču i na istom uređaju; brisanje podataka sajta resetuje ga. Analitički zapisi se automatski brišu nakon 180 dana. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
 $('#footer-privacy').onclick=()=>$('#privacy').click();
 $('#rules').onclick=()=>modal('Pravila zajednice',node('p','', 'Piši bez vređanja, uznemiravanja, pretnji i spama. Slike i linkovi nisu dozvoljeni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj. Čitanje, objavljivanje ispovesti, komentari, odgovori i glasanje su besplatni. Ispovesti čekaju red i objavljuje se najviše jedna na sat.'));
