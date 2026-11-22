@@ -113,8 +113,3 @@ button:disabled{opacity:.55}
  background:transparent;
 }
 .side-menu .private-panel h2 .my-confessions-link:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
-.my-confession-entry .story-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.my-confession-status{font-size:11px;font-weight:800;letter-spacing:.02em}
-.my-confession-status.status-queued{color:#f0d58e}
-.my-confession-status.status-published{color:#b9dfad}
-.my-confession-status.status-removed{color:#e39a9a}
