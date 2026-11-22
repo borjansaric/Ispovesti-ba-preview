@@ -244,7 +244,7 @@ async function commentBranch(confessionId,parentId,container,refreshContext,conf
   const detail=event.detail||{},args=detail.args||{};
   if(detail.action!=='comments'||String(args.confession_id)!==String(confessionId)||String(args.parent_id??'')!==String(parentId??''))return;
   const pageOffset=Math.max(0,Number(args.offset)||0),keep=allItems.filter(item=>item.pending||item._cacheOffset!==pageOffset),fresh=(detail.result?.items||[]).map(item=>({...item,_cacheOffset:pageOffset}));
-  allItems.splice(0,allItems.length,...keep,...fresh);void renderItems();
+  allItems.splice(0,allItems.length,...keep,...fresh);void loadCardData(fresh).then(renderItems);
  };
  window.addEventListener('ispovesti:read-cache-updated',cacheUpdate);
  if(confirmed)allItems.push(confirmed);
