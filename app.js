@@ -269,7 +269,7 @@ function comment(item,confessionId,refreshContext,focusOptions={}){
   row.append(node('span','action-spacer'),reportButton);wrap.append(card,row);commentMeta.add({item,wrap,count,favorite});updateCommentMeta();return wrap;
 }
 const inlineThreads=new WeakMap();let activeInlineThread=null,ignoreThreadPopstate=false;
- document.addEventListener('click',event=>{if(!activeInlineThread||event.target.closest('.inline-thread, .thread-active-comment'))return;activeInlineThread.close();});
+ document.addEventListener('click',event=>{if(!activeInlineThread||event.target.closest('.inline-thread, .thread-active-comment, .reply-toggle'))return;activeInlineThread.close(true,'replace');});
  async function openReplies(item,confessionId,refreshContext,trigger){
   const existing=inlineThreads.get(trigger);if(existing){existing.close();return;}
   activeInlineThread?.close(false,'replace');
