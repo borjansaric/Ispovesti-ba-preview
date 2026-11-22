@@ -29,9 +29,9 @@
     body.menu-open .side-menu{transform:translateX(0)} body.menu-open .menu-overlay{opacity:1;visibility:visible}
     .side-menu h2{margin:0 0 3px}.menu-links{display:grid;gap:2px;margin-bottom:4px}
     .menu-links button{margin:0;text-align:left;background:#242424;color:var(--text);border:1px solid #383838}
-    .menu-links button.active{color:var(--gold);border-color:var(--gold);background:#302819}
+    .menu-links button.active{color:var(--gold)}
     .side-menu .private-actions{display:grid;gap:2px}.side-menu .private-actions button{text-align:left;background:#242424;color:var(--text);border:1px solid #383838}
     .side-menu .private-panel{padding:0;margin:0;border:0;background:transparent}
     .side-menu .panel{padding:2px 0;margin:0 0 3px;border-radius:10px}
     .side-menu .panel h2{font-size:18px;margin-bottom:2px}
-    @media(max-width:480px){body{padding-right:10px}:root{--side-menu-padding:4px 9px 5px}.side-menu{padding:4px 0 5px 9px}}
+    @media(max-width:480px){:root{--side-menu-padding:4px 9px 5px}.side-menu{padding:4px 0 5px 9px}}
