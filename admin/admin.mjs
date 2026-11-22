@@ -37,15 +37,39 @@ async function renderDashboard(){
  viewContent.append(notice('Sigurnosna napomena testne baze','Provjera baze je prijavila da tabela community_test.reactions trenutno nema uključen RLS. Admin statistika je čita samo kroz serverski zaštićenu funkciju; ovu tabelu ne treba direktno izlagati browseru. Potrebna je zasebna provjera i odobrenje odgovarajuće RLS politike.',true));
  setStatus('Podaci su učitani iz testne baze.');
 }
+function sumTrend(rows,key){return rows.reduce((total,row)=>total+Number(row[key]||0),0);}
+function csvCell(value){const text=String(value??'');return '"'+text.replace(/"/g,'""')+'"';}
+function exportStatsCsv(d){
+ const lines=[['Pokazatelj','Vrijednost'],
+ ['Ispovijesti ukupno',d.confessions?.total],['Objavljene ispovijesti',d.confessions?.published],['Ispovijesti na čekanju',d.confessions?.queued],['Uklonjene ispovijesti',d.confessions?.removed],
+ ['Komentari',d.community?.comments],['Odgovori',d.community?.replies],['Reakcije',d.reactions],['Glasovi',d.votes],['Prijave sadržaja',d.reports],
+ ['Chat poruke',d.chat_messages?.total],['Vidljive chat poruke',d.chat_messages?.visible],['Uklonjene chat poruke',d.chat_messages?.removed],['Prijave chata',d.chat_reports],
+ [],['Dnevni trend','Sadržaj','Chat']];
+ for(const row of (d.trend_30d||[]))lines.push([row.day,row.content,row.chat]);
+ const csv='\\uFEFF'+lines.map(row=>row.map(csvCell).join(';')).join('\\r\\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+ const link=el('a');link.href=url;link.download='ispovesti-statistika-'+new Date().toISOString().slice(0,10)+'.csv';document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url);
+}
 async function renderStats(){
  setStatus('Učitavam statistiku…');const d=await loadDashboard();if(currentView!=='stats')return;viewContent.replaceChildren();
+ const toolbar=el('div','toolbar');toolbar.append(el('span','meta','Izvor: testna baza · dnevni podaci za posljednjih 30 dana'),actionButton('Izvezi CSV',()=>exportStatsCsv(d),'small'));viewContent.append(toolbar);
  viewContent.append(el('h3','','Sadržaj zajednice'));
  addStatGrid(viewContent,[['Ispovijesti ukupno',d.confessions?.total],['Objavljene',d.confessions?.published],['Na čekanju',d.confessions?.queued],['Uklonjene',d.confessions?.removed],['Komentari ukupno',d.community?.comments],['Komentari objavljeni',d.community?.published_comments],['Odgovori ukupno',d.community?.replies],['Odgovori objavljeni',d.community?.published_replies]]);
  viewContent.append(el('h3','','Aktivnost i reakcije'));
  addStatGrid(viewContent,[['Reakcije',d.reactions],['Glasovi',d.votes],['Prijave sadržaja',d.reports],['Chat poruke',d.chat_messages?.total],['Vidljive chat poruke',d.chat_messages?.visible],['Uklonjene chat poruke',d.chat_messages?.removed],['Prijave chata',d.chat_reports]]);
+ const trend=[...(d.trend_30d||[])].sort((a,b)=>String(a.day).localeCompare(String(b.day)));
+ const current=trend.slice(-7),previous=trend.slice(-14,-7);
+ viewContent.append(el('h3','','Poređenje aktivnosti · posljednjih 7 dana'));
+ if(current.length===7&&previous.length===7){
+  const currentContent=sumTrend(current,'content'),previousContent=sumTrend(previous,'content');
+  const currentChat=sumTrend(current,'chat'),previousChat=sumTrend(previous,'chat');
+  const change=(now,before)=>before===0?(now===0?'0%':'novo'):((now-before)/before*100).toFixed(1).replace('.',',')+'%';
+  addStatGrid(viewContent,[['Sadržaj · zadnjih 7 dana',currentContent,'Prethodnih 7 dana: '+fmt(previousContent)+' · promjena '+change(currentContent,previousContent)],['Chat · zadnjih 7 dana',currentChat,'Prethodnih 7 dana: '+fmt(previousChat)+' · promjena '+change(currentChat,previousChat)]]);
+ }else viewContent.append(notice('Poređenje još nije dostupno','Potrebno je najmanje 14 dana evidentiranih podataka.'));
  viewContent.append(el('h3','','Dnevni trend · posljednjih 30 dana'));
- const rows=el('div','trend');for(const item of (d.trend_30d||[])){const line=el('div','trend-row');line.append(el('span','',new Date(item.day+'T12:00:00').toLocaleDateString('sr-Latn-RS',{day:'2-digit',month:'2-digit'})),el('span','', 'Sadržaj: '+fmt(item.content)+' · Chat: '+fmt(item.chat)));rows.append(line);}viewContent.append(rows);
- viewContent.append(el('p','meta','Brojevi predstavljaju redove i događaje koji postoje u testnoj bazi; reakcije i glasovi prikazani su odvojeno.'));setStatus('Statistika je učitana.');
+ const rows=el('div','trend');for(const item of trend){const line=el('div','trend-row');line.append(el('span','',new Date(item.day+'T12:00:00').toLocaleDateString('sr-Latn-RS',{day:'2-digit',month:'2-digit'})),el('span','', 'Sadržaj: '+fmt(item.content)+' · Chat: '+fmt(item.chat)));rows.append(line);}viewContent.append(rows);
+ viewContent.append(el('p','meta','Poređenje koristi posljednjih 7 dana naspram prethodnih 7 dana. CSV sadrži trenutno dostupne zbirne pokazatelje i dnevni trend. Reakcije i glasovi prikazani su odvojeno; ovo nije analitika jedinstvenih posjetilaca.'));
+ setStatus('Statistika i poređenje su učitani.'); 
 }
 async function fetchConfessions(view){
  const found=[];let offset=0;
