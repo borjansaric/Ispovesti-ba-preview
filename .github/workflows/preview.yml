@@ -1,5 +1,6 @@
 name: Deploy isolated Ispovesti preview
-# Preview-only deployment; wait for artifact API visibility before deploying.
+# Preview-only deployment. Artifact names are unique per run attempt so a retry
+# cannot leave multiple artifacts with the same name for deploy-pages.
 
 on:
   push:
@@ -49,14 +50,17 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
+          name: github-pages-${{ github.run_attempt }}
 
       - name: Wait for Pages artifact indexing
         env:
           GH_TOKEN: ${{ github.token }}
+          PAGES_ARTIFACT_NAME: github-pages-${{ github.run_attempt }}
         run: |
           for attempt in $(seq 1 12); do
-            count=$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=github-pages" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{process.stdout.write(String(JSON.parse(s).total_count||0))}catch{process.stdout.write('0')}})")
-            if [ "$count" -gt 0 ]; then echo "Pages artifact is visible to the deployment API."; exit 0; fi
+            count=$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=$PAGES_ARTIFACT_NAME" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{process.stdout.write(String(JSON.parse(s).total_count||0))}catch{process.stdout.write('0')}})")
+            if [ "$count" -eq 1 ]; then echo "Exactly one Pages artifact is visible to the deployment API."; exit 0; fi
+            if [ "$count" -gt 1 ]; then echo "More than one Pages artifact with the expected name was found."; exit 1; fi
             echo "Artifact not indexed yet (attempt $attempt/12); waiting 5 seconds."
             sleep 5
           done
@@ -66,3 +70,5 @@ jobs:
       - name: Deploy preview only
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}
