@@ -15,8 +15,8 @@
 .form .row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:5px}.form .hint{margin:4px 0}
 .form select{display:block;width:65vw;max-width:100%;margin-top:3px;background:transparent;color:var(--gold);border:0;border-bottom:1px solid var(--gold);border-radius:0;padding:7px 2px;font:inherit}
 /* Sidebar actions: the confession composer opens in the shared dialog. */
-.side-menu .panel h2 .compose-trigger{display:block;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:#ffe7a1;font-size:18px;font-weight:900;line-height:1.25;text-align:left;-webkit-text-stroke:0 transparent;text-shadow:none;box-shadow:none}
-.side-menu .panel h2 .compose-trigger:hover{color:var(--gold-soft);background:transparent}
+.side-menu .panel h2 .compose-trigger{display:block;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:#c9ad70;font-size:18px;font-weight:850;line-height:1.25;text-align:left;-webkit-text-stroke:0 transparent;text-shadow:none;box-shadow:none}
+.side-menu .panel h2 .compose-trigger:hover{color:#d8c18a;background:transparent;text-shadow:none}
 .menu-footer-links{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px}
 .menu-footer-links .text-button{flex:1 1 0;min-width:0;margin:0;padding:5px 0;text-align:center;font-size:11px;white-space:nowrap}
 .side-menu .private-panel .chat-entry-button{display:block;width:calc(100% - 18px);margin:8px auto 0;padding:11px 8px;border:1px solid #e5c77d;border-radius:5px;background:linear-gradient(135deg,#8d6b2f 0%,#f7e4a4 17%,#c69d4b 38%,#fff1bd 52%,#b48735 73%,#f2d88f 100%);color:#17130a;font-size:14px;font-weight:900;letter-spacing:.16em;text-align:center;text-shadow:0 1px 0 rgba(255,255,255,.34);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 4px rgba(80,49,8,.28),0 4px 12px rgba(0,0,0,.42)}
