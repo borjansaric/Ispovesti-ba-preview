@@ -405,12 +405,7 @@ dailyTabs.confession.onclick=()=>selectDailyView('confession');
 dailyTabs.comment.onclick=()=>selectDailyView('comment');
 function myConfessionEntry(item){
  const card=node('article','story my-confession-entry');
- const meta=node('div','story-meta');
- const labels={queued:'Čeka objavljivanje',published:'Objavljena',removed:'Uklonjena'};
- const status=node('span','my-confession-status status-'+String(item.state||'unknown'),labels[item.state]||'Status nije dostupan');
- const stamp=node('time','',date(item.published_at||item.created_at));stamp.dateTime=item.published_at||item.created_at||'';
- meta.append(status,stamp);
- card.append(meta,node('p','body-text',item.body));
+ card.append(node('p','body-text',item.body));
  if(item.state==='published')card.append(button('Pogledaj ispovest',()=>navigateToConfession(item.id),'action open-confession'));
  return card;
 }
