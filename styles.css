@@ -188,3 +188,11 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .direct-story{margin-top:2px}
 .direct-story-back{display:inline-block;margin:0 0 12px;padding:0;border:0;background:transparent;color:var(--gold);font-size:13px;font-weight:700;box-shadow:none}
 .direct-story-back:hover{background:transparent;color:var(--gold-soft)}
+
+/* Site navigation gutter and menu trigger belong to the site shell, not chat. */
+body{padding-left:max(32px,env(safe-area-inset-left))}
+#menu-toggle,body.menu-open #menu-toggle{position:fixed;left:0;top:max(10px,env(safe-area-inset-top));transform:none;width:30px;height:44px;padding:0;margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;color:var(--gold);font-size:17px;font-weight:normal;line-height:1;letter-spacing:-2px;touch-action:manipulation}
+#menu-toggle::after{content:"";position:absolute;inset:0;width:32px;height:44px}
+body.menu-open #menu-toggle{letter-spacing:normal;font-size:23px}
+.comment.pending{opacity:.78}
+.comment-pending{color:var(--muted);font-size:11px}
