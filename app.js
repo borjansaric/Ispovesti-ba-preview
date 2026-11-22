@@ -325,22 +325,25 @@ async function preloadAllConfessions(){
 }
 function story(item,options={}){
  const article=node('article','story');article.dataset.confessionId=String(item.id);if(commentWarmObserver)commentWarmObserver.observe(article);else warmComments(item.id);if(item.nickname)article.append(node('div','story-nickname',item.nickname));article.append(node('div','story-content body-text',item.body));const storyDate=node('div','story-date',date(item.published_at||item.created_at));article.append(storyDate);
- const row=node('div','story-actions'),commentsArea=node('section','comments-area comments');
- const comments=node('h3','comment-title','Komentari');commentsArea.hidden=true;
- let commentsLoaded=false;
- const commentsButton=button('💬 …',async b=>{
-  const opening=commentsArea.hidden;
-  commentsArea.hidden=!opening;
+ const row=node('div','story-actions'),commentsArea=node('section','comments-area comments'),commentComposeArea=node('section','comment-compose-area');
+ const comments=node('h3','comment-title','Komentari');commentsArea.hidden=true;commentComposeArea.hidden=true;
+ let composerCreated=false;
+ const commentsButton=button('💬 …',b=>{
+  const opening=commentComposeArea.hidden;
+  commentComposeArea.hidden=!opening;
   b.setAttribute('aria-expanded',String(opening));
-  if(opening&&!commentsLoaded){
-   commentsLoaded=true;
-   try{await commentBranch(item.id,null,commentsArea,refreshContext,null,comments);}
-   catch(error){commentsArea.replaceChildren(node('p','hint error',error.message));commentsLoaded=false;}
+  b.setAttribute('aria-label',opening?'Napiši komentar':'Zatvori polje za komentar');
+  if(opening&&!composerCreated){
+   composerCreated=true;
+   commentComposeArea.append(contentForm('comment',{confession_id:item.id},async(created,context,meta)=>{
+    if(meta.phase==='confirmed'&&context)await refreshContext(context);
+   }));
   }
+  if(opening)commentComposeArea.querySelector('textarea')?.focus({preventScroll:true});
  },'action comment-entry-button');
  commentsButton.setAttribute('aria-expanded','false');
- commentsButton.setAttribute('aria-label','Otvori komentare');
- commentsButton.title='Otvori komentare';
+ commentsButton.setAttribute('aria-label','Napiši komentar');
+ commentsButton.title='Napiši komentar';
  if(!options.detail)article.addEventListener('click',event=>{
   if(event.target.closest('.share-story-corner,.comments-area,button,a,input,textarea,select,label'))return;
   navigateToConfession(item.id);
@@ -364,8 +367,8 @@ function story(item,options={}){
    const copied=document.execCommand('copy');field.remove();if(!copied)throw new Error('Kopiranje nije uspelo. Pokušaj ponovo.');toast('Direktni link ispovesti je kopiran.');
   }
  },'action share-story-corner');shareButton.setAttribute('aria-label','Kopiraj direktni link do ispovesti');shareButton.setAttribute('title','Kopiraj link');
- const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,commentsButton,node('span','action-spacer'),reportButton);article.append(shareButton,row,commentsArea);
- if(options.detail){commentsArea.hidden=false;commentsLoaded=true;commentsButton.setAttribute('aria-expanded','true');void commentBranch(item.id,null,commentsArea,refreshContext,null,comments).catch(err=>{commentsArea.textContent=err.message;commentsLoaded=false;});}
+ const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,commentsButton,node('span','action-spacer'),reportButton);article.append(shareButton,row,commentComposeArea,commentsArea);
+ if(options.detail){commentsArea.hidden=false;void commentBranch(item.id,null,commentsArea,refreshContext,null,comments).catch(err=>{commentsArea.textContent=err.message;});}
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
  const observer=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!recorded){readTimer=setTimeout(()=>{recorded=true;request('read',{id:item.id}).catch(()=>{});observer.disconnect();},1500);}else clearTimeout(readTimer);},{threshold:.1});observer.observe(article);
