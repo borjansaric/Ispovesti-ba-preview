@@ -523,5 +523,4 @@ function trackAnonymousVisit(){
 }
 initializeFeed();
 trackAnonymousVisit();
-void initializeNotifications();
 void initializeSecurity().catch(error=>toast(error.message));
