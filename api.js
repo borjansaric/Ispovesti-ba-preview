@@ -9,13 +9,13 @@ async function ensureCaptchaClearance(host=document.body){
   const initialSession=await session(),initialUid=initialSession?.user?.id;
   if(!initialUid)throw new Error('Anonimna sesija trenutno nije dostupna. Pokušaj kasnije.');
   if(captchaClearanceUid===initialUid)return true;
-  const current=await networkRequest('captcha_init',{});
-  if(current.verified===true){captchaClearanceUid=(await session()).user.id;return true;}
+  const current=await networkRequest('captcha_init',{},initialSession);
+  if(current.verified===true){captchaClearanceUid=initialUid;return true;}
   if(current.required!==true)throw new Error('Sigurnosna provjera nije dostupna. Pokušaj kasnije.');
   prepareCaptcha({kind:'entry',host,action:'app_entry'});
   try{
    const token=await captchaToken({kind:'entry',host,action:'app_entry'});
-   const result=await networkRequest('captcha_init',{captcha_token:token});
+   const result=await networkRequest('captcha_init',{captcha_token:token},initialSession);
    if(result.verified!==true)throw new Error('Sigurnosna provjera nije potvrđena. Pokušaj ponovo.');
    captchaClearanceUid=(await session()).user.id;return true;
   }finally{releaseCaptcha(host);}
