@@ -221,7 +221,7 @@ async function commentBranch(confessionId,parentId,container,refreshContext,conf
    while(true){
     const r=await request('comments',{confession_id:confessionId,parent_id:parentId,offset});
     if(!r.items.length)break;
-    allItems.push(...r.items.map(item=>({...item,_cacheOffset:offset})));
+    r.items.forEach(item=>item._cacheOffset=offset);allItems.push(...r.items);
     await loadCardData(r.items);
     await renderItems();
     offset+=r.items.length;
@@ -231,7 +231,7 @@ async function commentBranch(confessionId,parentId,container,refreshContext,conf
  }
  async function loadAll(){
   const first=await request('comments',{confession_id:confessionId,parent_id:parentId,offset:0});
-  allItems.push(...first.items.map(item=>({...item,_cacheOffset:0})));
+  first.items.forEach(item=>item._cacheOffset=0);allItems.push(...first.items);
   await renderItems();
   if(first.items.length){
    void loadCardData(first.items).then(renderItems);
@@ -267,7 +267,8 @@ function comment(item,confessionId,refreshContext,focusOptions={}){
   const repliesButton=button('',()=>focusOptions.close?focusOptions.close():focusOptions.reply?focusOptions.reply(item):openReplies(item,confessionId,refreshContext,repliesButton),'reply-toggle');
   repliesButton.setAttribute('aria-label',focusOptions.close?'Zatvori odgovore':'Otvori ili napiši odgovore');repliesButton.append(count,arrow);if(!focusOptions.readOnly)row.append(repliesButton);
   row.append(node('span','action-spacer'),reportButton);wrap.append(card,row);commentMeta.add({item,wrap,count,favorite});updateCommentMeta();return wrap;
-}const inlineThreads=new WeakMap();let activeInlineThread=null,ignoreThreadPopstate=false;
+}
+const inlineThreads=new WeakMap();let activeInlineThread=null,ignoreThreadPopstate=false;
  document.addEventListener('click',event=>{if(!activeInlineThread||event.target.closest('.inline-thread, .thread-active-comment'))return;activeInlineThread.close();});
  async function openReplies(item,confessionId,refreshContext,trigger){
   const existing=inlineThreads.get(trigger);if(existing){existing.close();return;}
@@ -485,3 +486,4 @@ window.addEventListener('popstate',()=>{
  if(id)void openDirectConfession(id);else void initializeFeed();
 });
 initializeFeed();
+void initializeSecurity().catch(error=>toast(error.message));
