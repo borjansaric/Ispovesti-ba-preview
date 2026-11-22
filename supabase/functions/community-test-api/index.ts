@@ -66,7 +66,7 @@ Deno.serve(async(req:Request)=>{
   }
   let uid:string|null=null;
   if(!publicActions.has(action)){
-   const token=req.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];if(!token)fail('Potrebna je anonimna sesija.',401);
+   const token=req.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1]||'';if(!token)fail('Potrebna je anonimna sesija.',401);
    const response=await timed('auth',()=>fetch(url+'/auth/v1/user',{headers:{apikey:serviceKey,Authorization:'Bearer '+token},signal:AbortSignal.timeout(10000)}));
    if(!response.ok)fail('Sesija je istekla. Osvježi stranicu.',401);
    const user=await response.json();uid=user.id;if(!uid)fail('Neispravna sesija.',401);
