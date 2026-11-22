@@ -23,7 +23,7 @@ async function ensureCaptchaClearance(host=document.body){
  return captchaClearancePromise;
 }
 export function initializeSecurity(){return ensureCaptchaClearance(document.body);}
-export function prepareSubmission(){if(!isPreview&&!isLocal)void ensureCaptchaClearance(document.body).catch(()=>{});}
+export function prepareSubmission(){if(!isPreview&&!isLocal&&!captchaClearanceUid)void ensureCaptchaClearance(document.body).catch(()=>{});}
 let client, sessionPromise;
 export function authClient(admin = false) {
   if (isPreview) throw new Error('Administracija je dostupna samo na povezanom testnom ili živom okruženju.');
