@@ -139,10 +139,33 @@ async function renderQueue(){
  const list=el('div','list');viewContent.append(list);const items=(d.items||[]).filter(x=>x.kind==='confession');if(!items.length)list.append(empty('Nema ispovijesti na čekanju.'));else items.forEach(x=>list.append(renderContentCard(x)));setStatus('Na čekanju: '+items.length+'. Red je FIFO; panel ne mijenja redoslijed objava.');
 }
 async function renderAnalytics(){
- setStatus('Provjeravam dostupnost anonimne analitike…');const d=await community('admin_analytics');if(currentView!=='analytics')return;viewContent.replaceChildren();
- viewContent.append(notice(d.available?'Analitika je dostupna':'Analitika još nije dostupna',d.reason||'Nema podataka za prikaz.',!d.available));
- viewContent.append(el('p','meta','Za pouzdano mjerenje zadržavanja 10/20/30 dana potrebno je prvo odobriti i implementirati poseban anonimni izvor događaja. Ovaj panel ne uvodi identifikatore posjetilaca niti prikazuje procjene kao činjenice.'));
- setStatus('Status analitike je provjeren.');
+ setStatus('Učitavam anonimnu analitiku…');const d=await community('admin_analytics');if(currentView!=='analytics')return;viewContent.replaceChildren();
+ if(!d.available){viewContent.append(notice('Analitika nije dostupna',d.reason||'Podaci trenutno nisu dostupni.',true));setStatus('Analitika nije dostupna.');return;}
+ const since=d.data_since?new Date(d.data_since+'T12:00:00').toLocaleDateString('sr-Latn-RS'):'još nema podataka';
+ viewContent.append(notice('Način mjerenja','Broje se jedinstveni pregledači po UTC danu. Ne koristi se Auth UID, IP adresa, putanja stranice ni tekst sadržaja. Isti pregledač na više dana ostaje povezan samo preko nasumičnog identifikatora čiji se hash čuva na serveru.'));
+ viewContent.append(el('h3','','Posjete i povratnici · posljednjih 30 dana'));
+ addStatGrid(viewContent,[['Jedinstveni pregledači',d.unique_30d],['Novi pregledači',d.new_30d],['Povratnici',d.returning_30d],['Dana sa podacima',d.days_collected]]);
+ viewContent.append(el('h3','','Zadržavanje posjetilaca'));
+ const retentionGrid=el('div','stats-grid');
+ for(const item of (d.retention||[])){
+  const card=el('article','stat-card');
+  const percent=item.percent===null||item.percent===undefined?'—':Number(item.percent).toLocaleString('sr-Latn-RS',{maximumFractionDigits:1})+'%';
+  card.append(el('div','stat-label','Povratak tačno '+item.day+'. dan'),el('div','stat-value',percent),el('div','stat-note',fmt(item.returned)+' od '+fmt(item.cohort_size)+' posjetilaca u zreloj kohorti'));
+  retentionGrid.append(card);
+ }
+ viewContent.append(retentionGrid);
+ viewContent.append(el('p','meta','Zadržavanje se računa kao povratak tačno 10, 20. ili 30. dan nakon prve zabilježene posjete. Svaki period koristi do 30 dnevnih kohorti koje su dovoljno stare za mjerenje. Podaci počinju od dana uključivanja analitike; ranije posjete se ne mogu rekonstruisati.'));
+ viewContent.append(el('h3','','Dnevni trend · posljednjih 30 dana'));
+ const trend=el('div','trend');
+ for(const item of (d.daily||[])){
+  const line=el('div','trend-row');
+  const day=new Date(item.day+'T12:00:00').toLocaleDateString('sr-Latn-RS',{day:'2-digit',month:'2-digit'});
+  line.append(el('span','',day),el('span','','Jedinstveni: '+fmt(item.visitors)+' · novi: '+fmt(item.new_visitors)));
+  trend.append(line);
+ }
+ viewContent.append(trend);
+ viewContent.append(el('p','meta','Početak evidentiranja: '+since+'. Identifikator važi samo u istom pregledaču i na istom uređaju; brisanje podataka sajta ili korišćenje drugog uređaja može se prikazati kao novi posjetilac. Analitički zapisi čuvaju se najviše 180 dana.'));
+ setStatus('Anonimna analitika je učitana.');
 }
 async function verifyAdmin(session){currentSession=session;await community('admin_session');loginPanel.hidden=true;app.hidden=false;signOut.hidden=false;setView('dashboard');}
 async function beginEmailVerification(session){
