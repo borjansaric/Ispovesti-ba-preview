@@ -143,6 +143,7 @@ Deno.serve(async(req:Request)=>{
    // CAPTCHA clearance and reply-parent validation are enforced atomically in the database dispatcher.
    delete args.captcha_token;
   }
+  if(action==='my_confessions')return send(await timedRpc('community_test_my_confessions',uid,action,args));
   if(['admin_dashboard','admin_comments','admin_reports','admin_audit','admin_analytics'].includes(action))return send(await timedRpc('community_test_admin_read',uid,action,args));
   return send(await timedRpc('community_test_dispatch',uid,action,args));
  }catch(error){if(error instanceof HttpError)return send({error:error.message},error.status);if(error instanceof SyntaxError)return send({error:'Neispravan zahtjev.'},400);return send({error:'Server trenutno nije dostupan. Pokušaj ponovo.'},503);}
