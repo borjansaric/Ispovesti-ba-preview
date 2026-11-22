@@ -66,7 +66,7 @@ document.addEventListener('keydown',event=>{
 $('#close-dialog').onclick=()=>dialog.close();
 $('#write').onclick=()=>modal('Ispovest',contentForm('confession',{},()=>{}));
 $('#sidebar-compose-open').onclick=()=>{closeMenu();modal('Ispovest',contentForm('confession',{},()=>{}));};
-$('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledaču. Brisanje podataka pregledača može značiti gubitak privatnih lista i istorije. Nema javnih profila. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
+$('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledaču. Za zbirnu statistiku povratka koristi se nasumični identifikator pregledača: analitička baza čuva samo njegov zaštićeni hash i datum posjete, bez povezivanja s anonimnom sesijom, IP adresom, putanjom stranice ili tekstom. Identifikator važi samo u istom pregledaču i na istom uređaju; brisanje podataka sajta resetuje ga. Analitički zapisi se automatski brišu nakon 180 dana. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
 $('#footer-privacy').onclick=()=>$('#privacy').click();
 $('#rules').onclick=()=>modal('Pravila zajednice',node('p','', 'Piši bez vređanja, uznemiravanja, pretnji i spama. Slike i linkovi nisu dozvoljeni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj. Čitanje, objavljivanje ispovesti, komentari, odgovori i glasanje su besplatni. Ispovesti čekaju red i objavljuje se najviše jedna na sat.'));
 if(isLocal)$('#preview').textContent='Lokalni test · bez veze sa živim sajtom';
@@ -504,5 +504,22 @@ window.addEventListener('popstate',()=>{
  const id=new URLSearchParams(location.search).get('ispovest');
  if(id)void openDirectConfession(id);else void initializeFeed();
 });
+function trackAnonymousVisit(){
+ if(isPreview||isLocal)return;
+ try{
+  const idKey='ispovesti:analytics:visitor:v1',dayKey='ispovesti:analytics:last-day:v1';
+  let visitorId=localStorage.getItem(idKey);
+  if(!visitorId||!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(visitorId)){
+   visitorId=crypto.randomUUID();
+   localStorage.setItem(idKey,visitorId);
+  }
+  const today=new Date().toISOString().slice(0,10);
+  if(localStorage.getItem(dayKey)===today)return;
+  void request('track_visit',{visitor_id:visitorId}).then(()=>{
+   try{localStorage.setItem(dayKey,today);}catch{}
+  }).catch(()=>{});
+ }catch{}
+}
 initializeFeed();
+trackAnonymousVisit();
 void initializeSecurity().catch(error=>toast(error.message));
