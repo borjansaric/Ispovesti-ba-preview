@@ -367,7 +367,7 @@ function story(item,options={}){
    const copied=document.execCommand('copy');field.remove();if(!copied)throw new Error('Kopiranje nije uspelo. Pokušaj ponovo.');toast('Direktni link ispovesti je kopiran.');
   }
  },'action share-story-corner');shareButton.setAttribute('aria-label','Kopiraj direktni link do ispovesti');shareButton.setAttribute('title','Kopiraj link');
- const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,commentsButton,node('span','action-spacer'),reportButton);article.append(shareButton,row,commentComposeArea,commentsArea);
+ const reportButton=button('!',()=>report(item,reportButton),'action report');syncReportButton(reportButton,item,'confession');row.append(voteControls(item),favorite,...(options.detail?[]:[commentsButton]),node('span','action-spacer'),reportButton);article.append(shareButton,row,...(options.detail?[]:[commentComposeArea]),...(options.detail?[commentsArea]:[]));
  if(options.detail){commentsArea.hidden=false;void commentBranch(item.id,null,commentsArea,refreshContext,null,comments).catch(err=>{commentsArea.textContent=err.message;});}
  // A story is marked read after a visible part has remained visible for 1.5 seconds.
  let readTimer,recorded=false;
