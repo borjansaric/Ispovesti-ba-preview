@@ -2,19 +2,19 @@ import { captchaToken, prepareCaptcha, releaseCaptcha } from './captcha.js?v=roo
 const config = window.ISPOVESTI_CONFIG || {};
 export const isPreview = config.mode === 'preview';
 export const isLocal = config.mode === 'local';
-let captchaClearancePromise;
+let captchaClearancePromise,captchaClearanceVerified=false;
 async function ensureCaptchaClearance(host=document.body){
- if(isPreview||isLocal)return true;
+ if(isPreview||isLocal||captchaClearanceVerified)return true;
  if(!captchaClearancePromise)captchaClearancePromise=(async()=>{
   const current=await networkRequest('captcha_init',{});
-  if(current.verified===true)return true;
+  if(current.verified===true){captchaClearanceVerified=true;return true;}
   if(current.required!==true)throw new Error('Sigurnosna provjera nije dostupna. Pokušaj kasnije.');
   prepareCaptcha({kind:'entry',host,action:'app_entry'});
   try{
    const token=await captchaToken({kind:'entry',host,action:'app_entry'});
    const result=await networkRequest('captcha_init',{captcha_token:token});
    if(result.verified!==true)throw new Error('Sigurnosna provjera nije potvrđena. Pokušaj ponovo.');
-   return true;
+   captchaClearanceVerified=true;return true;
   }finally{releaseCaptcha(host);}
  })().finally(()=>{captchaClearancePromise=null;});
  return captchaClearancePromise;
