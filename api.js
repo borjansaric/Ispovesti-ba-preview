@@ -165,6 +165,10 @@ async function previewRequest(action, a) {
     s.contents.push(c);persist();return{success:true,id:c.id};
   }
   if(action==='confession'){if(!visible(item)||item.kind!=='confession')throw new Error('Ispovest nije dostupna.');return{item:safe(item)};}
+  if(action==='my_confessions') {
+    const rows=s.contents.filter(c=>c.mine&&c.kind==='confession').reverse();
+    return{items:rows.slice(offset,offset+20).map(c=>({id:c.id,body:c.body,nickname:c.nickname||null,state:c.state,created_at:c.created_at,published_at:c.published_at||null}))};
+  }
   if(action==='list') {
     let rows=a.list==='my_comments'?s.contents.filter(c=>c.mine&&c.kind!=='confession'&&visible(c)).reverse(): (a.list==='favorites'?s.favorites:s.recent).map(i=>s.contents.find(c=>c.id===i)).filter(visible);
     return{items:rows.slice(offset,offset+20).map(safe)};
