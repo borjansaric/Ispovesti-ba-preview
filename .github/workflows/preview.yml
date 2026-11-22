@@ -1,4 +1,5 @@
 name: Deploy isolated Ispovesti preview
+# Preview-only deployment; wait for artifact API visibility before deploying.
 
 on:
   push:
