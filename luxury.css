@@ -84,7 +84,7 @@ button:disabled{opacity:.55}
 /* Fine, flowing gold ribbons framing the existing masthead. */
 .site-header{isolation:isolate;overflow:hidden}
 .site-header::before{
- content:"";position:absolute;z-index:-1;pointer-events:none;
+ content:"";position:absolute;z-index:0;pointer-events:none;
  inset:-24px -18px;
  background:
   radial-gradient(ellipse 76% 150% at -3% -8%,
