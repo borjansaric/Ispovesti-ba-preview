@@ -45,87 +45,6 @@ function toast(text){$('#toast').textContent=text;clearTimeout(toast.timer);toas
 
 function modal(title,content){$('#dialog-title').textContent=title;$('#dialog-body').replaceChildren(content);if(!dialog.open)dialog.showModal();}
 
-const notificationButton=$('#notifications-open'),notificationCount=$('#notifications-count');
-let notificationItems=[],notificationRefreshPromise=null,notificationSubscribePromise=null,notificationChannel=null;
-function setNotificationCount(value){
- const count=Math.max(0,Number(value)||0);
- notificationCount.textContent=count>99?'99+':String(count);
- notificationCount.hidden=count===0;
- notificationButton.setAttribute('aria-label',count?('Obavještenja, '+count+' nepročitanih'):'Otvori obavještenja');
-}
-function notificationPanel(){
- const panel=node('div','notification-panel');
- const unread=notificationItems.some(item=>!item.read_at);
- if(unread)panel.append(button('Označi sve kao pročitano',async()=>{
-  await request('notifications_read_all');
-  await refreshNotifications(true);
- },'text-button notification-mark-all'));
- if(!notificationItems.length)panel.append(node('p','empty','Još nema odgovora na tvoje komentare.'));
- for(const item of notificationItems){
-  const entry=node('article','notification-item'+(!item.read_at?' unread':''));
-  entry.append(node('strong','notification-text','Neko je odgovorio na tvoj komentar.'));
-  const time=node('time','notification-time',date(item.created_at));time.dateTime=item.created_at||'';
-  entry.append(time,button('Otvori ispovijest',async()=>{
-   await request('notification_read',{id:item.id});
-   await refreshNotifications();
-   dialog.close();
-   navigateToConfession(item.confession_id);
-  },'text-button notification-open'));
-  panel.append(entry);
- }
- panel.append(node('p','notification-retention','Obavještenja se čuvaju 30 dana i vezana su za tvoju anonimnu sesiju na ovom uređaju.'));
- return panel;
-}
-async function refreshNotifications(render=false){
- if(notificationRefreshPromise)return notificationRefreshPromise;
- notificationRefreshPromise=(async()=>{
-  const result=await request('notifications',{limit:50});
-  notificationItems=Array.isArray(result.items)?result.items:[];
-  setNotificationCount(result.unread_count);
-  if(render||(dialog.open&&$('#dialog-title').textContent==='Obavještenja'))$('#dialog-body').replaceChildren(notificationPanel());
-  return result;
- })().finally(()=>{notificationRefreshPromise=null;});
- return notificationRefreshPromise;
-}
-notificationButton.onclick=()=>{
- closeMenu();
- modal('Obavještenja',notificationPanel());
- void refreshNotifications(true).catch(error=>toast(error.message));
-};
-async function subscribeNotifications(){
- if(notificationChannel)return;
- if(notificationSubscribePromise)return notificationSubscribePromise;
- notificationSubscribePromise=(async()=>{
-  const client=authClient();
-  const {data,error}=await client.auth.getSession();
-  if(error||!data.session?.user?.id)return;
-  await client.realtime.setAuth();
-  const channel=client.channel('notifications:'+data.session.user.id,{config:{private:true}})
-   .on('broadcast',{event:'reply_notification'},()=>{void refreshNotifications(true).catch(()=>{});})
-   .subscribe(status=>{
-    if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){
-     if(notificationChannel===channel)notificationChannel=null;
-    }
-   });
-  notificationChannel=channel;
- })().finally(()=>{notificationSubscribePromise=null;});
- return notificationSubscribePromise;
-}
-async function initializeNotifications(){
- if(isPreview||isLocal)return;
- try{await refreshNotifications();}catch{}
- try{await subscribeNotifications();}catch{}
-}
-document.addEventListener('visibilitychange',()=>{
- if(!document.hidden){
-  void refreshNotifications().catch(()=>{});
-  if(!notificationChannel)void subscribeNotifications().catch(()=>{});
- }
-});
-window.addEventListener('focus',()=>{
- void refreshNotifications().catch(()=>{});
- if(!notificationChannel)void subscribeNotifications().catch(()=>{});
-});
 const menuToggle=$('#menu-toggle'),sideMenu=$('#side-menu'),menuOverlay=$('#menu-overlay');
 function closeMenu(){setMenu(false);}
 function setMenu(open){
@@ -605,5 +524,4 @@ function trackAnonymousVisit(){
 }
 initializeFeed();
 trackAnonymousVisit();
-void initializeNotifications();
 void initializeSecurity().catch(error=>toast(error.message));
