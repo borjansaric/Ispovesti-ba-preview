@@ -69,7 +69,7 @@ let menuSwipeStart=null;
 document.addEventListener('pointerdown',event=>{
  if(event.pointerType!=='touch')return;
  const isOpen=document.body.classList.contains('menu-open');
- if(!isOpen&&event.clientX<=28)menuSwipeStart={x:event.clientX,y:event.clientY};
+ if(!isOpen)menuSwipeStart={x:event.clientX,y:event.clientY};
  else menuSwipeStart=null;
 },{passive:true});
 document.addEventListener('pointerup',event=>{
@@ -77,7 +77,7 @@ document.addEventListener('pointerup',event=>{
  const dx=event.clientX-menuSwipeStart.x,dy=event.clientY-menuSwipeStart.y;
  menuSwipeStart=null;
  if(Math.abs(dy)>Math.abs(dx)*.8)return;
- if(dx>65)setMenu(true);
+ if(dx>75)setMenu(true);
 },{passive:true});
 document.addEventListener('pointercancel',()=>{menuSwipeStart=null;},{passive:true});
 document.addEventListener('keydown',event=>{
