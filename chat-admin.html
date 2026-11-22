@@ -23,6 +23,10 @@
 <label for="password">Lozinka</label><input id="password" name="password" type="password" autocomplete="current-password" required>
 <button type="submit">Prijavi se</button>
 </form>
+<form id="email-code-form" hidden>
+<label for="email-code">Sigurnosni kod sa e-maila</label><input id="email-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" maxlength="10" required>
+<button type="submit">Potvrdi kod</button>
+</form>
 <p id="login-status" class="status" role="status"></p>
 </section>
 <section id="archive-panel" hidden>
