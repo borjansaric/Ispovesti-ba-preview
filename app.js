@@ -57,29 +57,38 @@ function setMenu(open){
   document.body.classList.remove('menu-open');
   menuCloseTimer=setTimeout(()=>{sideMenu.hidden=true;menuOverlay.hidden=true;},300);
  }
- menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'Zatvori meni':'Otvori meni');menuToggle.textContent=open?'×':'›››';
+ menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'Zatvori meni':'Otvori meni');menuToggle.textContent=open?'‹‹‹':'›››';
  for(const el of document.querySelectorAll('.site-header,main,footer'))el.inert=open;
  if(open){sideMenu.querySelector('button')?.focus();requestAnimationFrame(()=>window.dispatchEvent(new Event('ispovesti:layout-visible')));}
 }
 menuToggle.onclick=()=>{const open=!document.body.classList.contains('menu-open');setMenu(open);if(!open)menuToggle.focus();};
 menuOverlay.onclick=()=>{closeMenu();menuToggle.focus();};
-// Touch gesture: swipe right from the left screen edge to open.
-// Closing remains available through the existing outside-click overlay and close button.
+// Open the sidebar with a rightward horizontal swipe starting anywhere on the page.
 let menuSwipeStart=null;
-document.addEventListener('pointerdown',event=>{
- if(event.pointerType!=='touch')return;
- const isOpen=document.body.classList.contains('menu-open');
- if(!isOpen)menuSwipeStart={x:event.clientX,y:event.clientY};
+function beginMenuSwipe(x,y){
+ if(!document.body.classList.contains('menu-open'))menuSwipeStart={x,y};
  else menuSwipeStart=null;
+}
+function finishMenuSwipe(x,y){
+ if(!menuSwipeStart)return;
+ const dx=x-menuSwipeStart.x,dy=y-menuSwipeStart.y;
+ menuSwipeStart=null;
+ if(Math.abs(dx)>75&&dx>0&&Math.abs(dy)<Math.abs(dx)*0.8)setMenu(true);
+}
+document.addEventListener('pointerdown',event=>{
+ if(event.pointerType==='touch')beginMenuSwipe(event.clientX,event.clientY);
 },{passive:true});
 document.addEventListener('pointerup',event=>{
- if(!menuSwipeStart||event.pointerType!=='touch')return;
- const dx=event.clientX-menuSwipeStart.x,dy=event.clientY-menuSwipeStart.y;
- menuSwipeStart=null;
- if(Math.abs(dy)>Math.abs(dx)*.8)return;
- if(dx>75)setMenu(true);
+ if(event.pointerType==='touch')finishMenuSwipe(event.clientX,event.clientY);
 },{passive:true});
 document.addEventListener('pointercancel',()=>{menuSwipeStart=null;},{passive:true});
+document.addEventListener('touchstart',event=>{
+ const t=event.changedTouches[0];if(t)beginMenuSwipe(t.clientX,t.clientY);
+},{passive:true});
+document.addEventListener('touchend',event=>{
+ const t=event.changedTouches[0];if(t)finishMenuSwipe(t.clientX,t.clientY);
+},{passive:true});
+document.addEventListener('touchcancel',()=>{menuSwipeStart=null;},{passive:true});
 document.addEventListener('keydown',event=>{
  if(sideMenu.hidden||dialog.open)return;
  if(event.key==='Escape'){closeMenu();menuToggle.focus();}
