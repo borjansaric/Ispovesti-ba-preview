@@ -46,15 +46,41 @@ function toast(text){$('#toast').textContent=text;clearTimeout(toast.timer);toas
 function modal(title,content){$('#dialog-title').textContent=title;$('#dialog-body').replaceChildren(content);if(!dialog.open)dialog.showModal();}
 
 const menuToggle=$('#menu-toggle'),sideMenu=$('#side-menu'),menuOverlay=$('#menu-overlay');
+let menuCloseTimer=null;
 function closeMenu(){setMenu(false);}
 function setMenu(open){
- document.body.classList.toggle('menu-open',open);sideMenu.hidden=!open;menuOverlay.hidden=!open;
+ clearTimeout(menuCloseTimer);
+ if(open){
+  sideMenu.hidden=false;menuOverlay.hidden=false;
+  requestAnimationFrame(()=>document.body.classList.add('menu-open'));
+ }else{
+  document.body.classList.remove('menu-open');
+  menuCloseTimer=setTimeout(()=>{sideMenu.hidden=true;menuOverlay.hidden=true;},300);
+ }
  menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'Zatvori meni':'Otvori meni');menuToggle.textContent=open?'×':'›››';
  for(const el of document.querySelectorAll('.site-header,main,footer'))el.inert=open;
  if(open){sideMenu.querySelector('button')?.focus();requestAnimationFrame(()=>window.dispatchEvent(new Event('ispovesti:layout-visible')));}
 }
-menuToggle.onclick=()=>{const open=sideMenu.hidden;setMenu(open);if(!open)menuToggle.focus();};
+menuToggle.onclick=()=>{const open=!document.body.classList.contains('menu-open');setMenu(open);if(!open)menuToggle.focus();};
 menuOverlay.onclick=()=>{closeMenu();menuToggle.focus();};
+// Touch gesture: swipe right from the left screen edge to open; swipe left on the open menu to close.
+let menuSwipeStart=null;
+document.addEventListener('pointerdown',event=>{
+ if(event.pointerType!=='touch')return;
+ const isOpen=document.body.classList.contains('menu-open');
+ if((!isOpen&&event.clientX<=28)||(isOpen&&sideMenu.contains(event.target))){
+  menuSwipeStart={x:event.clientX,y:event.clientY,open:isOpen};
+ }else menuSwipeStart=null;
+},{passive:true});
+document.addEventListener('pointerup',event=>{
+ if(!menuSwipeStart||event.pointerType!=='touch')return;
+ const dx=event.clientX-menuSwipeStart.x,dy=event.clientY-menuSwipeStart.y,wasOpen=menuSwipeStart.open;
+ menuSwipeStart=null;
+ if(Math.abs(dy)>Math.abs(dx)*.8)return;
+ if(!wasOpen&&dx>65)setMenu(true);
+ else if(wasOpen&&dx< -65){setMenu(false);menuToggle.focus();}
+},{passive:true});
+document.addEventListener('pointercancel',()=>{menuSwipeStart=null;},{passive:true});
 document.addEventListener('keydown',event=>{
  if(sideMenu.hidden||dialog.open)return;
  if(event.key==='Escape'){closeMenu();menuToggle.focus();}
