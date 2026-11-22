@@ -436,7 +436,7 @@ async function load(reset=false){
    offset+=result.items.length;
    hasMoreFeed=result.items.length===20;
   }
-  if(!offset)feed.append(node('p','empty',dailyKind?(dailyKind==='confession'?'Još nema ispovesti za dnevni izbor.':'Još nema komentara za dnevni izbor.'):currentView==='my_confessions'?'Još nisi napisao nijednu ispovijest.':isList?'Ova privatna lista je još prazna.':'Još nema objavljenih ispovesti.'));
+  if(!offset)feed.append(node('p','empty',dailyKind?(dailyKind==='confession'?'Još nema ispovesti za dnevni izbor.':'Još nema komentara za dnevni izbor.'):currentView==='my_confessions'?'Još nisi napisao nijednu ispovest.':isList?'Ova privatna lista je još prazna.':'Još nema objavljenih ispovesti.'));
  }catch(err){if(version!==generation)return;if(reset)feed.replaceChildren(node('p','empty error',err.message));else toast(err.message);hasMoreFeed=false;}
  finally{if(version===generation)busy=false;}
 }
@@ -497,7 +497,7 @@ async function initializeFeed(){
   document.querySelectorAll('[data-feed-sort]').forEach(b=>{const active=b.dataset.feedSort===currentView;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
   for(const [key,tab] of Object.entries(dailyTabs)){const active=currentView===(key==='confession'?'daily_confessions':'daily_comments');tab.classList.toggle('active',active);tab.setAttribute('aria-pressed',String(active));}
  }
- const descriptions={new:'Svaka priča ima svoje mesto.',popular:'Najpopularnije ispovesti.',likes:'Ispovesti sa najviše pozitivnih glasova.',dislikes:'Ispovesti sa najviše negativnih glasova.',comments:'Ispovesti sa najviše komentara.',random:'Nasumičan redosled ispovesti.',favorites:'Privatno · samo u tvojoj anonimnoj sesiji',recently_read:'Privatno · samo u tvojoj anonimnoj sesiji',my_comments:'Privatno · samo u tvojoj anonimnoj sesiji',my_confessions:'Privatno · ispovijesti napisane u tvojoj anonimnoj sesiji',daily_confessions:'Najlajkovanija ispovest za svaki od poslednjih sedam dana.',daily_comments:'Najlajkovaniji glavni komentar za svaki od poslednjih sedam dana.'};
+ const descriptions={new:'Svaka priča ima svoje mesto.',popular:'Najpopularnije ispovesti.',likes:'Ispovesti sa najviše pozitivnih glasova.',dislikes:'Ispovesti sa najviše negativnih glasova.',comments:'Ispovesti sa najviše komentara.',random:'Nasumičan redosled ispovesti.',favorites:'Privatno · samo u tvojoj anonimnoj sesiji',recently_read:'Privatno · samo u tvojoj anonimnoj sesiji',my_comments:'Privatno · samo u tvojoj anonimnoj sesiji',my_confessions:'Privatno · ispovesti napisane u tvojoj anonimnoj sesiji',daily_confessions:'Najlajkovanija ispovest za svaki od poslednjih sedam dana.',daily_comments:'Najlajkovaniji glavni komentar za svaki od poslednjih sedam dana.'};
  $('#feed-subtitle').textContent=descriptions[currentView]||'Svaka priča ima svoje mesto.';
  await load(true);
  if(saved&&Number.isFinite(Number(saved.offset))&&Number(saved.offset)>offset&&hasMoreFeed){
