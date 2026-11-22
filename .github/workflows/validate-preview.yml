@@ -1,0 +1,39 @@
+name: Validate Ispovesti preview changes
+
+on:
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout preview repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check scripts/build.mjs
+          while IFS= read -r -d '' file; do
+            echo "Checking $file"
+            node --input-type=module --check < "$file"
+          done < <(find . -type f \( -name '*.js' -o -name '*.mjs' \) -not -path './.git/*' -not -path './dist/*' -print0)
+
+      - name: Check Supabase Edge Function TypeScript
+        run: deno check supabase/functions/community-test-api/index.ts
+
+      - name: Build preview without deploying
+        run: node scripts/build.mjs

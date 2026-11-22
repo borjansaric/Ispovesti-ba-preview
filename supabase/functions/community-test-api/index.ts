@@ -41,7 +41,7 @@ Deno.serve(async(req:Request)=>{
  const origin=req.headers.get('origin');
  const began=Date.now(),timings:Record<string,number>={};
  const timed=async<T>(name:string,work:()=>Promise<T>):Promise<T>=>{const at=Date.now();try{return await work();}finally{timings[name]=(timings[name]||0)+Date.now()-at;}};
- const timedRpc=(name:string,uid:string|null,action:string,args:Record<string,unknown>={})=>timed(name==='community_test_dispatch'?'database':name==='community_test_security'?'settings':name==='community_test_visitor_event'?'analytics_database':'admin_database',()=>rpc(name,uid,action,args));
+ const timedRpc=(name:string,uid:string|null,action:string,args:Record<string,unknown>={})=>timed(name==='community_test_dispatch'?'database':name==='community_test_security'?'settings':name==='community_test_visitor_event'?'analytics_database':name==='community_test_notifications'?'notifications_database':'admin_database',()=>rpc(name,uid,action,args));
  const headers:Record<string,string>={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','Vary':'Origin','Access-Control-Allow-Headers':'authorization, apikey, content-type, x-client-info','Access-Control-Allow-Methods':'POST, OPTIONS','X-Content-Type-Options':'nosniff'};
  if(origin&&allowed.includes(origin)){headers['Access-Control-Allow-Origin']=origin;headers['Timing-Allow-Origin']=origin;headers['Access-Control-Expose-Headers']='Server-Timing';}
  const send=(data:unknown,status=200)=>{headers['Server-Timing']=[...Object.entries(timings).map(([name,ms])=>name+';dur='+ms),'server;dur='+(Date.now()-began)].join(', ');return new Response(JSON.stringify(data),{status,headers});};
@@ -66,7 +66,7 @@ Deno.serve(async(req:Request)=>{
   }
   let uid:string|null=null;
   if(!publicActions.has(action)){
-   const token=req.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];if(!token)fail('Potrebna je anonimna sesija.',401);
+   const token=req.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1]||'';if(!token)fail('Potrebna je anonimna sesija.',401);
    const response=await timed('auth',()=>fetch(url+'/auth/v1/user',{headers:{apikey:serviceKey,Authorization:'Bearer '+token},signal:AbortSignal.timeout(10000)}));
    if(!response.ok)fail('Sesija je istekla. Osvježi stranicu.',401);
    const user=await response.json();uid=user.id;if(!uid)fail('Neispravna sesija.',401);
@@ -143,6 +143,9 @@ Deno.serve(async(req:Request)=>{
    // CAPTCHA clearance and reply-parent validation are enforced atomically in the database dispatcher.
    delete args.captcha_token;
   }
+  if(action==='notifications')return send(await timedRpc('community_test_notifications',uid,'list',{}));
+  if(action==='notification_read')return send(await timedRpc('community_test_notifications',uid,'read',{id:args.id}));
+  if(action==='notifications_read_all')return send(await timedRpc('community_test_notifications',uid,'read_all',{}));
   if(['admin_dashboard','admin_comments','admin_reports','admin_audit','admin_analytics'].includes(action))return send(await timedRpc('community_test_admin_read',uid,action,args));
   return send(await timedRpc('community_test_dispatch',uid,action,args));
  }catch(error){if(error instanceof HttpError)return send({error:error.message},error.status);if(error instanceof SyntaxError)return send({error:'Neispravan zahtjev.'},400);return send({error:'Server trenutno nije dostupan. Pokušaj ponovo.'},503);}
