@@ -20,6 +20,8 @@ GitHub Actions workflow `.github/workflows/preview.yml` pokreće `scripts/build.
 
 ## Sigurnosne napomene
 
+- Preview koristi zasebne browser Auth storage ključeve `ispovesti-preview-user-session` i `ispovesti-preview-admin-session`. Ne dijeli ih sa produkcijskim ili ranijim generičkim test ključevima. Ovo razdvaja sesije u istom browser origin-u; ne predstavlja zaseban Supabase Auth projekat.
+
 - Javni publishable ključ u `config.js` nije server tajna; service-role ključevi i CAPTCHA tajni ključ ostaju na serveru.
 - Testne šeme nisu direktno izložene anonimnom SQL pristupu; zahtjevi prolaze kroz Edge Function gateway.
 - CAPTCHA clearance se provjerava server-side i vezuje za anonimni Auth UID. Nakon uspješne provjere ne traži se novi izazov pri svakom komentaru ili odgovoru.
