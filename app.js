@@ -63,32 +63,30 @@ function setMenu(open){
 }
 menuToggle.onclick=()=>{const open=!document.body.classList.contains('menu-open');setMenu(open);if(!open)menuToggle.focus();};
 menuOverlay.onclick=()=>{closeMenu();menuToggle.focus();};
-// Open the sidebar with a rightward horizontal swipe starting anywhere on the page.
+// Open menu on a rightward horizontal finger swipe from anywhere on the page.
 let menuSwipeStart=null;
-function beginMenuSwipe(x,y){
- if(!document.body.classList.contains('menu-open'))menuSwipeStart={x,y};
+function startMenuSwipe(touch){
+ if(!document.body.classList.contains('menu-open'))menuSwipeStart={x:touch.clientX,y:touch.clientY};
  else menuSwipeStart=null;
 }
-function finishMenuSwipe(x,y){
- if(!menuSwipeStart)return;
- const dx=x-menuSwipeStart.x,dy=y-menuSwipeStart.y;
- menuSwipeStart=null;
- if(Math.abs(dx)>75&&dx>0&&Math.abs(dy)<Math.abs(dx)*0.8)setMenu(true);
-}
-document.addEventListener('pointerdown',event=>{
- if(event.pointerType==='touch')beginMenuSwipe(event.clientX,event.clientY);
-},{passive:true});
-document.addEventListener('pointerup',event=>{
- if(event.pointerType==='touch')finishMenuSwipe(event.clientX,event.clientY);
-},{passive:true});
-document.addEventListener('pointercancel',()=>{menuSwipeStart=null;},{passive:true});
+function resetMenuSwipe(){menuSwipeStart=null;}
 document.addEventListener('touchstart',event=>{
- const t=event.changedTouches[0];if(t)beginMenuSwipe(t.clientX,t.clientY);
-},{passive:true});
-document.addEventListener('touchend',event=>{
- const t=event.changedTouches[0];if(t)finishMenuSwipe(t.clientX,t.clientY);
-},{passive:true});
-document.addEventListener('touchcancel',()=>{menuSwipeStart=null;},{passive:true});
+ if(event.touches.length===1)startMenuSwipe(event.touches[0]);
+ else resetMenuSwipe();
+},{passive:true,capture:true});
+document.addEventListener('touchmove',event=>{
+ if(!menuSwipeStart||event.touches.length!==1)return;
+ const touch=event.touches[0],dx=touch.clientX-menuSwipeStart.x,dy=touch.clientY-menuSwipeStart.y;
+ if(dx>65&&dx>Math.abs(dy)*1.2){
+  if(event.cancelable)event.preventDefault();
+  resetMenuSwipe();
+  setMenu(true);
+ }else if(Math.abs(dy)>Math.abs(dx)*1.2){
+  resetMenuSwipe();
+ }
+},{passive:false,capture:true});
+document.addEventListener('touchend',resetMenuSwipe,{passive:true,capture:true});
+document.addEventListener('touchcancel',resetMenuSwipe,{passive:true,capture:true});
 document.addEventListener('keydown',event=>{
  if(sideMenu.hidden||dialog.open)return;
  if(event.key==='Escape'){closeMenu();menuToggle.focus();}
