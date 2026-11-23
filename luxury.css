@@ -145,3 +145,27 @@ main#main{
  overscroll-behavior-y:contain;
  -webkit-overflow-scrolling:touch;
 }
+
+
+/* Tighten and raise the masthead elements without changing the visual theme. */
+.site-header{
+ padding:0 10px 3px!important;
+ margin:0!important;
+}
+.site-header h1{
+ margin:0 0 1px!important;
+ line-height:1.04;
+}
+.site-header>.partner-banner-placeholder{
+ margin:0 auto 1px!important;
+ min-height:80px;
+ padding:7px 8px;
+ gap:2px;
+}
+.site-header p{
+ margin:1px auto 0!important;
+ padding:0;
+ line-height:1.12;
+ letter-spacing:.005em!important;
+ word-spacing:-.035em;
+}
