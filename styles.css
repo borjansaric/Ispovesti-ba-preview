@@ -250,3 +250,16 @@ body.menu-open #font-size-controls{display:none}
 /* Place the existing gold menu banner above the masthead; all page content follows beneath it. */
 .site-header{padding-top:8px}
 .site-header>.partner-banner-placeholder{width:100%;max-width:760px;min-height:88px;margin:0 auto 12px}
+
+/* Floating navigation controls: icons only, with no button background or shadow. */
+#menu-toggle,body.menu-open #menu-toggle,
+#quick-compose,
+#font-size-controls button{
+ background:transparent!important;
+ box-shadow:none!important;
+}
+#menu-toggle:hover,#menu-toggle:active,
+#font-size-controls button:hover,#font-size-controls button:active{
+ background:transparent!important;
+ box-shadow:none!important;
+}
