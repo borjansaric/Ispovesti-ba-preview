@@ -49,22 +49,5 @@
 <div id="preview" class="preview">TEST · odvojeni probni podaci · glavni sajt je netaknut</div>
 <dialog id="dialog"><div class="dialog-heading"><h2 id="dialog-title"></h2><button type="button" id="close-dialog" class="icon-button" aria-label="Zatvori">×</button></div><div id="dialog-body"></div></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
-<script>
-(function(){
-  const areas=['.site-header','#main','footer','#side-menu','#dialog'];
-  const levels=[1,1.1,1.2,1.3];
-  let level=0;
-  try{const saved=Number(localStorage.getItem('ispovesti:font-size-level'));if(Number.isInteger(saved)&&saved>=0&&saved<levels.length)level=saved;}catch{}
-  function apply(){
-    areas.forEach(selector=>document.querySelectorAll(selector).forEach(el=>{el.style.zoom=String(levels[level]);}));
-    const plus=document.getElementById('font-increase'),minus=document.getElementById('font-decrease');
-    if(plus)plus.disabled=level===levels.length-1;
-    if(minus)minus.disabled=level===0;
-    try{localStorage.setItem('ispovesti:font-size-level',String(level));}catch{}
-  }
-  document.getElementById('font-increase').addEventListener('click',()=>{level=Math.min(level+1,levels.length-1);apply();});
-  document.getElementById('font-decrease').addEventListener('click',()=>{level=Math.max(level-1,0);apply();});
-  apply();
-})();
-</script>
+<script src="font-size.js?v=20261123-font-controls-fix1" defer></script>
 </body></html>
