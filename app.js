@@ -225,7 +225,7 @@ setInterval(()=>{
 },45000);
 function commentReactionControl(item){
  const wrap=node('span','comment-reaction-wrap');
- const choices=[['❤️','Srce'],['🫂','Zagrljaj'],['😢','Dirnulo me'],['😮','Nemam riječi'],['🤗','Uz tebe sam'],['🤣','Umirem od smijeha']];
+ const choices=[['🫂','Zagrljaj'],['😢','Dirnulo me'],['😮','Nemam riječi'],['🤗','Uz tebe sam'],['🤣','Umirem od smijeha']];
  let current={popular_emoji:null,my_reaction:null,can_change:true};
  let loading=true;
  const trigger=button('🙂',async()=>{
