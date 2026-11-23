@@ -59,10 +59,10 @@ function setMenu(open){
  }
  menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'Zatvori meni':'Otvori meni');menuToggle.textContent=open?'‹‹‹':'›››';
  for(const el of document.querySelectorAll('.site-header,main,footer'))el.inert=open;
- if(open){sideMenu.querySelector('button')?.focus();requestAnimationFrame(()=>window.dispatchEvent(new Event('ispovesti:layout-visible')));}
+ if(open){sideMenu.querySelector('.my-confessions-link')?.focus();requestAnimationFrame(()=>window.dispatchEvent(new Event('ispovesti:layout-visible')));}else{menuToggle.blur();}
 }
-menuToggle.onclick=()=>{const open=!document.body.classList.contains('menu-open');setMenu(open);if(!open)menuToggle.focus();};
-menuOverlay.onclick=()=>{closeMenu();menuToggle.focus();};
+menuToggle.onclick=()=>{const open=!document.body.classList.contains('menu-open');setMenu(open);};
+menuOverlay.onclick=()=>{closeMenu();};
 // Open menu on a rightward horizontal finger swipe from anywhere on the page.
 let menuSwipeStart=null;
 function startMenuSwipe(touch){
@@ -89,7 +89,7 @@ document.addEventListener('touchend',resetMenuSwipe,{passive:true,capture:true})
 document.addEventListener('touchcancel',resetMenuSwipe,{passive:true,capture:true});
 document.addEventListener('keydown',event=>{
  if(sideMenu.hidden||dialog.open)return;
- if(event.key==='Escape'){closeMenu();menuToggle.focus();}
+ if(event.key==='Escape'){closeMenu();}
  if(event.key==='Tab'){
   const items=[menuToggle,...sideMenu.querySelectorAll('button:not(:disabled),input,textarea,select,a[href]')];
   const first=items[0],last=items.at(-1);
