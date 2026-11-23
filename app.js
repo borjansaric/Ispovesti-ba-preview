@@ -79,13 +79,12 @@ document.addEventListener('touchmove',event=>{
  if(!menuSwipeStart||event.touches.length!==1)return;
  const touch=event.touches[0],dx=touch.clientX-menuSwipeStart.x,dy=touch.clientY-menuSwipeStart.y;
  if(dx>65&&dx>Math.abs(dy)*1.2){
-  if(event.cancelable)event.preventDefault();
   resetMenuSwipe();
   setMenu(true);
  }else if(Math.abs(dy)>Math.abs(dx)*1.2){
   resetMenuSwipe();
  }
-},{passive:false,capture:true});
+},{passive:true,capture:true});
 document.addEventListener('touchend',resetMenuSwipe,{passive:true,capture:true});
 document.addEventListener('touchcancel',resetMenuSwipe,{passive:true,capture:true});
 document.addEventListener('keydown',event=>{
