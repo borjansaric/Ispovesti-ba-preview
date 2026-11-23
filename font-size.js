@@ -6,37 +6,42 @@
   const EXCLUDED = '#font-size-controls, #font-size-controls *, script, style, svg, path, symbol, template';
   const baseSizes = new WeakMap();
   let level = 0;
+  let initialized = false;
 
   try {
-    const saved = parseInt(localStorage.getItem(KEY) || '0', 10);
+    const saved = Number.parseInt(localStorage.getItem(KEY) || '0', 10);
     if (Number.isInteger(saved) && saved >= 0 && saved < SCALES.length) level = saved;
   } catch (_) {}
 
   function hasText(el) {
     if (!(el instanceof Element) || el.matches(EXCLUDED)) return false;
-    return /^(BUTTON|INPUT|TEXTAREA|SELECT|OPTION)$/.test(el.tagName) ||
-      Array.from(el.childNodes).some(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+    if (/^(INPUT|TEXTAREA|SELECT|OPTION)$/.test(el.tagName)) return true;
+    return Array.from(el.childNodes).some(node =>
+      node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0
+    );
   }
 
-  function remember(root, isInitial = false) {
-    const list = [];
-    if (root instanceof Element && hasText(root)) list.push(root);
+  function collect(root, initial = false) {
+    const elements = [];
+    if (root instanceof Element && hasText(root)) elements.push(root);
     if (root && root.querySelectorAll) {
-      root.querySelectorAll('*').forEach(el => { if (hasText(el)) list.push(el); });
+      root.querySelectorAll('*').forEach(el => {
+        if (hasText(el)) elements.push(el);
+      });
     }
-    list.forEach(el => {
+    const currentScale = SCALES[level];
+    elements.forEach(el => {
       if (baseSizes.has(el)) return;
-      const size = parseFloat(getComputedStyle(el).fontSize);
-      if (Number.isFinite(size)) {
-        // On a fresh page load, CSS has not yet been scaled. Never divide
-        // those original sizes by the saved preference.
-        baseSizes.set(el, size);
-      }
+      const computed = Number.parseFloat(getComputedStyle(el).fontSize);
+      if (!Number.isFinite(computed)) return;
+      // New content may inherit a font size already scaled on its parent.
+      baseSizes.set(el, initial || !initialized ? computed : computed / currentScale);
     });
   }
 
   function apply() {
-    remember(document.body, true);
+    collect(document.body, !initialized);
+    initialized = true;
     const scale = SCALES[level];
     document.querySelectorAll('body *').forEach(el => {
       if (!hasText(el)) return;
@@ -52,39 +57,53 @@
     if (minus) minus.disabled = level === 0;
   }
 
-  function init() {
-    const plus = document.getElementById('font-increase');
-    const minus = document.getElementById('font-decrease');
-
-    plus?.addEventListener('click', event => {
-      event.preventDefault();
-      level = Math.min(level + 1, SCALES.length - 1);
-      apply();
-    });
-    minus?.addEventListener('click', event => {
-      event.preventDefault();
-      level = Math.max(level - 1, 0);
-      apply();
-    });
-
+  function changeLevel(direction) {
+    const next = Math.max(0, Math.min(SCALES.length - 1, level + direction));
+    if (next === level) return;
+    level = next;
     apply();
+  }
 
+  // Delegate at document level so the controls work even if another script
+  // later changes or re-renders nearby markup.
+  document.addEventListener('click', event => {
+    const button = event.target instanceof Element
+      ? event.target.closest('#font-increase, #font-decrease')
+      : null;
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+    changeLevel(button.id === 'font-increase' ? 1 : -1);
+  }, true);
+
+  function start() {
+    apply();
     const observer = new MutationObserver(records => {
-      let added = false;
-      records.forEach(record => record.addedNodes.forEach(node => {
-        if (node instanceof Element) {
-          remember(node);
-          added = true;
+      let changed = false;
+      records.forEach(record => {
+        if (record.type === 'childList') {
+          record.addedNodes.forEach(node => {
+            if (node instanceof Element) {
+              collect(node);
+              changed = true;
+            } else if (node.nodeType === Node.TEXT_NODE && node.parentElement) {
+              collect(node.parentElement);
+              changed = true;
+            }
+          });
+        } else if (record.type === 'characterData' && record.target.parentElement) {
+          collect(record.target.parentElement);
+          changed = true;
         }
-      }));
-      if (added) apply();
+      });
+      if (changed) apply();
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
+    document.addEventListener('DOMContentLoaded', start, { once: true });
   } else {
-    init();
+    start();
   }
 })();
