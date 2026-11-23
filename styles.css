@@ -3,6 +3,9 @@
 .story>.action.share-story-corner{position:absolute;top:4px;right:4px;z-index:3;display:inline-flex;align-items:center;justify-content:center;margin:0;padding:2px 4px;border:0;border-radius:0;background:transparent;color:var(--gold);font-family:Arial,sans-serif;font-size:13px;font-weight:normal;line-height:1;box-shadow:none}
 .story>.action.share-story-corner:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
+/* Keep the menu's visible focus highlight only on the My Confessions entry. */
+.side-menu button:focus-visible:not(.my-confessions-link){outline:0;box-shadow:none}
+
 /* Original site rules live verbatim in original.css. New functional controls only. */
 :root{color-scheme:dark}button,input,textarea,select{font-family:Arial,sans-serif}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}[hidden]{display:none}
 .body-text{white-space:pre-wrap;overflow-wrap:anywhere}.story .story-content{margin:0}.story-nickname{font-size:12px;color:var(--muted);margin-bottom:1px}
