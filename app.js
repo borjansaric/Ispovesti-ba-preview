@@ -3,35 +3,34 @@ import {collectReplies,replyCounterText} from './chat/thread-model.mjs?v=progres
 import { request, authClient, isPreview, isLocal, prepareSubmission, initializeSecurity } from './api.js?v=20261119-instant-cache3';
 const $ = s => document.querySelector(s);
 
-/* Text-size controls: integrated in the main app module so they cannot race
-   the page script. Only ordinary text elements are scaled, never controls. */
+/* Text-size controls: affect confession/comment body copy only. */
 (() => {
  const KEY='ispovesti:font-size-level-v2';
  const LEVELS=[1,1.1,1.2,1.3,1.4];
  const BASE='data-isp-font-base';
- const SKIP='#font-size-controls, #font-size-controls *, button, input, textarea, select, option, script, style, svg, [role="button"]';
  let level=0;
  try{
   const saved=Number.parseInt(localStorage.getItem(KEY)||'0',10);
   if(Number.isInteger(saved)&&saved>=0&&saved<LEVELS.length)level=saved;
  }catch{}
- const isScalable=el=>el instanceof Element&&!el.matches(SKIP)&&
-  Array.from(el.childNodes).some(n=>n.nodeType===Node.TEXT_NODE&&n.textContent.trim()!=='');
- function remember(el,added=false){
-  if(!isScalable(el)||el.hasAttribute(BASE))return;
+ // Clean up inline sizes left by the previous, overly broad implementation.
+ document.querySelectorAll('body ['+BASE+']').forEach(el=>{
+  el.style.removeProperty('font-size');
+  el.removeAttribute(BASE);
+ });
+ function remember(el){
+  if(!(el instanceof Element)||!el.matches('.body-text')||el.hasAttribute(BASE))return;
   const size=Number.parseFloat(getComputedStyle(el).fontSize);
-  if(!Number.isFinite(size))return;
-  el.setAttribute(BASE,String(added&&level?size/LEVELS[level]:size));
+  if(Number.isFinite(size))el.setAttribute(BASE,String(size));
  }
- function scan(root=document.body,added=false){
-  if(root instanceof Element)remember(root,added);
-  root?.querySelectorAll?.('*').forEach(el=>remember(el,added));
+ function scan(root=document.body){
+  if(root instanceof Element)remember(root);
+  root?.querySelectorAll?.('.body-text').forEach(remember);
  }
  function apply(){
-  scan(document.body,false);
+  scan();
   const factor=LEVELS[level];
-  document.querySelectorAll('body *').forEach(el=>{
-   if(!isScalable(el))return;
+  document.querySelectorAll('body .body-text').forEach(el=>{
    const base=Number.parseFloat(el.getAttribute(BASE));
    if(Number.isFinite(base))el.style.setProperty('font-size',(base*factor)+'px','important');
   });
@@ -39,8 +38,8 @@ const $ = s => document.querySelector(s);
   document.documentElement.setAttribute('data-isp-font-level',String(level));
   const plus=document.getElementById('font-increase');
   const minus=document.getElementById('font-decrease');
-  if(plus)plus.title='Povećaj slova · trenutno '+Math.round(factor*100)+'%';
-  if(minus)minus.title='Smanji slova · trenutno '+Math.round(factor*100)+'%';
+  if(plus)plus.title='Povećaj tekst ispovijesti i komentara · trenutno '+Math.round(factor*100)+'%';
+  if(minus)minus.title='Smanji tekst ispovijesti i komentara · trenutno '+Math.round(factor*100)+'%';
  }
  function change(delta){
   const next=Math.max(0,Math.min(LEVELS.length-1,level+delta));
@@ -56,8 +55,8 @@ const $ = s => document.querySelector(s);
   for(const record of records){
    if(record.type!=='childList')continue;
    for(const item of record.addedNodes){
-    if(item instanceof Element){scan(item,true);added=true;}
-    else if(item.nodeType===Node.TEXT_NODE&&item.parentElement){remember(item.parentElement,true);added=true;}
+    if(item instanceof Element){scan(item);added=true;}
+    else if(item.nodeType===Node.TEXT_NODE&&item.parentElement?.matches('.body-text')){remember(item.parentElement);added=true;}
    }
   }
   if(added)apply();
