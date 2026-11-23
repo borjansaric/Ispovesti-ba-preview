@@ -205,32 +205,66 @@ document.addEventListener('pointerdown',event=>{
  if(activeReactionMenu&&!activeReactionMenu.panel.contains(event.target)&&!activeReactionMenu.button.contains(event.target))closeReactionMenu();
 });
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeReportMenu();closeReactionMenu();}});
+const reactionRefreshers=new Set();
+setInterval(()=>{
+ if(document.hidden)return;
+ const active=[...reactionRefreshers].filter(entry=>{
+  if(!entry.element.isConnected){reactionRefreshers.delete(entry);return false;}
+  return true;
+ });
+ for(let i=0;i<active.length;i+=8)void Promise.allSettled(active.slice(i,i+8).map(entry=>entry.refresh()));
+},45000);
 function commentReactionControl(item){
- const wrap=node('span','comment-reaction-wrap'),key='ispovesti:comment-reaction:'+String(item.id);
- const choices=[['🫂','Zagrljaj'],['😢','Dirnulo me'],['😮','Nemam riječi'],['🤗','Uz tebe sam'],['🤣','Umirem od smijeha']];
- let selected=null;
- try{selected=localStorage.getItem(key)||null;}catch{}
- const trigger=button(selected||'🙂',()=>{
+ const wrap=node('span','comment-reaction-wrap');
+ const choices=[['❤️','Srce'],['🫂','Zagrljaj'],['😢','Dirnulo me'],['😮','Nemam riječi'],['🤗','Uz tebe sam'],['🤣','Umirem od smijeha']];
+ let current={popular_emoji:null,my_reaction:null,can_change:true};
+ let loading=false;
+ const trigger=button('🙂',async()=>{
   if(activeReactionMenu?.button===trigger){closeReactionMenu();return;}
   closeReportMenu();closeReactionMenu();
   const panel=node('div','comment-reaction-menu');panel.setAttribute('role','group');panel.setAttribute('aria-label','Reakcije na komentar');
   for(const [emoji,label] of choices){
-   const option=button(emoji,()=>{
-    const next=selected===emoji?null:emoji;
-    try{if(next)localStorage.setItem(key,next);else localStorage.removeItem(key);}
-    catch{toast('Preglednik ne dozvoljava čuvanje reakcije.');return;}
-    selected=next;render();closeReactionMenu();
+   const option=button(emoji,async()=>{
+    if(option.disabled)return;
+    option.disabled=true;
+    try{
+     const result=await request('reaction',{id:item.id,emoji});
+     render(result);closeReactionMenu();
+    }catch(error){option.disabled=false;toast(error.message);}
    },'comment-reaction-option');
-   option.setAttribute('aria-label',label);option.title=label;option.setAttribute('aria-pressed',String(selected===emoji));panel.append(option);
+   option.setAttribute('aria-label',label);option.title=label;
+   option.setAttribute('aria-pressed',String(current.my_reaction===emoji));
+   option.disabled=!current.can_change&&current.my_reaction!==emoji;
+   panel.append(option);
   }
   wrap.append(panel);trigger.setAttribute('aria-expanded','true');activeReactionMenu={panel,button:trigger};
+  if(loading)await refresh();
  },'action comment-reaction-trigger');
- function render(){
-  trigger.textContent=selected||'🙂';
-  trigger.setAttribute('aria-label',selected?'Promijeni reakciju na komentar':'Dodaj reakciju na komentar');
-  trigger.title=selected?'Promijeni reakciju':'Dodaj reakciju';
+ function render(result){
+  current={...current,...result};
+  trigger.textContent=current.popular_emoji||'🙂';
+  trigger.setAttribute('aria-label',current.popular_emoji
+   ?'Najčešća reakcija na komentar: '+current.popular_emoji+'. Otvori izbor reakcija'
+   :'Dodaj reakciju na komentar');
+  trigger.title=current.popular_emoji?'Najčešća reakcija':'Dodaj reakciju';
+  const panel=wrap.querySelector('.comment-reaction-menu');
+  if(panel)for(const option of panel.querySelectorAll('.comment-reaction-option')){
+   const emoji=option.textContent;
+   option.setAttribute('aria-pressed',String(current.my_reaction===emoji));
+   option.disabled=!current.can_change&&current.my_reaction!==emoji;
+  }
  }
- trigger.setAttribute('aria-haspopup','true');trigger.setAttribute('aria-expanded','false');render();wrap.append(trigger);return wrap;
+ async function refresh(){
+  if(!wrap.isConnected)return;
+  const result=await request('reaction_status',{id:item.id});
+  render(result);
+  loading=false;
+ }
+ trigger.setAttribute('aria-haspopup','true');trigger.setAttribute('aria-expanded','false');
+ wrap.append(trigger);
+ const entry={element:wrap,refresh};reactionRefreshers.add(entry);
+ void refresh().catch(()=>{});
+ return wrap;
 }
 function report(item,reportButton){
  closeReactionMenu();
