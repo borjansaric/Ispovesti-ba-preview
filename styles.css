@@ -5,7 +5,7 @@
 
 /* Keep the menu's visible focus highlight only on the All Confessions entry. */
 .side-menu button:focus-visible:not(.nav-button[data-view="new"]){outline:0;box-shadow:none}
-.side-menu .nav-button[data-view="new"].menu-open-focus{outline:2px solid var(--gold);outline-offset:3px;}
+.side-menu .nav-button[data-view="new"].menu-open-focus{outline:0;border:2px solid var(--gold);border-radius:5px;box-sizing:border-box;}
 
 /* Original site rules live verbatim in original.css. New functional controls only. */
 :root{color-scheme:dark}button,input,textarea,select{font-family:Arial,sans-serif}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}[hidden]{display:none}
