@@ -59,7 +59,8 @@ function setMenu(open){
  }
  menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'Zatvori meni':'Otvori meni');menuToggle.textContent=open?'‹‹‹':'›››';
  for(const el of document.querySelectorAll('.site-header,main,footer'))el.inert=open;
- if(open){sideMenu.querySelector('.nav-button[data-view="new"]')?.focus();requestAnimationFrame(()=>window.dispatchEvent(new Event('ispovesti:layout-visible')));}else{menuToggle.blur();}
+ if(open){const allConfessionsLink=sideMenu.querySelector('.nav-button[data-view="new"]');
+  if(allConfessionsLink){allConfessionsLink.classList.add('menu-open-focus');allConfessionsLink.focus();};requestAnimationFrame(()=>window.dispatchEvent(new Event('ispovesti:layout-visible')));}else{sideMenu.querySelector('.nav-button[data-view="new"]')?.classList.remove('menu-open-focus');menuToggle.blur();}
 }
 menuToggle.onclick=()=>{const open=!document.body.classList.contains('menu-open');setMenu(open);};
 menuOverlay.onclick=()=>{closeMenu();};
