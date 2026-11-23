@@ -28,8 +28,8 @@ let client, sessionPromise;
 export function authClient(admin = false) {
   if (isPreview) throw new Error('Administracija je dostupna samo na povezanom testnom ili živom okruženju.');
   if (!config.supabaseUrl || !config.publishableKey || !window.supabase) throw new Error('Veza sa serverom nije podešena.');
-  if (admin) return window.supabase.createClient(config.supabaseUrl, config.publishableKey, { auth: { storageKey: 'ispovesti-test-admin-session', storage: window.sessionStorage } });
-  return client ||= window.supabase.createClient(config.supabaseUrl, config.publishableKey, { auth: { storageKey: 'ispovesti-test-user-session' } });
+  if (admin) return window.supabase.createClient(config.supabaseUrl, config.publishableKey, { auth: { storageKey: 'ispovesti-preview-admin-session', storage: window.sessionStorage } });
+  return client ||= window.supabase.createClient(config.supabaseUrl, config.publishableKey, { auth: { storageKey: 'ispovesti-preview-user-session' } });
 }
 async function session() {
   if (!sessionPromise) sessionPromise = (async () => {
