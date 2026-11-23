@@ -34,7 +34,6 @@ async function renderDashboard(){
  addStatGrid(viewContent,[['Sve ispovijesti',d.confessions?.total],['Objavljene ispovijesti',d.confessions?.published],['Na čekanju',d.confessions?.queued],['Uklonjene ispovijesti',d.confessions?.removed],['Komentari',d.community?.comments],['Odgovori',d.community?.replies],['Reakcije',d.reactions,'Odvojeno od komentara i odgovora'],['Glasovi',d.votes],['Prijave zajednice',d.reports],['Chat poruke',d.chat_messages?.total],['Uklonjene chat poruke',d.chat_messages?.removed],['Prijave chata',d.chat_reports]]);
  viewContent.append(notice('Red objava',d.publisher?.paused?'Automatsko objavljivanje je trenutno pauzirano.':'Automatsko objavljivanje nije pauzirano.'));
  viewContent.append(notice('Analitika posjetilaca nije dostupna','Testni backend trenutno ne bilježi pouzdane anonimne posjete ni povratne posjete. Ne prikazujem izmišljene vrijednosti za zadržavanje 10/20/30 dana.',true));
- viewContent.append(notice('Sigurnosna napomena testne baze','Provjera baze je prijavila da tabela community_test.reactions trenutno nema uključen RLS. Admin statistika je čita samo kroz serverski zaštićenu funkciju; ovu tabelu ne treba direktno izlagati browseru. Potrebna je zasebna provjera i odobrenje odgovarajuće RLS politike.',true));
  setStatus('Podaci su učitani iz testne baze.');
 }
 function sumTrend(rows,key){return rows.reduce((total,row)=>total+Number(row[key]||0),0);}
@@ -42,7 +41,7 @@ function csvCell(value){const text=String(value??'');return '"'+text.replace(/"/
 function exportStatsCsv(d){
  const lines=[['Pokazatelj','Vrijednost'],
  ['Ispovijesti ukupno',d.confessions?.total],['Objavljene ispovijesti',d.confessions?.published],['Ispovijesti na čekanju',d.confessions?.queued],['Uklonjene ispovijesti',d.confessions?.removed],
- ['Komentari',d.community?.comments],['Odgovori',d.community?.replies],['Reakcije',d.reactions],['Glasovi',d.votes],['Prijave sadržaja',d.reports],
+ ['Komentari',d.community?.comments],['Odgovori',d.community?.replies],['Reakcije ukupno',d.reactions],...['❤️','🫂','😢','😮','🤗','🤣'].map(emoji=>['Reakcija '+emoji,d.reaction_breakdown?.[emoji]||0]),['Glasovi',d.votes],['Prijave sadržaja',d.reports],
  ['Chat poruke',d.chat_messages?.total],['Vidljive chat poruke',d.chat_messages?.visible],['Uklonjene chat poruke',d.chat_messages?.removed],['Prijave chata',d.chat_reports],
  [],['Dnevni trend','Sadržaj','Chat']];
  for(const row of (d.trend_30d||[]))lines.push([row.day,row.content,row.chat]);
@@ -57,6 +56,9 @@ async function renderStats(){
  addStatGrid(viewContent,[['Ispovijesti ukupno',d.confessions?.total],['Objavljene',d.confessions?.published],['Na čekanju',d.confessions?.queued],['Uklonjene',d.confessions?.removed],['Komentari ukupno',d.community?.comments],['Komentari objavljeni',d.community?.published_comments],['Odgovori ukupno',d.community?.replies],['Odgovori objavljeni',d.community?.published_replies]]);
  viewContent.append(el('h3','','Aktivnost i reakcije'));
  addStatGrid(viewContent,[['Reakcije',d.reactions],['Glasovi',d.votes],['Prijave sadržaja',d.reports],['Chat poruke',d.chat_messages?.total],['Vidljive chat poruke',d.chat_messages?.visible],['Uklonjene chat poruke',d.chat_messages?.removed],['Prijave chata',d.chat_reports]]);
+  viewContent.append(el('h3','','Reakcije po emoji-ju'));
+  addStatGrid(viewContent,['❤️','🫂','😢','😮','🤗','🤣'].map(emoji=>[emoji,d.reaction_breakdown?.[emoji]||0]));
+  viewContent.append(el('p','meta','Brojevi prikazuju ukupne reakcije iz testne baze, bez prikazivanja identiteta posjetilaca.')));
  const trend=[...(d.trend_30d||[])].sort((a,b)=>String(a.day).localeCompare(String(b.day)));
  const current=trend.slice(-7),previous=trend.slice(-14,-7);
  viewContent.append(el('h3','','Poređenje aktivnosti · posljednjih 7 dana'));
