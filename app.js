@@ -205,23 +205,23 @@ document.addEventListener('pointerdown',event=>{
  if(activeReactionMenu&&!activeReactionMenu.panel.contains(event.target)&&!activeReactionMenu.button.contains(event.target))closeReactionMenu();
 });
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeReportMenu();closeReactionMenu();}});
-const reactionRefreshers=new Map();
+const reactionRefreshers=new Map(),visibleReactionElements=new Set();
 const reactionObserver='IntersectionObserver' in window?new IntersectionObserver(entries=>{
  for(const entry of entries){
   const refresh=reactionRefreshers.get(entry.target);
   if(!refresh)continue;
-  if(entry.isIntersecting)void refresh().catch(()=>{});
+  if(entry.isIntersecting){visibleReactionElements.add(entry.target);void refresh().catch(()=>{});}
+  else visibleReactionElements.delete(entry.target);
  }
 },{rootMargin:'120px 0px',threshold:0}):null;
 setInterval(()=>{
  if(document.hidden)return;
  const active=[];
  for(const [element,refresh] of reactionRefreshers){
-  if(!element.isConnected){reactionRefreshers.delete(element);reactionObserver?.unobserve(element);continue;}
-  const rect=element.getBoundingClientRect();
-  if(!reactionObserver&&rect.bottom>=0&&rect.top<=innerHeight)active.push(refresh);
+  if(!element.isConnected){reactionRefreshers.delete(element);visibleReactionElements.delete(element);reactionObserver?.unobserve(element);continue;}
+  if(reactionObserver?visibleReactionElements.has(element):element.getBoundingClientRect().bottom>=0&&element.getBoundingClientRect().top<=innerHeight)active.push(refresh);
  }
- if(!reactionObserver)for(let i=0;i<active.length;i+=8)void Promise.allSettled(active.slice(i,i+8).map(refresh=>refresh()));
+ for(let i=0;i<active.length;i+=8)void Promise.allSettled(active.slice(i,i+8).map(refresh=>refresh()));
 },45000);
 function commentReactionControl(item){
  const wrap=node('span','comment-reaction-wrap');
