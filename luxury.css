@@ -116,56 +116,29 @@ button:disabled{opacity:.55}
 .side-menu .private-panel h2 .my-confessions-link:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
 
 
-/* Keep the masthead stationary and make only the main confession area scroll. */
+/* Keep the masthead visible without trapping page scroll. */
 html,body{
- height:100%;
- min-height:0;
+ min-height:100%;
+ height:auto;
 }
 body{
- display:flex;
- flex-direction:column;
- height:100dvh;
- min-height:0;
- overflow:hidden;
- box-sizing:border-box;
+ display:block;
+ min-height:100%;
+ height:auto;
+ overflow:visible;
 }
 .site-header{
- position:relative!important;
- top:auto!important;
+ position:sticky!important;
+ top:0!important;
  z-index:1001!important;
- flex:0 0 auto;
+ flex:initial!important;
+ background:#090909;
 }
 main#main{
  position:relative!important;
  z-index:1;
- flex:1 1 auto;
  min-height:0;
- overflow-x:hidden;
- overflow-y:auto;
- overscroll-behavior-y:contain;
- -webkit-overflow-scrolling:touch;
-}
-
-
-/* Tighten and raise the masthead elements without changing the visual theme. */
-.site-header{
- padding:0 10px 3px!important;
- margin:0!important;
-}
-.site-header h1{
- margin:0 0 1px!important;
- line-height:1.04;
-}
-.site-header>.partner-banner-placeholder{
- margin:0 auto 1px!important;
- min-height:80px;
- padding:7px 8px;
- gap:2px;
-}
-.site-header p{
- margin:1px auto 0!important;
- padding:0;
- line-height:1.12;
- letter-spacing:.005em!important;
- word-spacing:-.035em;
+ overflow:visible!important;
+ overscroll-behavior:auto!important;
+ -webkit-overflow-scrolling:auto;
 }
