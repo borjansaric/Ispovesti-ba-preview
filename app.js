@@ -205,14 +205,23 @@ document.addEventListener('pointerdown',event=>{
  if(activeReactionMenu&&!activeReactionMenu.panel.contains(event.target)&&!activeReactionMenu.button.contains(event.target))closeReactionMenu();
 });
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeReportMenu();closeReactionMenu();}});
-const reactionRefreshers=new Set();
+const reactionRefreshers=new Map();
+const reactionObserver='IntersectionObserver' in window?new IntersectionObserver(entries=>{
+ for(const entry of entries){
+  const refresh=reactionRefreshers.get(entry.target);
+  if(!refresh)continue;
+  if(entry.isIntersecting)void refresh().catch(()=>{});
+ }
+},{rootMargin:'120px 0px',threshold:0}):null;
 setInterval(()=>{
  if(document.hidden)return;
- const active=[...reactionRefreshers].filter(entry=>{
-  if(!entry.element.isConnected){reactionRefreshers.delete(entry);return false;}
-  return true;
- });
- for(let i=0;i<active.length;i+=8)void Promise.allSettled(active.slice(i,i+8).map(entry=>entry.refresh()));
+ const active=[];
+ for(const [element,refresh] of reactionRefreshers){
+  if(!element.isConnected){reactionRefreshers.delete(element);reactionObserver?.unobserve(element);continue;}
+  const rect=element.getBoundingClientRect();
+  if(!reactionObserver&&rect.bottom>=0&&rect.top<=innerHeight)active.push(refresh);
+ }
+ if(!reactionObserver)for(let i=0;i<active.length;i+=8)void Promise.allSettled(active.slice(i,i+8).map(refresh=>refresh()));
 },45000);
 function commentReactionControl(item){
  const wrap=node('span','comment-reaction-wrap');
@@ -262,8 +271,8 @@ function commentReactionControl(item){
  }
  trigger.setAttribute('aria-haspopup','true');trigger.setAttribute('aria-expanded','false');
  wrap.append(trigger);
- const entry={element:wrap,refresh};reactionRefreshers.add(entry);
- void refresh().catch(()=>{});
+ reactionRefreshers.set(wrap,refresh);
+ if(reactionObserver)reactionObserver.observe(wrap);else void refresh().catch(()=>{});
  return wrap;
 }
 function report(item,reportButton){
