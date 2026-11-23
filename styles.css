@@ -225,3 +225,15 @@ body.menu-open #menu-toggle{display:none}
 #quick-compose:hover{background:transparent;color:var(--gold-soft)}
 #quick-compose:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 body.menu-open #quick-compose{display:none}
+
+
+/* The reaction picker is a hidden discovery hotspot; only the community's
+   leading reaction remains visible. */
+.comment-reaction-wrap{position:relative;min-width:32px;width:32px;height:32px}
+.comment-reaction-indicator{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;font-size:16px;line-height:1;pointer-events:none}
+.comment-reaction-wrap>.comment-reaction-trigger{position:absolute;inset:0;width:32px;height:32px;min-width:32px;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:transparent;opacity:0;box-shadow:none;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.comment-reaction-wrap>.comment-reaction-trigger::after{content:"";position:absolute;inset:-6px}
+.comment-reaction-wrap>.comment-reaction-trigger:hover,
+.comment-reaction-wrap>.comment-reaction-trigger:active,
+.comment-reaction-wrap>.comment-reaction-trigger[aria-expanded="true"]{background:transparent;color:transparent;opacity:0;box-shadow:none;text-shadow:none}
+.comment-reaction-wrap>.comment-reaction-trigger:focus-visible{outline:1px solid rgba(218,183,101,.5);outline-offset:2px}
