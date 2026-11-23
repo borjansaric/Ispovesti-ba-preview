@@ -251,15 +251,35 @@ body.menu-open #font-size-controls{display:none}
 .site-header{padding-top:8px}
 .site-header>.partner-banner-placeholder{width:100%;max-width:760px;min-height:88px;margin:0 auto 12px}
 
-/* Floating navigation controls: icons only, with no button background or shadow. */
-#menu-toggle,body.menu-open #menu-toggle,
+/* Floating controls: force transparent surfaces, including browser and pseudo-element painting. */
+button#menu-toggle,
+button#menu-toggle:hover,
+button#menu-toggle:active,
+button#menu-toggle:focus,
+button#menu-toggle:focus-visible,
+body.menu-open button#menu-toggle,
 #quick-compose,
-#font-size-controls button{
+#quick-compose:hover,
+#quick-compose:active,
+#font-size-controls button,
+#font-size-controls button:hover,
+#font-size-controls button:active,
+#font-size-controls button:focus,
+#font-size-controls button:focus-visible{
  background:transparent!important;
+ background-color:transparent!important;
+ background-image:none!important;
  box-shadow:none!important;
+ filter:none!important;
+ -webkit-appearance:none!important;
+ appearance:none!important;
 }
-#menu-toggle:hover,#menu-toggle:active,
-#font-size-controls button:hover,#font-size-controls button:active{
+button#menu-toggle::before,
+button#menu-toggle::after,
+#quick-compose::before,
+#quick-compose::after,
+#font-size-controls button::before,
+#font-size-controls button::after{
  background:transparent!important;
  box-shadow:none!important;
 }
