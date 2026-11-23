@@ -197,11 +197,43 @@ function voteControls(item){
 }
 function reportStorageKey(item,kind){return 'ispovesti:reported:'+kind+':'+String(item.id);}
 function syncReportButton(btn,item,kind){try{const done=localStorage.getItem(reportStorageKey(item,kind))==='1';btn.classList.toggle('reported',done);btn.setAttribute('aria-label',done?'Sadržaj je prijavljen':'Prijavi sadržaj');btn.title=done?'Već si prijavio ovaj sadržaj':'Prijavi sadržaj';}catch{}}
-let activeReportMenu=null;
+let activeReportMenu=null,activeReactionMenu=null;
 function closeReportMenu(){if(!activeReportMenu)return;activeReportMenu.panel.remove();activeReportMenu.button.setAttribute('aria-expanded','false');activeReportMenu=null;}
-document.addEventListener('pointerdown',event=>{if(activeReportMenu&&!activeReportMenu.panel.contains(event.target)&&!activeReportMenu.button.contains(event.target))closeReportMenu();});
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeReportMenu)closeReportMenu();});
+function closeReactionMenu(){if(!activeReactionMenu)return;activeReactionMenu.panel.remove();activeReactionMenu.button.setAttribute('aria-expanded','false');activeReactionMenu=null;}
+document.addEventListener('pointerdown',event=>{
+ if(activeReportMenu&&!activeReportMenu.panel.contains(event.target)&&!activeReportMenu.button.contains(event.target))closeReportMenu();
+ if(activeReactionMenu&&!activeReactionMenu.panel.contains(event.target)&&!activeReactionMenu.button.contains(event.target))closeReactionMenu();
+});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeReportMenu();closeReactionMenu();}});
+function commentReactionControl(item){
+ const wrap=node('span','comment-reaction-wrap'),key='ispovesti:comment-reaction:'+String(item.id);
+ const choices=[['🫂','Zagrljaj'],['😢','Dirnulo me'],['😮','Nemam riječi'],['🤗','Uz tebe sam'],['🤣','Umirem od smijeha']];
+ let selected=null;
+ try{selected=localStorage.getItem(key)||null;}catch{}
+ const trigger=button(selected||'🙂',()=>{
+  if(activeReactionMenu?.button===trigger){closeReactionMenu();return;}
+  closeReportMenu();closeReactionMenu();
+  const panel=node('div','comment-reaction-menu');panel.setAttribute('role','group');panel.setAttribute('aria-label','Reakcije na komentar');
+  for(const [emoji,label] of choices){
+   const option=button(emoji,()=>{
+    const next=selected===emoji?null:emoji;
+    try{if(next)localStorage.setItem(key,next);else localStorage.removeItem(key);}
+    catch{toast('Preglednik ne dozvoljava čuvanje reakcije.');return;}
+    selected=next;render();closeReactionMenu();
+   },'comment-reaction-option');
+   option.setAttribute('aria-label',label);option.title=label;option.setAttribute('aria-pressed',String(selected===emoji));panel.append(option);
+  }
+  wrap.append(panel);trigger.setAttribute('aria-expanded','true');activeReactionMenu={panel,button:trigger};
+ },'action comment-reaction-trigger');
+ function render(){
+  trigger.textContent=selected||'🙂';
+  trigger.setAttribute('aria-label',selected?'Promijeni reakciju na komentar':'Dodaj reakciju na komentar');
+  trigger.title=selected?'Promijeni reakciju':'Dodaj reakciju';
+ }
+ trigger.setAttribute('aria-haspopup','true');trigger.setAttribute('aria-expanded','false');render();wrap.append(trigger);return wrap;
+}
 function report(item,reportButton){
+ closeReactionMenu();
  if(reportButton?.classList.contains('reported')){toast('Već si prijavio ovaj sadržaj.');return;}
  if(activeReportMenu?.button===reportButton){closeReportMenu();return;}closeReportMenu();
  const row=reportButton.closest('.story-actions,.comment-actions'),panel=node('div','report-menu');
@@ -299,7 +331,8 @@ function comment(item,confessionId,refreshContext,focusOptions={}){
   const count=node('span','reply-count',''),arrow=node('span','reply-triangle');arrow.setAttribute('aria-hidden','true');
   const repliesButton=button('',()=>focusOptions.close?focusOptions.close():focusOptions.reply?focusOptions.reply(item):openReplies(item,confessionId,refreshContext,repliesButton),'reply-toggle');
   repliesButton.setAttribute('aria-label',focusOptions.close?'Zatvori odgovore':'Otvori ili napiši odgovore');repliesButton.append(count,arrow);if(!focusOptions.readOnly)row.append(repliesButton);
-  row.append(node('span','action-spacer'),reportButton);wrap.append(card,row);commentMeta.add({item,wrap,count,favorite});updateCommentMeta();return wrap;
+  const leftSpace=node('span','action-spacer'),rightSpace=node('span','action-spacer'),reactionControl=commentReactionControl(item);
+  row.append(leftSpace,reactionControl,rightSpace,reportButton);wrap.append(card,row);commentMeta.add({item,wrap,count,favorite});updateCommentMeta();return wrap;
 }
 const inlineThreads=new WeakMap();let activeInlineThread=null,ignoreThreadPopstate=false;
  document.addEventListener('click',event=>{if(!activeInlineThread||event.target.closest('.inline-thread, .thread-active-comment, .reply-toggle'))return;activeInlineThread.close(true,'replace');});
