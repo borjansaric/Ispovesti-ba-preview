@@ -41,7 +41,7 @@ function csvCell(value){const text=String(value??'');return '"'+text.replace(/"/
 function exportStatsCsv(d){
  const lines=[['Pokazatelj','Vrijednost'],
  ['Ispovijesti ukupno',d.confessions?.total],['Objavljene ispovijesti',d.confessions?.published],['Ispovijesti na čekanju',d.confessions?.queued],['Uklonjene ispovijesti',d.confessions?.removed],
- ['Komentari',d.community?.comments],['Odgovori',d.community?.replies],['Reakcije ukupno',d.reactions],...['❤️','🫂','😢','😮','🤗','🤣'].map(emoji=>['Reakcija '+emoji,d.reaction_breakdown?.[emoji]||0]),['Glasovi',d.votes],['Prijave sadržaja',d.reports],
+ ['Komentari',d.community?.comments],['Odgovori',d.community?.replies],['Reakcije ukupno',d.reactions],...['🫂','😢','😮','🤗','🤣'].map(emoji=>['Reakcija '+emoji,d.reaction_breakdown?.[emoji]||0]),['Glasovi',d.votes],['Prijave sadržaja',d.reports],
  ['Chat poruke',d.chat_messages?.total],['Vidljive chat poruke',d.chat_messages?.visible],['Uklonjene chat poruke',d.chat_messages?.removed],['Prijave chata',d.chat_reports],
  [],['Dnevni trend','Sadržaj','Chat']];
  for(const row of (d.trend_30d||[]))lines.push([row.day,row.content,row.chat]);
@@ -57,7 +57,7 @@ async function renderStats(){
  viewContent.append(el('h3','','Aktivnost i reakcije'));
  addStatGrid(viewContent,[['Reakcije',d.reactions],['Glasovi',d.votes],['Prijave sadržaja',d.reports],['Chat poruke',d.chat_messages?.total],['Vidljive chat poruke',d.chat_messages?.visible],['Uklonjene chat poruke',d.chat_messages?.removed],['Prijave chata',d.chat_reports]]);
   viewContent.append(el('h3','','Reakcije po emoji-ju'));
-  addStatGrid(viewContent,['❤️','🫂','😢','😮','🤗','🤣'].map(emoji=>[emoji,d.reaction_breakdown?.[emoji]||0]));
+  addStatGrid(viewContent,['🫂','😢','😮','🤗','🤣'].map(emoji=>[emoji,d.reaction_breakdown?.[emoji]||0]));
   viewContent.append(el('p','meta','Brojevi prikazuju ukupne reakcije iz testne baze, bez prikazivanja identiteta posjetilaca.'));
  const trend=[...(d.trend_30d||[])].sort((a,b)=>String(a.day).localeCompare(String(b.day)));
  const current=trend.slice(-7),previous=trend.slice(-14,-7);
