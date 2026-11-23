@@ -190,7 +190,7 @@ dialog{max-width:560px;width:calc(100% - 28px);max-height:90dvh;overflow:auto;bo
 .direct-story-back:hover{background:transparent;color:var(--gold-soft)}
 
 /* Site navigation gutter and menu trigger belong to the site shell, not chat. */
-body{padding-left:max(32px,env(safe-area-inset-left));touch-action:pan-y}
+html,body{touch-action:pan-y pinch-zoom}body{padding-left:max(32px,env(safe-area-inset-left))}
 #menu-toggle,body.menu-open #menu-toggle{position:fixed;z-index:1002;left:0;top:max(10px,env(safe-area-inset-top));transform:none;width:44px;height:44px;padding:0;margin:0;border:0;border-radius:0 0 8px 0;background:#111;box-shadow:0 2px 8px rgba(0,0,0,.45);color:var(--gold);font-size:17px;font-weight:normal;line-height:1;letter-spacing:-2px;touch-action:manipulation}
 #menu-toggle::after{content:"";position:absolute;inset:0;width:32px;height:44px}
 body.menu-open #menu-toggle{display:none}
