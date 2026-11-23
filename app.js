@@ -228,7 +228,8 @@ function commentReactionControl(item){
  const choices=[['🫂','Zagrljaj'],['😢','Dirnulo me'],['😮','Nemam riječi'],['🤗','Uz tebe sam'],['🤣','Umirem od smijeha']];
  let current={popular_emoji:null,my_reaction:null,can_change:true};
  let loading=true;
- const trigger=button('🙂',async()=>{
+ const indicator=node('span','comment-reaction-indicator');
+ const trigger=button('',async()=>{
   if(activeReactionMenu?.button===trigger){closeReactionMenu();return;}
   closeReportMenu();closeReactionMenu();
   const panel=node('div','comment-reaction-menu');panel.setAttribute('role','group');panel.setAttribute('aria-label','Reakcije na komentar');
@@ -251,7 +252,7 @@ function commentReactionControl(item){
  },'action comment-reaction-trigger');
  function render(result){
   current={...current,...result};
-  trigger.textContent=current.popular_emoji||'🙂';
+  indicator.textContent=current.popular_emoji||'';
   trigger.setAttribute('aria-label',current.popular_emoji
    ?'Najčešća reakcija na komentar: '+current.popular_emoji+'. Otvori izbor reakcija'
    :'Dodaj reakciju na komentar');
@@ -270,7 +271,7 @@ function commentReactionControl(item){
   loading=false;
  }
  trigger.setAttribute('aria-haspopup','true');trigger.setAttribute('aria-expanded','false');
- wrap.append(trigger);
+ wrap.append(indicator,trigger);
  reactionRefreshers.set(wrap,refresh);
  if(reactionObserver)reactionObserver.observe(wrap);else void refresh().catch(()=>{});
  return wrap;
