@@ -2,6 +2,68 @@ import {chatRequest} from './chat/client.mjs?v=room3';
 import {collectReplies,replyCounterText} from './chat/thread-model.mjs?v=progressive11';
 import { request, authClient, isPreview, isLocal, prepareSubmission, initializeSecurity } from './api.js?v=20261119-instant-cache3';
 const $ = s => document.querySelector(s);
+
+/* Text-size controls: integrated in the main app module so they cannot race
+   the page script. Only ordinary text elements are scaled, never controls. */
+(() => {
+ const KEY='ispovesti:font-size-level-v2';
+ const LEVELS=[1,1.1,1.2,1.3,1.4];
+ const BASE='data-isp-font-base';
+ const SKIP='#font-size-controls, #font-size-controls *, button, input, textarea, select, option, script, style, svg, [role="button"]';
+ let level=0;
+ try{
+  const saved=Number.parseInt(localStorage.getItem(KEY)||'0',10);
+  if(Number.isInteger(saved)&&saved>=0&&saved<LEVELS.length)level=saved;
+ }catch{}
+ const isScalable=el=>el instanceof Element&&!el.matches(SKIP)&&
+  Array.from(el.childNodes).some(n=>n.nodeType===Node.TEXT_NODE&&n.textContent.trim()!=='');
+ function remember(el,added=false){
+  if(!isScalable(el)||el.hasAttribute(BASE))return;
+  const size=Number.parseFloat(getComputedStyle(el).fontSize);
+  if(!Number.isFinite(size))return;
+  el.setAttribute(BASE,String(added&&level?size/LEVELS[level]:size));
+ }
+ function scan(root=document.body,added=false){
+  if(root instanceof Element)remember(root,added);
+  root?.querySelectorAll?.('*').forEach(el=>remember(el,added));
+ }
+ function apply(){
+  scan(document.body,false);
+  const factor=LEVELS[level];
+  document.querySelectorAll('body *').forEach(el=>{
+   if(!isScalable(el))return;
+   const base=Number.parseFloat(el.getAttribute(BASE));
+   if(Number.isFinite(base))el.style.setProperty('font-size',(base*factor)+'px','important');
+  });
+  try{localStorage.setItem(KEY,String(level));}catch{}
+  document.documentElement.setAttribute('data-isp-font-level',String(level));
+  const plus=document.getElementById('font-increase');
+  const minus=document.getElementById('font-decrease');
+  if(plus)plus.title='Povećaj slova · trenutno '+Math.round(factor*100)+'%';
+  if(minus)minus.title='Smanji slova · trenutno '+Math.round(factor*100)+'%';
+ }
+ function change(delta){
+  const next=Math.max(0,Math.min(LEVELS.length-1,level+delta));
+  if(next===level)return;
+  level=next;
+  apply();
+ }
+ document.getElementById('font-increase')?.addEventListener('click',()=>change(1));
+ document.getElementById('font-decrease')?.addEventListener('click',()=>change(-1));
+ apply();
+ const observer=new MutationObserver(records=>{
+  let added=false;
+  for(const record of records){
+   if(record.type!=='childList')continue;
+   for(const item of record.addedNodes){
+    if(item instanceof Element){scan(item,true);added=true;}
+    else if(item.nodeType===Node.TEXT_NODE&&item.parentElement){remember(item.parentElement,true);added=true;}
+   }
+  }
+  if(added)apply();
+ });
+ observer.observe(document.body,{childList:true,subtree:true});
+})();
 const feed = $('#feed'), dialog = $('#dialog');
 const dailyTabs={confession:$('#daily-confessions'),comment:$('#daily-comments')};
 let currentView='new',offset=0,generation=0,busy=false,hasMoreFeed=true;
