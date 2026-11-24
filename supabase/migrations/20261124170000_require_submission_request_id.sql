@@ -108,64 +108,7 @@ BEGIN
       RAISE EXCEPTION 'Potrebna je anonimna sesija.' USING errcode='28000';
     END IF;
     PERFORM pg_advisory_xact_lock(hashtextextended(p_uid::text,73142012));
-    IF coalesce(p_args->>'request_id','') !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}
-    v_payload=p_args-'request_id'-'captcha_token';
-    IF v_request IS NOT NULL THEN
-      SELECT * INTO v_receipt
-      FROM community_test.submission_receipts
-      WHERE user_id=p_uid AND request_id=v_request;
-      IF FOUND THEN
-        IF v_receipt.payload<>v_payload THEN
-          RAISE EXCEPTION 'Zahtjev za slanje je promijenjen. Pokušaj ponovo.';
-        END IF;
-        IF v_receipt.result ? 'item'
-          AND NOT community_test.visible((v_receipt.result->>'id')::bigint) THEN
-          RAISE EXCEPTION 'Sadržaj više nije dostupan.';
-        END IF;
-        v_result=v_receipt.result||jsonb_build_object('replayed',true);
-        IF v_result ? 'context' THEN
-          v_result=v_result||jsonb_build_object(
-            'context',
-            public.community_test_dispatch_base(
-              p_uid,'context',jsonb_build_object('id',p_args->>'confession_id')
-            )
-          );
-        END IF;
-        RETURN v_result;
-      END IF;
-    END IF;
-    v_result=public.community_test_dispatch_base(p_uid,p_action,p_args);
-    IF (v_result->>'success')::boolean IS TRUE
-      AND p_args->>'kind' IN ('comment','reply') THEN
-      SELECT jsonb_build_object(
-        'id',c.id::text,'body',c.body,'nickname',c.nickname,
-        'created_at',c.created_at,'parent_id',c.parent_id::text,'has_replies',false
-      ) INTO v_item
-      FROM community_test.content c
-      WHERE c.id=(v_result->>'id')::bigint
-        AND c.author_id=p_uid
-        AND c.state='published'
-        AND community_test.visible(c.id);
-      IF v_item IS NOT NULL THEN
-        v_result=v_result||jsonb_build_object(
-          'item',v_item,
-          'context',public.community_test_dispatch_base(
-            p_uid,'context',jsonb_build_object('id',p_args->>'confession_id')
-          )
-        );
-      END IF;
-    END IF;
-    IF v_request IS NOT NULL AND (v_result->>'success')::boolean IS TRUE THEN
-      INSERT INTO community_test.submission_receipts(user_id,request_id,payload,result)
-      VALUES(p_uid,v_request,v_payload,v_result);
-    END IF;
-    RETURN v_result;
-  END IF;
-
-  RETURN public.community_test_dispatch_base(p_uid,p_action,p_args);
-END
-$function$
- THEN
+    IF coalesce(p_args->>'request_id','') !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$' THEN
       RAISE EXCEPTION 'Nedostaje ili je neispravan ID zahtjeva za slanje.' USING errcode='22023';
     END IF;
     v_request=(p_args->>'request_id')::uuid;
