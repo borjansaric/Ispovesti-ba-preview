@@ -63,3 +63,10 @@ body.inline-thread-open .site-header,body.inline-thread-open #feed-title,body.in
 .chat-report-custom textarea::placeholder{color:#493a1b;opacity:.8}
 .chat-report-custom textarea:focus{border-bottom-color:#17130a;outline:0}
 .chat-report-custom button{width:auto;flex:0 0 auto;font-size:11px;padding:5px 3px;color:#241b0a}
+
+/* Mirror report menu positioning for right-aligned messages: open toward screen center. */
+.chat-panel[data-own-side="right"] .chat-message.own .chat-report-options,
+.chat-panel[data-own-side="left"] .chat-message.other .chat-report-options{
+ left:auto;
+ right:0;
+}
