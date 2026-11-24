@@ -157,6 +157,9 @@ async function previewRequest(action, a) {
   }
   if (action==='comments') return { items:s.contents.filter(c=>c.confession_id===String(a.confession_id)&&c.parent_id===(a.parent_id?String(a.parent_id):null)&&visible(c)).slice(offset,offset+20).map(c=>({...safe(c),has_replies:s.contents.some(r=>r.parent_id===c.id&&visible(r))})) };
   if (action==='submit') {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(a.request_id || ''))) {
+      throw new Error('Nedostaje ili je neispravan ID zahtjeva za slanje.');
+    }
     const body=a.body.trim(), min=a.kind==='confession'?15:1,max=a.kind==='confession'?5000:1000;
     if ([...body].length<min||[...body].length>max) throw new Error('Tekst nije dozvoljene dužine.');
     if (/(https?[:：]|www\.|[\p{L}\d][\p{L}\d._-]*\.[\p{L}]{2,}|mailto:|ftp:|tel:)/iu.test(body+' '+(a.nickname||''))) throw new Error('Linkovi nisu dozvoljeni.');
