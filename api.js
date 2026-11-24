@@ -59,7 +59,7 @@ async function localRequest(action,args,retry=true){
  const result=await response.json();if(!response.ok)throw new Error(result.error||'Lokalna provera nije uspela.');return result;
 }
 const readCacheActions=new Set(['feed','comments','confession','daily_highlights']);
-const readCacheDb='ispovesti-read-cache-v1';
+const readCacheDb='ispovesti-read-cache-v2';
 let readCacheDbPromise;
 function openReadCache(){
  if(!('indexedDB' in window))return Promise.resolve(null);
