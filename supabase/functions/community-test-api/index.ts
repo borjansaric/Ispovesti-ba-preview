@@ -140,6 +140,9 @@ Deno.serve(async(req:Request)=>{
    return send(await timedRpc('community_test_security',uid,action,clean));
   }
   if(action==='submit'){
+   // Reject missing or malformed IDs at the gateway; the database dispatcher independently enforces them.
+   const requestId=args.request_id;
+   if(typeof requestId!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId))fail('Nedostaje ili je neispravan ID zahtjeva za slanje.');
    // CAPTCHA clearance and reply-parent validation are enforced atomically in the database dispatcher.
    delete args.captcha_token;
   }

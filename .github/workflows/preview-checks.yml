@@ -34,6 +34,9 @@ jobs:
       - name: Verify pending submission storage
         run: node scripts/check-pending-submissions.mjs
 
+      - name: Verify server-side submission idempotency contract
+        run: node scripts/check-submission-idempotency.mjs
+
       - name: Verify CAPTCHA clearance flow
         run: node scripts/check-captcha-flow.mjs
 
