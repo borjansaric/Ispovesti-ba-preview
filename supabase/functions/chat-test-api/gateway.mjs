@@ -55,7 +55,7 @@ export function createChatHandler({supabaseUrl,serviceKey,allowedOrigins,allowTr
     }
    }
    if(body.action==='admin_messages'&&Array.isArray(result?.items)&&result.items.length){
-    const ids=result.items.map(item=>String(item.id)).filter(id=>/^\\d+$/.test(id));
+    const ids=result.items.map(item=>String(item.id)).filter(id=>/^\d+$/.test(id));
     if(ids.length){
      try{
       const query=ids.join(',');
