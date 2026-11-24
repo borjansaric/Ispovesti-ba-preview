@@ -43,8 +43,8 @@ function validateRecord(record){
  if(!record||typeof record!=='object'||!/^([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i.test(String(record.requestId||'')))throw new Error('Neispravan ID nedovršenog slanja.');
  if(!['confession','comment','reply'].includes(record.kind))throw new Error('Nepoznata vrsta nedovršenog slanja.');
  if(!record.payload||typeof record.payload!=='object'||record.payload.kind!==record.kind||typeof record.payload.body!=='string')throw new Error('Nedostaje sadržaj nedovršenog slanja.');
- if(record.kind!=='confession'&&!/^\\d+$/.test(String(record.payload.confession_id||'')))throw new Error('Nedostaje ispovest kojoj pripada komentar.');
- if(record.kind==='reply'&&!/^\\d+$/.test(String(record.payload.parent_id||'')))throw new Error('Nedostaje glavni komentar kojem odgovor pripada.');
+ if(record.kind!=='confession'&&!/^\d+$/.test(String(record.payload.confession_id||'')))throw new Error('Nedostaje ispovest kojoj pripada komentar.');
+ if(record.kind==='reply'&&!/^\d+$/.test(String(record.payload.parent_id||'')))throw new Error('Nedostaje glavni komentar kojem odgovor pripada.');
 }
 
 export async function savePendingSubmission(record){

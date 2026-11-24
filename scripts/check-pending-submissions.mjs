@@ -9,7 +9,7 @@ const store={
 };
 const db={
  objectStoreNames:{contains:()=>true},
- transaction(){const tx={objectStore:()=>store};queueMicrotask(()=>tx.oncomplete?.());return tx;}
+ transaction(){const tx={objectStore:()=>store};setTimeout(()=>tx.oncomplete?.(),0);return tx;}
 };
 globalThis.indexedDB={open(){const request={result:db};queueMicrotask(()=>{request.onupgradeneeded?.();request.onsuccess?.();});return request;}};
 

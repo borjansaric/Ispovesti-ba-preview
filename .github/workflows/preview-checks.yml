@@ -31,8 +31,5 @@ jobs:
       - name: Verify preview environment isolation
         run: node scripts/check-preview-isolation.mjs
 
-      - name: Verify pending submission storage
-        run: node scripts/check-pending-submissions.mjs
-
       - name: Build preview without deploying
         run: node scripts/build.mjs

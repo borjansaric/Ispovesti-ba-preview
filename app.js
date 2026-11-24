@@ -1,7 +1,6 @@
 import {chatRequest} from './chat/client.mjs?v=room3';
 import {collectReplies,replyCounterText} from './chat/thread-model.mjs?v=progressive11';
 import { request, authClient, isPreview, isLocal, prepareSubmission, initializeSecurity } from './api.js?v=20261119-instant-cache3';
-import { listPendingSubmissions, savePendingSubmission, deletePendingSubmission } from './submission-store.mjs';
 const $ = s => document.querySelector(s);
 
 /* Text-size controls: affect confession/comment body copy only. */
@@ -105,66 +104,6 @@ window.addEventListener('pagehide',persistFeedState);
 const dailyDayLabel=value=>{const d=new Date(String(value)+'T12:00:00');return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString('sr-Latn-RS',{weekday:'long',day:'numeric',month:'long',year:'numeric'});};
 function toast(text){$('#toast').textContent=text;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').textContent='',6500);}
 
-const pendingPanel=node('section','panel pending-submissions');
-pendingPanel.hidden=true;
-$('#feed').before(pendingPanel);
-let pendingResume=null;
-async function refreshPendingSubmissions(){
- try{
-  const records=await listPendingSubmissions();
-  pendingPanel.replaceChildren();
-  if(!records.length){pendingPanel.hidden=true;return;}
-  pendingPanel.hidden=false;
-  pendingPanel.append(node('h2','','Nedovršena slanja'),node('p','pending-submissions-note','Ova slanja su sačuvana samo u ovom pregledaču. Nastavi ih sa istim ID-jem zahtjeva ili ih odbaci.'));
-  const list=node('div','pending-submission-list');
-  for(const record of records){
-   const row=node('article','pending-submission');
-   const label=record.kind==='confession'?'Ispovest':record.kind==='reply'?'Odgovor':'Komentar';
-   const body=String(record.payload?.body||'');
-   row.append(node('strong','',label),node('p','pending-submission-text',body.length>150?body.slice(0,150)+'…':body));
-   const actions=node('div','pending-submission-actions');
-   actions.append(button('Nastavi slanje',()=>resumePendingSubmission(record),'action pending-resume'));
-   actions.append(button('Odbaci',async()=>{
-    if(!confirm('Odbaciti sačuvano slanje? Tekst i ID zahtjeva biće uklonjeni sa ovog uređaja.'))return;
-    await deletePendingSubmission(record.requestId);
-    await refreshPendingSubmissions();
-   },'text-button pending-discard'));
-   row.append(actions);list.append(row);
-  }
-  pendingPanel.append(list);
- }catch(error){
-  pendingPanel.hidden=false;
-  pendingPanel.replaceChildren(node('strong','','Lokalna evidencija slanja nije dostupna.'),node('p','pending-submissions-note',error.message||'Provjeri podršku pregledača za IndexedDB.'));
- }
-}
-async function resumePendingSubmission(record){
- pendingResume=record;
- if(record.kind==='confession'){
-  modal('Nastavi slanje ispovesti',contentForm('confession',{},()=>{},null,record));
-  return;
- }
- const confessionId=String(record.payload?.confession_id||'');
- if(!/^\d+$/.test(confessionId)){pendingResume=null;toast('Nedostaje podatak o ispovesti za nastavak slanja.');return;}
- const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('ispovest',confessionId);
- if(url.href!==location.href)history.pushState({ispovestiDetail:true},'',url);
- await openDirectConfession(confessionId);
- if(!document.querySelector('#feed .direct-story')){pendingResume=null;toast('Ispovest trenutno nije dostupna. Sačuvano slanje nije obrisano.');return;}
- if(record.kind==='reply'){
-  const parentId=String(record.payload?.parent_id||'');
-  if(!/^\d+$/.test(parentId)){pendingResume=null;toast('Nedostaje komentar na koji je odgovor bio namijenjen.');return;}
-  let parent=null;
-  for(let attempt=0;attempt<60&&!parent;attempt++){
-   parent=document.querySelector('#feed .comment[data-comment-id="'+parentId+'"]');
-   if(!parent)await new Promise(resolve=>setTimeout(resolve,100));
-  }
-  const trigger=parent?.querySelector('.reply-toggle');
-  if(!trigger){pendingResume=null;toast('Glavni komentar nije prikazan. Sačuvani odgovor je i dalje dostupan u nedovršenim slanjima.');return;}
-  trigger.click();
- }
- if(pendingResume===record){pendingResume=null;toast('Nije pronađeno odgovarajuće polje za nastavak. Slanje je sačuvano.');}
-}
-
-
 function modal(title,content){$('#dialog-title').textContent=title;$('#dialog-body').replaceChildren(content);if(!dialog.open)dialog.showModal();}
 
 const menuToggle=$('#menu-toggle'),sideMenu=$('#side-menu'),menuOverlay=$('#menu-overlay');
@@ -230,11 +169,8 @@ if(isLocal)$('#preview').textContent='Lokalni test · bez veze sa živim sajtom'
 else if(window.ISPOVESTI_CONFIG?.mode==='live-test')$('#preview').textContent='TEST · prava baza, odvojeni probni podaci';
 else if(!isPreview)$('#preview').hidden=true;
 function metadata(item){const div=node('div','story-meta');const author=String(item.nickname||'').trim();if(author)div.append(node('span','author',author));const t=node('time','',date(item.published_at||item.created_at));t.dateTime=item.published_at||item.created_at||'';div.append(t);return div;}
-function contentForm(kind,extra,done,onBack,resumeRecord=null){
+function contentForm(kind,extra,done,onBack){
  const form=node('form',kind==='confession'?'form':'form discussion-form'),label=node('label','',kind==='confession'?'Ispovest':'Tvoje reči'),text=node('textarea');
- const matchesPending=record=>record?.kind===kind&&String(record.payload?.confession_id||'')===String(extra.confession_id||'')&&String(record.payload?.parent_id||'')===String(extra.parent_id||'');
- const restored=resumeRecord||(pendingResume&&matchesPending(pendingResume)?pendingResume:null);
- if(restored&&pendingResume===restored)pendingResume=null;
  text.addEventListener('focus',()=>prepareSubmission(kind,form));
  text.addEventListener('input',()=>{prepareSubmission(kind,form);if(kind==='confession'){text.style.height='auto';text.style.height=Math.max(30,text.scrollHeight)+'px';}});
  text.required=true;text.maxLength=kind==='confession'?5000:1000;text.classList.toggle('discussion-textarea',kind!=='confession');
@@ -246,12 +182,7 @@ function contentForm(kind,extra,done,onBack,resumeRecord=null){
  const row=node('div','row'),back=onBack?button('← Nazad',()=>onBack(),'discussion-back'):null;if(back)row.append(back);
  form.append(label,identityRow,...(back?[row]:[]),status);
  if(kind==='confession'){const syncUnderline=()=>{if(!form.isConnected||!form.getClientRects().length)return;const left=text.getBoundingClientRect().left,right=sendPrefix.getBoundingClientRect().right,width=right-left;if(width>0&&Math.abs(text.getBoundingClientRect().width-width)>0.5)text.style.width=`${width}px`;};requestAnimationFrame(syncUnderline);window.addEventListener('resize',syncUnderline,{passive:true});window.addEventListener('ispovesti:layout-visible',syncUnderline);}
- let allowDuplicate=Boolean(restored?.payload?.allow_duplicate),duplicateButton,sending=false,requestId=restored?.requestId||null,lastPayload=restored?JSON.stringify(restored.payload):null;
- if(restored){
-  text.value=String(restored.payload?.body||'');
-  nick.value=String(restored.payload?.nickname||'');
-  status.textContent='Sačuvano na ovom uređaju. Pritisni „Pošalji“ da nastaviš sa istim ID-jem zahtjeva.';
- }
+ let allowDuplicate=false,duplicateButton,sending=false,requestId=null,lastPayload=null;
  form.onsubmit=async e=>{
   e.preventDefault();if(sending)return;
   const body=text.value.trim(),nickname=nick.value.trim(),count=[...body].length,min=kind==='confession'?15:1,max=kind==='confession'?5000:1000;
@@ -262,22 +193,15 @@ function contentForm(kind,extra,done,onBack,resumeRecord=null){
   let optimisticShown=false;sending=true;send.disabled=true;if(back)back.disabled=true;text.disabled=true;nick.disabled=true;
   const submittedAt=performance.now();status.className='hint';status.textContent='Šaljem…';
   try{
-   await savePendingSubmission({requestId,kind,context:extra,payload,createdAt:restored?.createdAt||Date.now()});
-   await refreshPendingSubmissions();
    if(optimistic){await done(optimistic,null,{phase:'optimistic'});optimisticShown=true;}
    const r=await request('submit',{...payload,request_id:requestId},null,form),confirmedAt=performance.now();
    if(r.duplicate){
     if(optimisticShown)await done(null,null,{phase:'rollback',pendingId:optimistic.id});
-    await deletePendingSubmission(requestId).catch(()=>{});
-    void refreshPendingSubmissions();
     requestId=null;lastPayload=null;status.textContent='Ovaj tekst si već poslao. Ako želiš, možeš ga poslati ponovo.';
     if(!duplicateButton){duplicateButton=button('Ipak pošalji',()=>{allowDuplicate=true;form.requestSubmit();});form.append(duplicateButton);}return;
    }
    const confirmed=r.item||{id:r.id,body,nickname:nickname||null,created_at:new Date().toISOString(),parent_id:extra.parent_id||null,has_replies:false};
-   const completedRequestId=requestId;
-    try{await deletePendingSubmission(completedRequestId);}catch{toast('Slanje je potvrđeno, ali lokalna evidencija nije uklonjena. Ponovno slanje je bezbjedno.');}
-    void refreshPendingSubmissions();
-    requestId=null;lastPayload=null;status.textContent='';text.value='';nick.value='';allowDuplicate=false;duplicateButton?.remove();duplicateButton=null;
+   requestId=null;lastPayload=null;status.textContent='';text.value='';nick.value='';allowDuplicate=false;duplicateButton?.remove();duplicateButton=null;
    if(kind==='confession'){dialog.close();closeMenu();toast('Tvoja ispovest je uspešno poslata. Čeka svoj red za objavljivanje.');}
    else{await done(confirmed,r.context,{phase:'confirmed',pendingId:optimistic.id});toast(kind==='reply'?'Tvoj odgovor je poslat.':'Tvoj komentar je poslat.');}
    requestAnimationFrame(()=>{performance.measure('ispovesti-submit-render',{start:confirmedAt,end:performance.now()});performance.measure('ispovesti-submit-total',{start:submittedAt,end:performance.now()});const timings={};for(const name of ['session','captcha','network','render','total']){const measure=performance.getEntriesByName('ispovesti-submit-'+name).at(-1);if(measure)timings[name]=Math.round(measure.duration);}form.dataset.submissionTiming=JSON.stringify(timings);for(const name of ['session','captcha','network','render','total'])performance.clearMeasures('ispovesti-submit-'+name);});
@@ -502,7 +426,7 @@ function updateCommentMeta(){clearTimeout(commentMetaTimer);commentMetaTimer=set
  for(let i=0;i<ids.length;i+=50){try{const data=await chatRequest('comment_meta',{ids:ids.slice(i,i+50)});for(const x of commentMeta){const d=data[x.item.id];if(d){x.count.textContent=replyCounterText(d.replies);x.favorite.classList.toggle('selected',d.favorite);x.favorite.setAttribute('aria-pressed',String(d.favorite));x.favorite.textContent=d.favorite?'♥':'♡';applyHeartStyle(x.favorite,'comment',x.item.id,d.favorite);}}}catch(err){toast(err.message);}}
  },40);}
 function comment(item,confessionId,refreshContext,focusOptions={}){
-  const wrap=node('div',item.pending?'comment pending':'comment'),card=node('div','comment-card');wrap.dataset.commentId=String(item.id);card.append(metadata(item),node('p','body-text',item.body));
+  const wrap=node('div',item.pending?'comment pending':'comment'),card=node('div','comment-card');card.append(metadata(item),node('p','body-text',item.body));
   const row=node('div','comment-actions');
   if(item.pending){row.append(node('span','comment-pending','Šaljem…'));wrap.append(card,row);return wrap;}
   row.append(voteControls(item));
@@ -782,6 +706,5 @@ function trackAnonymousVisit(){
  }catch{}
 }
 initializeFeed();
-void refreshPendingSubmissions();
 trackAnonymousVisit();
 void initializeSecurity().catch(error=>toast(error.message));
