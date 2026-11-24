@@ -7,6 +7,7 @@ let emailChallenge=null,currentSession=null;
 let adminClient,oldestId=null,loaded=0,busy=false;
 const node=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
 const date=value=>value?new Date(value).toLocaleString('sr-Latn-RS',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}):'';
+const reportReasonLabel=reason=>({hate_speech:'Govor mržnje',spam:'Spam',other:'Drugo',abuse:'Uvredljiv sadržaj',threat:'Prijetnja'}[reason]||reason);
 function renderMessage(item){
  const card=node('article','message'+(item.removed?' removed':''));
  const head=node('div','message-head');
@@ -17,7 +18,7 @@ function renderMessage(item){
  const reports=Array.isArray(item.reports)?item.reports:[];
  if(reports.length){
   const section=node('section','reports');section.append(node('h3','','Prijave ('+reports.length+')'));
-  for(const report of reports)section.append(node('p','report','Razlog: '+report.reason+' · '+date(report.created_at)));
+  for(const report of reports){section.append(node('p','report','Razlog: '+reportReasonLabel(report.reason)+' · '+date(report.created_at)));if(report.details)section.append(node('p','report-detail','Dodatni opis: '+report.details));}
   card.append(section);
  }else card.append(node('p','no-reports','Nema prijava.'));
  return card;

@@ -25,8 +25,30 @@ export async function openChat(){
     const own=m.sender===profile.id;row=el('article','chat-message '+(own?'own':'other'));row.dataset.id=id;
     const avatar=el('span','chat-avatar',avatars[m.avatar]||avatars.ghost);avatar.setAttribute('aria-hidden','true');const body=el('p','chat-body',m.body);row.append(avatar,body);
     const actions=el('details','chat-message-menu');actions.addEventListener('toggle',()=>{if(actions.open){if(activeActionMenu&&activeActionMenu!==actions)activeActionMenu.open=false;activeActionMenu=actions;}else if(activeActionMenu===actions)activeActionMenu=null;});const more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
-    const reportButton=button('Prijavi',async()=>{const reason=prompt('Razlog: abuse, threat, spam ili other','spam');if(reason){await chatRequest('report',{id:m.id,reason});status.textContent='Prijava je poslata.';actions.open=false;}});
-    menu.append(reportButton);
+    const reportOptions=el('div','chat-report-options');reportOptions.hidden=true;
+    const custom=el('div','chat-report-custom');custom.hidden=true;
+    const detail=el('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni opis prijave');
+    let reportSending=false;
+    async function sendReport(reason,details=''){
+     if(reportSending)return;reportSending=true;
+     const controls=[...reportOptions.querySelectorAll('button,textarea')];controls.forEach(control=>control.disabled=true);
+     try{
+      const result=await chatRequest('report',{id:m.id,reason,details:details.trim()});
+      status.textContent=result.already_reported?'Već si prijavio ovu poruku.':'Prijava je zabilježena. Hvala.';
+      actions.open=false;
+     }catch(error){
+      status.textContent=error.message||'Prijava nije uspjela.';
+      controls.forEach(control=>control.disabled=false);reportSending=false;
+     }
+    }
+    const reportButton=button('Prijavi',()=>{reportOptions.hidden=!reportOptions.hidden;});
+    const hateButton=button('Govor mržnje',()=>sendReport('hate_speech'),'chat-small');
+    const spamButton=button('Spam',()=>sendReport('spam'),'chat-small');
+    const moreReason=button('···',()=>{custom.hidden=!custom.hidden;if(!custom.hidden)detail.focus();},'chat-small');
+    const sendReportButton=button('Pošalji',()=>sendReport('other',detail.value),'chat-small');
+    custom.append(detail,sendReportButton);
+    reportOptions.append(hateButton,spamButton,moreReason,custom);
+    menu.append(reportButton,reportOptions);
     if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
     actions.append(more,menu);row.append(actions);messageNodes.set(id,row);
    }else{
