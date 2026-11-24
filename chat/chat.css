@@ -37,3 +37,18 @@ body.inline-thread-open .site-header,body.inline-thread-open #feed-title,body.in
 .chat-settings{z-index:100001}
 .chat-settings-content{z-index:100002}
 .chat-messages{position:relative;z-index:1}
+
+
+/* Align the three-dot trigger with the left edge of right-aligned messages. */
+.chat-panel[data-own-side="right"] .chat-message.own .chat-message-menu,
+.chat-panel[data-own-side="left"] .chat-message.other .chat-message-menu{
+ left:-7px;
+ right:auto;
+}
+
+/* Report reasons and the expandable description follow the confession-report pattern. */
+.chat-report-options{display:flex;flex-direction:column;gap:2px;margin-top:3px;padding-top:3px;border-top:1px solid rgba(45,29,6,.35)}
+.chat-report-options[hidden],.chat-report-custom[hidden]{display:none}
+.chat-report-custom{display:flex;align-items:flex-end;gap:5px;min-width:0}
+.chat-report-custom textarea{box-sizing:border-box;width:160px;max-width:calc(100vw - 60px);min-width:90px;min-height:30px;max-height:80px;resize:vertical;margin:0;padding:5px;border:1px solid #6d5420;border-radius:4px;background:#fff8e8;color:#17130a;font:inherit;font-size:12px}
+.chat-report-custom button{width:auto;flex:0 0 auto}
