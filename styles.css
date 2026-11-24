@@ -302,3 +302,15 @@ button#menu-toggle::after,
 }
 .site-header h1{margin:0}
 .site-header p{margin:7px auto 0}
+
+/* Locally saved submissions: black-and-gold preview recovery panel. */
+.pending-submissions{margin:12px 0;padding:14px;border:1px solid rgba(255,218,104,.28);border-radius:12px;background:#171717;color:#f3f0e8}
+.pending-submissions[hidden]{display:none}
+.pending-submissions>h2{margin:0 0 6px;color:#ffda68;font-size:1rem}
+.pending-submissions-note{margin:0 0 10px;color:#c8c1b2;font-size:.88rem}
+.pending-submission-list{display:grid;gap:10px}
+.pending-submission{padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:9px}
+.pending-submission>strong{color:#ffda68}
+.pending-submission-text{margin:5px 0 9px;white-space:pre-wrap;overflow-wrap:anywhere;color:#eee}
+.pending-submission-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pending-discard{color:#c9c1b5}
