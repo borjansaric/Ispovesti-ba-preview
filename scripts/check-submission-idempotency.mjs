@@ -9,7 +9,7 @@ const [app, api, gateway, store, migration] = await Promise.all([
   readFile(new URL('../supabase/migrations/20261124170000_require_submission_request_id.sql', import.meta.url), 'utf8'),
 ]);
 
-const uuidPattern = String.raw`[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}`;
+const uuidSqlPattern = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 
 assert.match(app, /requestId=restored\?\.requestId\|\|null/, 'recovery must retain the original request ID');
 assert.match(app, /await savePendingSubmission\(\{requestId,kind,context:extra,payload/, 'pending data must be persisted before network submission');
@@ -30,6 +30,6 @@ assert.match(migration, /jsonb_build_object\('replayed',true\)/, 'same ID and sa
 assert.match(migration, /pg_advisory_xact_lock\(hashtextextended\(p_uid::text,73142012\)\)/, 'submissions must remain serialized per anonymous user');
 assert.match(migration, /CREATE OR REPLACE FUNCTION public\.community_test_dispatch/, 'the migration must update the test dispatcher');
 assert.doesNotMatch(migration, /community_live\./, 'the migration must not touch the live schema');
-assert.match(migration, new RegExp(uuidPattern), 'database must validate a UUID-shaped request ID');
+assert.ok(migration.includes(uuidSqlPattern), 'database must validate a UUID-shaped request ID');
 
 console.log('Submission idempotency source-contract checks passed.');
