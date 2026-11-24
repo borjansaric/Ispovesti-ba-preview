@@ -27,7 +27,7 @@ export async function openChat(){
     const actions=el('details','chat-message-menu');actions.addEventListener('toggle',()=>{if(actions.open){if(activeActionMenu&&activeActionMenu!==actions)activeActionMenu.open=false;activeActionMenu=actions;}else if(activeActionMenu===actions)activeActionMenu=null;});const more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
     const reportOptions=el('div','chat-report-options');reportOptions.hidden=true;
     const custom=el('div','chat-report-custom');custom.hidden=true;
-    const detail=el('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni opis prijave');
+    const detail=el('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni opis prijave');detail.style.height='28px';detail.addEventListener('input',()=>{detail.style.height='28px';detail.style.height=Math.min(detail.scrollHeight,70)+'px';});
     let reportSending=false;
     async function sendReport(reason,details=''){
      if(reportSending)return;reportSending=true;

@@ -428,7 +428,7 @@ function report(item,reportButton){
  const spam=button('Spam',()=>sendReport('spam'),'report-option');
  const more=button('···',()=>{const custom=panel.querySelector('.report-custom');custom.hidden=!custom.hidden;if(!custom.hidden)custom.querySelector('textarea').focus();},'report-more');
  const custom=node('div','report-custom');custom.hidden=true;
- const detail=node('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni razlog prijave');
+ const detail=node('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni razlog prijave');detail.style.height='28px';detail.addEventListener('input',()=>{detail.style.height='28px';detail.style.height=Math.min(detail.scrollHeight,70)+'px';});
  const send=button('Pošalji',()=>sendReport('other',detail.value),'report-send');
  custom.append(detail,send);panel.append(hate,spam,more,custom);row.append(panel);reportButton.setAttribute('aria-expanded','true');activeReportMenu={panel,button:reportButton};
 }
