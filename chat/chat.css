@@ -24,3 +24,16 @@ body.chat-open,body.thread-open{overflow:hidden}
 
 /* Keep the active inline discussion clear while dimming the surrounding feed. */
 body.inline-thread-open .site-header,body.inline-thread-open #feed-title,body.inline-thread-open footer,body.inline-thread-open .story:not(.thread-active-story),.thread-active-story>.story-content,.thread-active-story>.story-date,.thread-active-story>.story-nickname,.thread-active-story>.story-actions,.thread-active-story .comment-title,.thread-active-story .comment:not(.thread-active-comment):not(.inline-thread .comment),.thread-active-story .comment-list>.form{filter:blur(3px) brightness(.65)}
+
+/* Keep message action menus inside the viewport when their trigger sits on the right. */
+.chat-panel[data-own-side="right"] .chat-message.own .chat-message-actions,
+.chat-panel[data-own-side="left"] .chat-message.other .chat-message-actions{
+ left:auto;
+ right:100%;
+}
+
+/* The help/settings popover must paint above every message action menu. */
+.chat-topbar{position:relative;z-index:100000;flex:0 0 44px}
+.chat-settings{z-index:100001}
+.chat-settings-content{z-index:100002}
+.chat-messages{position:relative;z-index:1}
