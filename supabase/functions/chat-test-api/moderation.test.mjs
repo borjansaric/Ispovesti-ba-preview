@@ -20,3 +20,6 @@ test('long all-caps message is flagged',()=>{
 test('repeated phrase is flagged',()=>{
   assert.ok(classifyChatMessage('prodajem prodajem prodajem odmah').includes('repeated_phrase'));
 });
+test('short repeated affectionate phrase is not flagged',()=>{
+  assert.deepEqual(classifyChatMessage('volim te volim te volim te'),[]);
+});
