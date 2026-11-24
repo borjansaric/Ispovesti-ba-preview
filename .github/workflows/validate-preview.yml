@@ -33,7 +33,9 @@ jobs:
           done < <(find . -type f \( -name '*.js' -o -name '*.mjs' \) -not -path './.git/*' -not -path './dist/*' -print0)
 
       - name: Check Supabase Edge Function TypeScript
-        run: deno check supabase/functions/community-test-api/index.ts
+        run: |
+          deno check supabase/functions/community-test-api/index.ts
+          deno check supabase/functions/chat-test-api/index.ts
 
       - name: Build preview without deploying
         run: node scripts/build.mjs
