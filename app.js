@@ -144,15 +144,19 @@ async function resumePendingSubmission(record){
   return;
  }
  const confessionId=String(record.payload?.confession_id||'');
- if(!/^\\d+$/.test(confessionId)){pendingResume=null;toast('Nedostaje podatak o ispovesti za nastavak slanja.');return;}
+ if(!/^\d+$/.test(confessionId)){pendingResume=null;toast('Nedostaje podatak o ispovesti za nastavak slanja.');return;}
  const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('ispovest',confessionId);
  if(url.href!==location.href)history.pushState({ispovestiDetail:true},'',url);
  await openDirectConfession(confessionId);
  if(!document.querySelector('#feed .direct-story')){pendingResume=null;toast('Ispovest trenutno nije dostupna. Sačuvano slanje nije obrisano.');return;}
  if(record.kind==='reply'){
   const parentId=String(record.payload?.parent_id||'');
-  if(!/^\\d+$/.test(parentId)){pendingResume=null;toast('Nedostaje komentar na koji je odgovor bio namijenjen.');return;}
-  const parent=document.querySelector('#feed .comment[data-comment-id="'+parentId+'"]');
+  if(!/^\d+$/.test(parentId)){pendingResume=null;toast('Nedostaje komentar na koji je odgovor bio namijenjen.');return;}
+  let parent=null;
+  for(let attempt=0;attempt<60&&!parent;attempt++){
+   parent=document.querySelector('#feed .comment[data-comment-id="'+parentId+'"]');
+   if(!parent)await new Promise(resolve=>setTimeout(resolve,100));
+  }
   const trigger=parent?.querySelector('.reply-toggle');
   if(!trigger){pendingResume=null;toast('Glavni komentar nije prikazan. Sačuvani odgovor je i dalje dostupan u nedovršenim slanjima.');return;}
   trigger.click();
@@ -258,7 +262,7 @@ function contentForm(kind,extra,done,onBack,resumeRecord=null){
   let optimisticShown=false;sending=true;send.disabled=true;if(back)back.disabled=true;text.disabled=true;nick.disabled=true;
   const submittedAt=performance.now();status.className='hint';status.textContent='Šaljem…';
   try{
-   await savePendingSubmission({requestId,kind,context:extra,payload,createdAt:Date.now()});
+   await savePendingSubmission({requestId,kind,context:extra,payload,createdAt:restored?.createdAt||Date.now()});
    await refreshPendingSubmissions();
    if(optimistic){await done(optimistic,null,{phase:'optimistic'});optimisticShown=true;}
    const r=await request('submit',{...payload,request_id:requestId},null,form),confirmedAt=performance.now();
