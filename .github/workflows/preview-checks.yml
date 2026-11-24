@@ -37,6 +37,9 @@ jobs:
       - name: Verify server-side submission idempotency contract
         run: node scripts/check-submission-idempotency.mjs
 
+      - name: Verify comment and reply retry behavior
+        run: node scripts/check-discussion-retry.mjs
+
       - name: Verify CAPTCHA clearance flow
         run: node scripts/check-captcha-flow.mjs
 
