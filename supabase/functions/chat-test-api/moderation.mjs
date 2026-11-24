@@ -29,7 +29,7 @@ export function classifyChatMessage(value) {
     flags.push('excessive_caps');
   }
 
-  if (/\b([\p{L}\p{N}]{2,}(?:\s+[\p{L}\p{N}]{2,}){0,2})\b(?:\s+\1){2,}/iu.test(text)) {
+  if (raw.length >= 30 && /\b([\p{L}\p{N}]{2,}(?:\s+[\p{L}\p{N}]{2,}){0,2})\b(?:\s+\1){2,}/iu.test(text)) {
     flags.push('repeated_phrase');
   }
 
