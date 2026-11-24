@@ -33,7 +33,9 @@ jobs:
 
       - name: Verify pending submission storage
         run: node scripts/check-pending-submissions.mjs
-          node scripts/check-captcha-flow.mjs
+
+      - name: Verify CAPTCHA clearance flow
+        run: node scripts/check-captcha-flow.mjs
 
       - name: Build preview without deploying
         run: node scripts/build.mjs
