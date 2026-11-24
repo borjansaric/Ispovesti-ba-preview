@@ -61,7 +61,39 @@ begin
 
   if position('v_inserted integer' in v_definition)=0
      or position('already_reported' in v_definition)=0
-     or position('details',r.details' in v_definition)=0 then
+     or position($anchor then
+    raise exception 'Nije moguće bezbjedno ažurirati chat_test_dispatch; očekivani dijelovi nisu pronađeni.';
+  end if;
+
+  execute v_definition;
+
+  v_definition := pg_get_functiondef('public.community_test_admin_read(uuid,text,jsonb)'::regprocedure);
+
+  v_definition := replace(
+    v_definition,
+    $old$r.created_at reported_at,r.user_id::text reporter_id
+        from community_test.reports r$old$,
+    $new$r.created_at reported_at,r.user_id::text reporter_id,NULL::text details
+        from community_test.reports r$new$
+  );
+
+  v_definition := replace(
+    v_definition,
+    $old$r.created_at reported_at,r.user_id::text reporter_id
+        from chat_test.reports r$old$,
+    $new$r.created_at reported_at,r.user_id::text reporter_id,r.details
+        from chat_test.reports r$new$
+  );
+
+  if position('NULL::text details' in v_definition)=0
+     or position('r.details' in v_definition)=0 then
+    raise exception 'Nije moguće bezbjedno ažurirati administratorski pregled prijava.';
+  end if;
+
+  execute v_definition;
+end
+$migration$;
+details',r.details$anchor$ in v_definition)=0 then
     raise exception 'Nije moguće bezbjedno ažurirati chat_test_dispatch; očekivani dijelovi nisu pronađeni.';
   end if;
 
