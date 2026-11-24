@@ -591,7 +591,7 @@ function story(item,options={}){
  commentsButton.setAttribute('aria-label','Napiši komentar');
  commentsButton.title='Napiši komentar';
  if(!options.detail)article.addEventListener('click',event=>{
-  if(event.target.closest('.share-story-corner,.comments-area,button,a,input,textarea,select,label'))return;
+  if(event.target.closest('.share-story-corner,.comments-area,.report-menu,button,a,input,textarea,select,label'))return;
   navigateToConfession(item.id);
  },true);
  const favorite=button('♡',async b=>{const previous=b.getAttribute('aria-pressed')==='true',enabled=!previous;setFavorite(enabled);pulseHeart(b);try{const result=await request('favorite',{id:item.id,enabled});setFavorite(enabled,result.favorite_style);}catch(error){setFavorite(previous);throw error;}},'action favorite');favorite.setAttribute('aria-label','Dodaj ili ukloni iz omiljenih');
