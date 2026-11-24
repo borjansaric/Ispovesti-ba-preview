@@ -66,3 +66,5 @@ button.small{min-height:32px;padding:5px 9px;font-size:12px}
 .section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 8px}
 @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.app-layout{grid-template-columns:1fr}.sidebar{position:static;grid-template-columns:repeat(3,minmax(0,1fr))}.sidebar button{text-align:center;padding:8px 5px}}
 @media(max-width:560px){.admin-shell{width:calc(100% - 18px);padding-top:18px}.admin-header{align-items:center}.workspace{padding:13px}.sidebar{grid-template-columns:repeat(2,minmax(0,1fr))}.stats-grid{gap:7px}.stat-card{padding:11px}.stat-card .stat-value{font-size:21px}.two-col,.profile-grid{grid-template-columns:1fr}.toolbar .search{max-width:none}.card-head{gap:6px}}
+
+.pill.flagged{border-color:#805148;color:#ffc2b5;background:#241815}
