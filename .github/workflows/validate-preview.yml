@@ -37,5 +37,8 @@ jobs:
           deno check supabase/functions/community-test-api/index.ts
           deno check supabase/functions/chat-test-api/index.ts
 
+      - name: Check chat report parity
+        run: node scripts/check-chat-report-contract.mjs
+
       - name: Build preview without deploying
         run: node scripts/build.mjs
