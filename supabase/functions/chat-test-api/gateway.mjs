@@ -1,3 +1,4 @@
+import {classifyChatMessage} from './moderation.mjs';
 // No payment endpoint. Trial actions require server configuration AND verified admin SQL checks.
 const allowedActions=new Set(['bootstrap','profile','history','send','block','unblock','report','recovery_set','recover','admin_status','admin_profiles','admin_test_mode','admin_grant','admin_nickname','admin_avatar','admin_messages','admin_remove','admin_restore','admin_ban','admin_unban','comment_meta','comment_favorite']);
 const trialActions=new Set(['admin_test_mode','admin_grant','admin_nickname','admin_avatar']);
@@ -39,6 +40,37 @@ export function createChatHandler({supabaseUrl,serviceKey,allowedOrigins,allowTr
    const response=await fetcher(supabaseUrl+'/rest/v1/rpc/chat_test_dispatch_v2',{method:'POST',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,'Content-Type':'application/json'},body:JSON.stringify({p_uid:user.id,p_action:body.action,p_args:args,p_session:tokenClaims.session_id||null}),signal:AbortSignal.timeout(12000)});
    const result=await response.json();if(!response.ok){const safe=['42501','28000','P0001'].includes(result.code);return send({error:safe?result.message:'Chat trenutno nije dostupan.'},result.code==='42501'?403:result.code==='28000'?401:400);}
    if(result._http_status){const {_http_status,...safe}=result;return send(safe,_http_status);}
+   if(body.action==='send'&&result?.success&&result?.id){
+    const reasons=classifyChatMessage(args.body);
+    if(reasons.length){
+     try{
+      const saved=await fetcher(supabaseUrl+'/rest/v1/chat_test_moderation_flags?on_conflict=message_id',{
+       method:'POST',
+       headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,'Content-Type':'application/json',Prefer:'resolution=ignore-duplicates,return=minimal'},
+       body:JSON.stringify({message_id:String(result.id),user_id:user.id,reasons,status:'review'}),
+       signal:AbortSignal.timeout(6000)
+      });
+      if(!saved.ok)console.warn('Chat moderation flag could not be stored:',saved.status);
+     }catch{console.warn('Chat moderation flag storage unavailable.');}
+    }
+   }
+   if(body.action==='admin_messages'&&Array.isArray(result?.items)&&result.items.length){
+    const ids=result.items.map(item=>String(item.id)).filter(id=>/^\\d+$/.test(id));
+    if(ids.length){
+     try{
+      const query=ids.join(',');
+      const flagsResponse=await fetcher(supabaseUrl+'/rest/v1/chat_test_moderation_flags?message_id=in.('+query+')&select=message_id,reasons,status,created_at',{
+       headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey},
+       signal:AbortSignal.timeout(6000)
+      });
+      if(flagsResponse.ok){
+       const flags=await flagsResponse.json();
+       const byId=new Map(flags.map(flag=>[String(flag.message_id),flag]));
+       result.items=result.items.map(item=>({...item,moderation:byId.get(String(item.id))||null}));
+      }else console.warn('Chat moderation flags could not be loaded:',flagsResponse.status);
+     }catch{console.warn('Chat moderation flags unavailable to admin view.');}
+    }
+   }
    return send(result);
   }catch{return send({error:'Chat trenutno nije dostupan. Pokušaj ponovo.'},400);}
  };
