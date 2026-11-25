@@ -69,3 +69,6 @@ body.inline-thread-open .site-header,body.inline-thread-open #feed-title,body.in
  left:auto;
  right:0;
 }
+
+
+.chat-rules-acceptance{margin:12px;padding:14px;border:1px solid var(--gold);border-radius:8px;background:#17140d;color:var(--text)}.chat-rules-acceptance h3{margin:0 0 8px;color:var(--gold);font-size:15px}.chat-rules-acceptance p{font-size:13px;line-height:1.5}.chat-rules-acceptance button{margin-top:10px}
