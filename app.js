@@ -225,7 +225,20 @@ $('#sidebar-compose-open').onclick=()=>{closeMenu();modal('Ispovest',contentForm
 $('#quick-compose').onclick=()=>modal('Ispovest',contentForm('confession',{},()=>{}));
 $('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledaču. Za zbirnu statistiku povratka koristi se nasumični identifikator pregledača: analitička baza čuva samo njegov zaštićeni hash i datum posjete, bez povezivanja s anonimnom sesijom, IP adresom, putanjom stranice ili tekstom. Identifikator važi samo u istom pregledaču i na istom uređaju; brisanje podataka sajta resetuje ga. Analitički zapisi se automatski brišu nakon 180 dana. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
 $('#footer-privacy').onclick=()=>$('#privacy').click();
-$('#rules').onclick=()=>modal('Pravila zajednice',node('p','', 'Piši bez vređanja, uznemiravanja, pretnji i spama. Slike i linkovi nisu dozvoljeni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj. Čitanje, objavljivanje ispovesti, komentari, odgovori i glasanje su besplatni. Ispovesti čekaju red i objavljuje se najviše jedna na sat.'));
+function communityRulesContent(){
+ const box=node('div','community-rules');
+ box.append(
+  node('h3','','Zaštita maloljetnika'),
+  node('p','','Ispovesti.ba je namijenjen isključivo osobama koje imaju 18 ili više godina. Osobama mlađim od 18 godina nije dozvoljen pristup sajtu, objavljivanje ispovijesti, komentarisanje niti korišćenje chata. Provjera punoljetnosti prikazuje se pri ulasku na sajt.'),
+  node('p','','Nemoj zaobilaziti provjeru godina niti se predstavljati kao punoljetna osoba ako to nisi.'),
+  node('p','','Ako u chatu primijetiš osobu za koju sumnjaš da je mlađa od 18 godina, otvori meni (⋮) uz njenu poruku i izaberi opciju „18− korisnik“. Prijava se šalje moderatoru na pregled. Sama prijava ne znači automatsku zabranu.'),
+  node('h3','','Pravila ponašanja'),
+  node('p','','Piši bez vrijeđanja, uznemiravanja, prijetnji, govora mržnje i spama. Ne traži, ne objavljuj i ne dijeli tuđe lične podatke. Slike i linkovi nisu dozvoljeni. Ne pokušavaj da kontaktiraš druge članove izvan platforme na osnovu njihovih objava.'),
+  node('p','','Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj i pregledati prijave radi zaštite zajednice. Čitanje, objavljivanje ispovijesti, komentari, odgovori i glasanje su besplatni. Ispovijesti čekaju red i objavljuje se najviše jedna na sat.')
+ );
+ return box;
+}
+$('#rules').onclick=()=>modal('Pravila zajednice',communityRulesContent());
 if(isLocal)$('#preview').textContent='Lokalni test · bez veze sa živim sajtom';
 else if(window.ISPOVESTI_CONFIG?.mode==='live-test')$('#preview').textContent='TEST · prava baza, odvojeni probni podaci';
 else if(!isPreview)$('#preview').hidden=true;
@@ -248,7 +261,7 @@ function contentForm(kind,extra,done,onBack,resumeRecord=null){
  let siteRulesAccepted=false;
  const rulesPanel=node('section','site-rules-acceptance');
  rulesPanel.hidden=true;
- rulesPanel.append(node('h3','','Pravila zajednice'),node('p','','Piši bez vređanja, uznemiravanja, pretnji i spama. Slike i linkovi nisu dozvoljeni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj. Čitanje, objavljivanje ispovesti, komentari, odgovori i glasanje su besplatni. Ispovesti čekaju red i objavljuje se najviše jedna na sat.'));
+ rulesPanel.append(communityRulesContent());
  const acceptSiteRules=button('Shvatio sam i prihvatam pravila',async()=>{
   acceptSiteRules.disabled=true;
   try{await request('gate_accept',{scope:'site'});siteRulesAccepted=true;rulesPanel.hidden=true;status.textContent='Pravila su prihvaćena. Ponovo pritisni „Pošalji“. ';}
