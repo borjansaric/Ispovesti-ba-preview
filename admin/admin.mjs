@@ -117,7 +117,7 @@ async function renderAiModerator(){
  setStatus('Učitavam označeni sadržaj…');viewContent.replaceChildren();
  viewContent.append(notice('Kako radi moderator','Ovo je besplatni sistem pravila, a ne zaseban AI jezički model. Provjerava ispovijesti, komentare, odgovore i chat poruke. Označava moguće prijetnje, promotivni spam, brojeve telefona, pretjerana velika slova i ponavljanje fraza. Ne skriva i ne briše sadržaj automatski.'));
  const toolbar=el('div','toolbar'),refresh=actionButton('Osvježi',()=>renderAiModerator(),'small');
- toolbar.append(el('span','meta','Izvor: testna baza · do 100 chat poruka i 100 objava/komentara'),refresh);viewContent.append(toolbar);
+ toolbar.append(el('span','meta','Izvor: testna baza · do 100 chat poruka i 100 objava/komentara za pregled'),refresh);viewContent.append(toolbar);
  const list=el('div','list');viewContent.append(list);
  try{
   const [communityData,chatData]=await Promise.all([
