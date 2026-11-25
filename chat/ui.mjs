@@ -1,4 +1,4 @@
-import {chatRequest} from './client.mjs?v=room2';
+import {chatRequest} from './client.mjs?v=gate1';
 export const avatars={ghost:'👻',moon:'🌙',star:'⭐',owl:'🦉',fox:'🦊',leaf:'🍃',cloud:'☁️',comet:'☄️'};
 const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
 const button=(label,run,cls='chat-small')=>{const b=el('button',cls,label);b.type='button';b.onclick=()=>Promise.resolve(run()).catch(e=>alert(e.message));return b;};
@@ -48,7 +48,8 @@ export async function openChat(){
     const moreReason=button('···',()=>{custom.hidden=!custom.hidden;if(!custom.hidden)detail.focus();},'chat-small');
     const sendReportButton=button('Pošalji',()=>sendReport('other',detail.value),'chat-small');
     custom.append(detail,sendReportButton);
-    reportOptions.append(hateButton,spamButton,moreReason,custom);
+    const underageButton=button('18− korisnik',()=>sendReport('underage'),'chat-small');
+    reportOptions.append(hateButton,spamButton,moreReason,underageButton,custom);
     menu.append(reportButton,reportOptions);
     if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
     actions.append(more,menu);row.append(actions);messageNodes.set(id,row);
@@ -81,8 +82,28 @@ export async function openChat(){
    blocked.replaceChildren();for(const [i,b]of (profile.blocked||[]).entries())blocked.append(button('Odblokiraj korisnika '+(i+1),async()=>{await chatRequest('unblock',{target:b.id});await loadProfile();}));
    form.hidden=!profile.active;if(profile.active){status.textContent='';await refresh(false);clearInterval(timer);timer=setInterval(()=>refresh(),1500);}else status.textContent='Chat trenutno nije dostupan.';
   }catch(e){resetAccess(e.message);}}
+
+ async function ensureChatRules(){
+  const gate=await chatRequest('gate_status');
+  if(gate.age_status!=='adult')throw new Error('Pristup chatu dozvoljen je samo punoljetnim osobama.');
+  if(gate.chat_rules_accepted)return true;
+  let panel=root.querySelector('.chat-rules-acceptance');
+  if(!panel){
+   panel=el('section','chat-rules-acceptance');
+   panel.append(el('h3','','Pravila chata'),el('p','','Jedna zajednička anonimna soba, bez privatnih poruka. Bez pretnji, vređanja, spama, linkova i dijeljenja tuđih ličnih podataka. Poruke imaju najviše 1.000 znakova; fotografije nisu dozvoljene. Lično blokiranje sakriva poruke izabranog korisnika samo tebi. Ovlašćeni moderatori mogu pregledati sadržaj i prijave.'));
+   const accept=button('Shvatio sam i prihvatam pravila',async()=>{
+    accept.disabled=true;
+    try{await chatRequest('gate_accept',{scope:'chat'});panel.remove();status.textContent='Pravila chata su prihvaćena. Ponovo pritisni „Pošalji poruku“. ';}
+    catch(error){status.textContent=error.message||'Potvrda pravila nije uspjela.';accept.disabled=false;}
+   },'chat-send');
+   panel.append(accept);root.insertBefore(panel,form);
+  }
+  status.textContent='Prije prve poruke moraš prihvatiti pravila chata.';
+  return false;
+ }
  form.onsubmit=async event=>{
   event.preventDefault();if(sending)return;
+  if(!await ensureChatRules())return;
   const draft=text.value.trim();
   if(!pendingMessage&&!draft)return;
   const body=pendingMessage?pendingMessage.body:draft;
