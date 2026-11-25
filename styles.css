@@ -323,3 +323,9 @@ button#menu-toggle::after,
 
 /* Consistent readable hierarchy for the expanded community rules dialog and acceptance panel. */
 .community-rules h3{margin:14px 0 6px;color:var(--gold);font-size:15px}.community-rules h3:first-child{margin-top:0}.community-rules p{margin:0 0 10px;line-height:1.6;color:var(--text)}.site-rules-acceptance .community-rules{font-size:13px}.site-rules-acceptance .community-rules h3{font-size:14px}
+
+
+/* Dedicated privacy-policy entry in the sidebar and rules dialog. */
+.privacy-policy-menu-link{display:block;margin:5px 9px 0;padding:7px 8px;border:1px solid rgba(214,177,94,.45);color:var(--gold);text-align:center;text-decoration:none;font-size:12px;font-weight:700;border-radius:4px;background:rgba(201,167,91,.04)}
+.community-privacy-link{display:inline-flex;align-items:center;justify-content:center;margin:12px 0 4px;padding:8px 14px;border:1px solid rgba(214,177,94,.6);border-radius:5px;color:var(--gold);background:rgba(201,167,91,.06);font-size:13px;font-weight:700;text-decoration:none}
+.community-privacy-link:hover,.privacy-policy-menu-link:hover{color:var(--gold-soft);border-color:var(--gold-soft)}
