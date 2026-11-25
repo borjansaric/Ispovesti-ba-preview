@@ -1,5 +1,5 @@
-import {authClient,request} from '../api.js?v=admin-panel-v1';
-import {chatRequest} from '../chat/client.mjs?v=admin-panel-v1';
+import {authClient,request} from '../api.js?v=age-gate1';
+import {chatRequest} from '../chat/client.mjs?v=gate1';
 const $=s=>document.querySelector(s);
 const requestedView=new URLSearchParams(window.location.search).get('view');
 const loginPanel=$('#login-panel'),app=$('#admin-app'),loginForm=$('#login-form'),codeForm=$('#email-code-form');
