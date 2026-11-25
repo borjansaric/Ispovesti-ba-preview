@@ -111,12 +111,14 @@ replaceAdminReference('src', 'chat/admin.mjs', chatAdminModule.url);
 await writeFile(path.join(dist, 'chat-admin.html'), adminHtml);
 
 let fullAdminHtml = await readFile(path.join(root, 'admin.html'), 'utf8');
-function replaceFullAdminReference(attribute, original, replacement) {
-  const escaped = original.replace(/[|\\{}()[\]^$+*?.]/g, '\\let fullAdminHtml = await readFile(path.join(root, 'admin.html'), 'utf8');
 fullAdminHtml = fullAdminHtml.replace('href="admin/admin.css"', 'href="' + adminCss + '"');
 fullAdminHtml = fullAdminHtml.replace('src="config.js"', 'src="' + configJs + '"');
 fullAdminHtml = fullAdminHtml.replace('src="vendor/supabase.js"', 'src="' + supabaseJs + '"');
-fullAdminHtml = fullAdminHtml.replace('src="admin/admin.mjs"', 'src="' + adminModule.url + '"');
+const adminModulePattern = /src="admin\/admin\.mjs(?:\?[^"]*)?"/g;
+if ([...fullAdminHtml.matchAll(adminModulePattern)].length !== 1) {
+  throw new Error('Expected exactly one full admin module reference.');
+}
+fullAdminHtml = fullAdminHtml.replace(adminModulePattern, 'src="' + adminModule.url + '"');
 await writeFile(path.join(dist, 'admin.html'), fullAdminHtml);');
   const pattern = new RegExp('(' + attribute + '=["\\x27])' + escaped + '(?:\\?[^"\\x27]*)?(["\\x27])', 'g');
   const matches = [...fullAdminHtml.matchAll(pattern)];
