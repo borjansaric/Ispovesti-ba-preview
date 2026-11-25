@@ -2,15 +2,15 @@
 // Keep the community-content classifier aligned with chat-test-api/moderation.mjs.
 function classifyCommunityContent(value: unknown): string[] {
  const raw=String(value??'').trim();if(!raw)return [];
- const text=raw.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLocaleLowerCase('sr-Latn');
+ const text=raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('sr-Latn');
  const flags:string[]=[];
- if(/\\b(?:ubicu te|ubit cu te|ubiti cu te|zaklacu te|znam gdje zivis|znam gdje stanujes)\\b/.test(text))flags.push('possible_threat');
- if(/\\b(?:brza zarada|garantovana zarada|sigurna zarada|zarada bez rada|laka zarada|uplati odmah|investiraj odmah|bonus bez depozita|posao preko telegrama)\\b/.test(text))flags.push('promotional_spam');
- const digits=(raw.match(/\\d/g)||[]).length;
- if(digits>=9&&digits<=15&&/\\+?\\d(?:[\\s().-]*\\d){7,}/.test(raw))flags.push('possible_phone_number');
- const letters=raw.match(/\\p{L}/gu)||[],uppercase=raw.match(/\\p{Lu}/gu)||[];
+ if(/\b(?:ubicu te|ubit cu te|ubiti cu te|zaklacu te|znam gdje zivis|znam gdje stanujes)\b/.test(text))flags.push('possible_threat');
+ if(/\b(?:brza zarada|garantovana zarada|sigurna zarada|zarada bez rada|laka zarada|uplati odmah|investiraj odmah|bonus bez depozita|posao preko telegrama)\b/.test(text))flags.push('promotional_spam');
+ const digits=(raw.match(/\d/g)||[]).length;
+ if(digits>=9&&digits<=15&&/\+?\d(?:[\s().-]*\d){7,}/.test(raw))flags.push('possible_phone_number');
+ const letters=raw.match(/\p{L}/gu)||[],uppercase=raw.match(/\p{Lu}/gu)||[];
  if(letters.length>=24&&uppercase.length/letters.length>=0.88)flags.push('excessive_caps');
- if(raw.length>=30&&/\\b([\\p{L}\\p{N}]{2,}(?:\\s+[\\p{L}\\p{N}]{2,}){0,2})\\b(?:\\s+\\1){2,}/iu.test(text))flags.push('repeated_phrase');
+ if(raw.length>=30&&/\b([\p{L}\p{N}]{2,}(?:\s+[\p{L}\p{N}]{2,}){0,2})\b(?:\s+\1){2,}/iu.test(text))flags.push('repeated_phrase');
  return [...new Set(flags)];
 }
 const url=Deno.env.get('SUPABASE_URL')!;
