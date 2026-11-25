@@ -90,7 +90,7 @@ export async function openChat(){
   let panel=root.querySelector('.chat-rules-acceptance');
   if(!panel){
    panel=el('section','chat-rules-acceptance');
-   panel.append(el('h3','','Pravila chata'),el('p','','Jedna zajednička anonimna soba, bez privatnih poruka. Bez pretnji, vređanja, spama, linkova i dijeljenja tuđih ličnih podataka. Poruke imaju najviše 1.000 znakova; fotografije nisu dozvoljene. Lično blokiranje sakriva poruke izabranog korisnika samo tebi. Ovlašćeni moderatori mogu pregledati sadržaj i prijave.'));
+   panel.append(el('h3','','Pravila chata'),el('p','','Chat je namijenjen isključivo punoljetnim osobama. Osobama mlađim od 18 godina nije dozvoljeno korišćenje chata. Ako posumnjaš da je neko maloljetan, prijavi njegovu poruku opcijom „18− korisnik“ u meniju (⋮). Prijavu pregleda moderator. Jedna je zajednička anonimna soba, bez privatnih poruka. Zabranjeni su prijetnje, vrijeđanje, uznemiravanje, govor mržnje, spam, linkovi i dijeljenje tuđih ličnih podataka. Poruke imaju najviše 1.000 znakova; fotografije nisu dozvoljene. Lično blokiranje sakriva poruke izabranog korisnika samo tebi. Ovlašćeni moderatori mogu pregledati sadržaj i prijave.'));
    const accept=button('Shvatio sam i prihvatam pravila',async()=>{
     accept.disabled=true;
     try{await chatRequest('gate_accept',{scope:'chat'});panel.remove();status.textContent='Pravila chata su prihvaćena. Ponovo pritisni „Pošalji poruku“. ';}
