@@ -95,7 +95,7 @@ export async function openChat(){
     accept.disabled=true;
     try{await chatRequest('gate_accept',{scope:'chat'});panel.remove();status.textContent='Pravila chata su prihvaćena. Ponovo pritisni „Pošalji poruku“. ';}
     catch(error){status.textContent=error.message||'Potvrda pravila nije uspjela.';accept.disabled=false;}
-   },'chat-send');
+   },'chat-rules-accept-button');
    panel.append(accept);root.insertBefore(panel,form);
   }
   status.textContent='Prije prve poruke moraš prihvatiti pravila chata.';
