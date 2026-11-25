@@ -106,7 +106,7 @@ async function networkRequest(action, args = {}, adminSession = null, captchaHos
   if (isPreview) return previewRequest(action, args);
   if(action==='submit')await ensureCaptchaClearance(captchaHost||document.body);
   const headers = { apikey: config.publishableKey, 'Content-Type': 'application/json' };
-  const needsSession = !['feed', 'comments', 'confession', 'daily_highlights', 'captcha_config', 'activate_admin', 'track_visit'].includes(action);
+  const needsSession = !['captcha_config', 'activate_admin', 'track_visit'].includes(action);
   const authAt=performance.now();
   const sessionTask = needsSession
     ? (adminSession ? Promise.resolve(adminSession) : session()).then(s => {
