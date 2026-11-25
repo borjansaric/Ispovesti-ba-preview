@@ -25,20 +25,27 @@
 <p class="privacy-updated"><strong>Ispovesti.ba</strong><br>Poslednje ažuriranje: 25. novembar 2026.</p>
 
 <h2>1. Koje podatke obrađujemo</h2>
-<p>Ispovesti.ba ne zahteva registraciju, naloge, lozinku, pravo ime niti dokumenta za identifikaciju. U zavisnosti od korišćenih funkcija, mogu se obrađivati:</p>
+<p>Ispovesti.ba ne zahteva klasičnu registraciju, korisnički nalog, lozinku, pravo ime niti dokumenta za identifikaciju. Radi funkcionisanja platforme može se kreirati anonimni tehnički identifikator i sesija. U zavisnosti od korišćenih funkcija, mogu se obrađivati:</p>
 <ul>
 <li>ispovesti, komentari, odgovori i poruke u četu (uključujući nadimak i avatar);</li>
 <li>potvrda punoletnosti (najmanje 18 godina);</li>
 <li>prijave sadržaja i podaci potrebni za moderaciju;</li>
-<li>tehnički identifikatori sesije i posete, IP adresa, podaci o uređaju, pregledaču i operativnom sistemu, kao i zapisi u memoriji pregledača.</li>
+<li>tehnički identifikatori anonimne sesije i posete, IP adresa, podaci o uređaju, pregledaču i operativnom sistemu, kao i tehnički zapisi;</li>
+<li>podaci u memoriji pregledača, uključujući lokalno sačuvane postavke i neposlate ispovesti, komentare ili odgovore.</li>
 </ul>
 
 <h2>2. Svrha, pravni osnov i čuvanje podataka</h2>
-<p>Podatke obrađujemo radi funkcionisanja ispovesti, komentara i četa, zaštite od zloupotreba i spama, moderacije, bezbednosti i ispunjavanja zakonskih obaveza, na osnovu zakonitog interesa za rad i zaštitu platforme, dobrovoljnog korišćenja funkcija i važećih propisa u Bosni i Hercegovini.</p>
-<p>Ne postoji jedinstven rok čuvanja za sve podatke. Evidencija poseta briše se nakon 180 dana, dok se određeni tehnički zapisi brišu po pravilima pružalaca usluga, a ostali podaci čuvaju dok je potrebno za rad, moderaciju, rešavanje zloupotreba i zakonske obaveze. Podaci u memoriji pregledača ostaju dok ih pregledač ili korisnik ne ukloni.</p>
+<p>Podatke obrađujemo radi pružanja funkcija koje posetilac izričito koristi, zaštite od zloupotreba i spama, moderacije, bezbednosti i ispunjavanja zakonskih obaveza. Obrada potrebna za pružanje traženih funkcija zasniva se na odnosu korišćenja platforme; obrada radi sprečavanja zloupotreba, moderacije i zaštite platforme zasniva se na legitimnom interesu, uz poštovanje prava i interesa posetilaca; podaci se obrađuju i kada je to potrebno radi ispunjavanja zakonskih obaveza. Pravna osnova zavisi od konkretne svrhe obrade i primenjuje se u skladu sa članom 8. Zakona o zaštiti ličnih podataka Bosne i Hercegovine.</p>
+<p>Ne postoji jedinstven rok čuvanja za sve podatke. Evidencija poseta briše se nakon 180 dana. Supabase API i baza podataka imaju automatsko čuvanje tehničkih logova do jednog dana, a Auth audit logovi do 24 sata. Ostali podaci čuvaju se dok je potrebno za rad, moderaciju, rešavanje zloupotreba i zakonske obaveze. Neposlati sadržaj sačuvan u memoriji pregledača može ostati na uređaju dok ga korisnik ne pošalje ili ne ukloni; za takve nacrte nije podešen automatski rok isteka.</p>
 
 <h2>3. Pružaoci usluga i deljenje podataka</h2>
-<p>Za rad platforme koriste se GitHub Pages, Supabase i Cloudflare Turnstile, koji obrađuju tehničke podatke u okviru svojih usluga (uključujući tehničku obradu i eventualni prenos podataka u skladu sa njihovim uslugama i zaštitnim merama). Podatke ne prodajemo i delimo ih samo sa tehničkim pružaocima usluga ili nadležnim organima kada postoji zakonski osnov.</p>
+<p>Za rad platforme koriste se GitHub Pages, Supabase i Cloudflare Turnstile:
+<ul>
+<li>GitHub Pages beleži i čuva IP adresu posetioca u bezbednosne svrhe; GitHub ne navodi poseban rok čuvanja ovih zapisa u dokumentaciji za Pages.</li>
+<li>Primarna Supabase baza podataka i Auth servis za Ispovesti.ba nalaze se u Frankfurtu, Nemačka (EU). Supabase Edge Functions mogu se izvršavati na globalnoj edge infrastrukturi, a servisni podaci, logovi i pristup podrške mogu se obrađivati izvan primarnog regiona.</li>
+<li>Cloudflare Turnstile obrađuje tehničke signale kao što su IP adresa, TLS otisak, User-Agent, sitekey i poreklo sajta radi otkrivanja botova i zaštite od zloupotreba. Turnstile navodi da ne pristupa sadržaju poruka, unosima u obrasce niti drugim sadržajima stranice; određene signale može obrađivati i radi unapređenja detekcije botova.</li>
+</ul>
+Zbog infrastrukture i podrške ovih pružalaca usluga, tehnički podaci mogu se obrađivati i izvan Bosne i Hercegovine, uključujući druge države u kojima pružaoci ili njihovi podizvođači posluju. Pružaoci usluga opisuju zaštitne mere i mehanizme međunarodnog prenosa u svojim uslovima i ugovorima o obradi podataka, uključujući standardne ugovorne klauzule gde su primenljive. Podatke ne prodajemo i delimo ih samo sa tehničkim pružaocima usluga potrebnim za rad platforme ili nadležnim organima kada postoji zakonski osnov.</p>
 
 <h2>4. Zaštita maloletnika i bezbednost</h2>
 <p>Platforma je namenjena isključivo osobama koje imaju najmanje 18 godina. Neprikladan sadržaj i ugrožavanje maloletnika su strogo zabranjeni i mogu se prijaviti putem opcije „Prijavi“. Primenjujemo tehničke i organizacione mere zaštite podataka i ograničen administrativni pristup.</p>
