@@ -8,7 +8,7 @@ const viewTitle=$('#view-title'),viewDescription=$('#view-description'),viewKick
 const adminClient=authClient(true);
 let currentSession=null,emailChallenge=null,currentView='dashboard',chatMessages=[],oldestChatId=null;
 const labels={'ai-moderator':'AI moderator',dashboard:'Kontrolna tabla',confessions:'Ispovijesti',comments:'Komentari i odgovori',reports:'Prijave',chat:'Arhiva chata',stats:'Statistika',analytics:'Analitika posjetilaca',audit:'Evidencija radnji',queue:'Red objava'};
-const descriptions={'ai-moderator':'Besplatna automatska provjera poruka · testno okruženje.',dashboard:'Sažetak stanja sajta, sadržaja i aktivnosti zajednice.',confessions:'Pregled, pretraga, uklanjanje i vraćanje ispovijesti.',comments:'Pregled komentara i odgovora, uz kontekst i moderatorske radnje.',reports:'Prijave sadržaja zajednice i poruka iz anonimnog chata.',chat:'Kompletna arhiva poruka, anonimni profili i moderatorske radnje na jednom mjestu.',stats:'Svi trenutno raspoloživi mjerljivi pokazatelji iz testne baze.',analytics:'Anonimno zadržavanje posjetilaca nakon 10, 20 i 30 dana.',audit:'Hronološka evidencija administratorskih radnji iz zajednice i chata.',queue:'Sadržaj na čekanju i kontrola pauziranja automatskog objavljivanja.'};
+const descriptions={'ai-moderator':'Besplatna automatska provjera poruka · testno okruženje.',dashboard:'Sažetak stanja sajta, sadržaja i aktivnosti zajednice.',confessions:'Pregled, pretraga, uklanjanje i vraćanje ispovijesti.',comments:'Pregled komentara i odgovora, uz kontekst i moderatorske radnje.',reports:'Prijave sadržaja zajednice i poruka iz anonimnog chata.',chat:'Kompletna arhiva poruka, anonimni profili i moderatorske radnje na jednom mjestu.',stats:'Mjerljivi pokazatelji sadržaja i aktivnosti na sajtu.',analytics:'Anonimno zadržavanje posjetilaca nakon 10, 20 i 30 dana.',audit:'Hronološka evidencija administratorskih radnji iz zajednice i chata.',queue:'Sadržaj na čekanju i kontrola pauziranja automatskog objavljivanja.'};
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n;};
 const fmt=value=>Number(value||0).toLocaleString('sr-Latn-RS');
 const date=value=>value?new Date(value).toLocaleString('sr-Latn-RS',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
@@ -33,11 +33,31 @@ function setView(view){
  Promise.resolve(renderers[view]?.()).catch(e=>setStatus(e.message||'Podaci trenutno nisu dostupni.'));
 }
 async function renderDashboard(){
- setStatus('Učitavam pregled…');const d=await loadDashboard();if(currentView!=='dashboard')return;viewContent.replaceChildren();
+ setStatus('Učitavam pregled…');
+ const [d,analyticsResult]=await Promise.all([
+  loadDashboard(),
+  community('admin_analytics').then(data=>({data})).catch(error=>({error}))
+ ]);
+ if(currentView!=='dashboard')return;viewContent.replaceChildren();
  addStatGrid(viewContent,[['Sve ispovijesti',d.confessions?.total],['Objavljene ispovijesti',d.confessions?.published],['Na čekanju',d.confessions?.queued],['Uklonjene ispovijesti',d.confessions?.removed],['Komentari',d.community?.comments],['Odgovori',d.community?.replies],['Reakcije',d.reactions,'Odvojeno od komentara i odgovora'],['Glasovi',d.votes],['Prijave zajednice',d.reports],['Chat poruke',d.chat_messages?.total],['Uklonjene chat poruke',d.chat_messages?.removed],['Prijave chata',d.chat_reports]]);
  viewContent.append(notice('Red objava',d.publisher?.paused?'Automatsko objavljivanje je trenutno pauzirano.':'Automatsko objavljivanje nije pauzirano.'));
- viewContent.append(notice('Analitika posjetilaca nije dostupna','Testni backend trenutno ne bilježi pouzdane anonimne posjete ni povratne posjete. Ne prikazujem izmišljene vrijednosti za zadržavanje 10/20/30 dana.',true));
- setStatus('Podaci su učitani iz testne baze.');
+ const analytics=analyticsResult.data;
+ viewContent.append(el('h3','','Posjete i zadržavanje · posljednjih 30 dana'));
+ if(analytics?.available){
+  addStatGrid(viewContent,[['Jedinstveni pregledači',analytics.unique_30d],['Novi pregledači',analytics.new_30d],['Povratni pregledači',analytics.returning_30d],['Dana sa podacima',analytics.days_collected]]);
+  const retentionGrid=el('div','stats-grid');
+  for(const item of (analytics.retention||[])){
+   const percent=item.percent===null||item.percent===undefined?'—':Number(item.percent).toLocaleString('sr-Latn-RS',{maximumFractionDigits:1})+'%';
+   const card=el('article','stat-card');
+   card.append(el('div','stat-label','Povratak tačno '+item.day+'. dan'),el('div','stat-value',percent),el('div','stat-note',fmt(item.returned)+' od '+fmt(item.cohort_size)+' posjetilaca u zreloj kohorti'));
+   retentionGrid.append(card);
+  }
+  viewContent.append(retentionGrid,actionButton('Otvori detaljnu analitiku',()=>setView('analytics'),'small'));
+ }else{
+  const reason=analyticsResult.error?.message||analytics?.reason||'Podaci trenutno nisu dostupni.';
+  viewContent.append(notice('Analitika posjetilaca trenutno nije dostupna',reason,true));
+ }
+ setStatus('Podaci su učitani.');
 }
 function sumTrend(rows,key){return rows.reduce((total,row)=>total+Number(row[key]||0),0);}
 function csvCell(value){const text=String(value??'');return '"'+text.replace(/"/g,'""')+'"';}
@@ -54,7 +74,7 @@ function exportStatsCsv(d){
 }
 async function renderStats(){
  setStatus('Učitavam statistiku…');const d=await loadDashboard();if(currentView!=='stats')return;viewContent.replaceChildren();
- const toolbar=el('div','toolbar');toolbar.append(el('span','meta','Izvor: testna baza · dnevni podaci za posljednjih 30 dana'),actionButton('Izvezi CSV',()=>exportStatsCsv(d),'small'));viewContent.append(toolbar);
+ const toolbar=el('div','toolbar');toolbar.append(el('span','meta','Izvor: baza povezana sa sajtom · dnevni podaci za posljednjih 30 dana'),actionButton('Izvezi CSV',()=>exportStatsCsv(d),'small'));viewContent.append(toolbar);
  viewContent.append(el('h3','','Sadržaj zajednice'));
  addStatGrid(viewContent,[['Ispovijesti ukupno',d.confessions?.total],['Objavljene',d.confessions?.published],['Na čekanju',d.confessions?.queued],['Uklonjene',d.confessions?.removed],['Komentari ukupno',d.community?.comments],['Komentari objavljeni',d.community?.published_comments],['Odgovori ukupno',d.community?.replies],['Odgovori objavljeni',d.community?.published_replies]]);
  viewContent.append(el('h3','','Aktivnost i reakcije'));
