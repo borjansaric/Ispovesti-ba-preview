@@ -111,10 +111,22 @@ replaceAdminReference('src', 'chat/admin.mjs', chatAdminModule.url);
 await writeFile(path.join(dist, 'chat-admin.html'), adminHtml);
 
 let fullAdminHtml = await readFile(path.join(root, 'admin.html'), 'utf8');
+function replaceFullAdminReference(attribute, original, replacement) {
+  const escaped = original.replace(/[|\\{}()[\]^$+*?.]/g, '\\let fullAdminHtml = await readFile(path.join(root, 'admin.html'), 'utf8');
 fullAdminHtml = fullAdminHtml.replace('href="admin/admin.css"', 'href="' + adminCss + '"');
 fullAdminHtml = fullAdminHtml.replace('src="config.js"', 'src="' + configJs + '"');
 fullAdminHtml = fullAdminHtml.replace('src="vendor/supabase.js"', 'src="' + supabaseJs + '"');
 fullAdminHtml = fullAdminHtml.replace('src="admin/admin.mjs"', 'src="' + adminModule.url + '"');
+await writeFile(path.join(dist, 'admin.html'), fullAdminHtml);');
+  const pattern = new RegExp('(' + attribute + '=["\\x27])' + escaped + '(?:\\?[^"\\x27]*)?(["\\x27])', 'g');
+  const matches = [...fullAdminHtml.matchAll(pattern)];
+  if (matches.length !== 1) throw new Error('Expected exactly one full admin ' + attribute + ' reference to ' + original + '; found ' + matches.length);
+  fullAdminHtml = fullAdminHtml.replace(pattern, '$1' + replacement + '$2');
+}
+replaceFullAdminReference('href', 'admin/admin.css', adminCss);
+replaceFullAdminReference('src', 'config.js', configJs);
+replaceFullAdminReference('src', 'vendor/supabase.js', supabaseJs);
+replaceFullAdminReference('src', 'admin/admin.mjs', adminModule.url);
 await writeFile(path.join(dist, 'admin.html'), fullAdminHtml);
 await writeFile(path.join(dist, '.nojekyll'), '');
 for (const file of ['SUPABASE-LICENSE', 'VERSION.txt']) {
