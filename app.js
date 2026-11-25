@@ -245,6 +245,18 @@ function contentForm(kind,extra,done,onBack,resumeRecord=null){
  const identityRow=node('div','identity-row');identityRow.append(nickLabel,send);
  const row=node('div','row'),back=onBack?button('← Nazad',()=>onBack(),'discussion-back'):null;if(back)row.append(back);
  form.append(label,identityRow,...(back?[row]:[]),status);
+ let siteRulesAccepted=false;
+ const rulesPanel=node('section','site-rules-acceptance');
+ rulesPanel.hidden=true;
+ rulesPanel.append(node('h3','','Pravila zajednice'),node('p','','Piši bez vređanja, uznemiravanja, pretnji i spama. Slike i linkovi nisu dozvoljeni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj. Čitanje, objavljivanje ispovesti, komentari, odgovori i glasanje su besplatni. Ispovesti čekaju red i objavljuje se najviše jedna na sat.'));
+ const acceptSiteRules=button('Shvatio sam i prihvatam pravila',async()=>{
+  acceptSiteRules.disabled=true;
+  try{await request('gate_accept',{scope:'site'});siteRulesAccepted=true;rulesPanel.hidden=true;status.textContent='Pravila su prihvaćena. Ponovo pritisni „Pošalji“. ';}
+  catch(error){status.textContent=error.message||'Potvrda pravila nije uspjela.';acceptSiteRules.disabled=false;}
+ },'primary');
+ rulesPanel.append(acceptSiteRules);
+ form.append(rulesPanel);
+
  if(kind==='confession'){const syncUnderline=()=>{if(!form.isConnected||!form.getClientRects().length)return;const left=text.getBoundingClientRect().left,right=sendPrefix.getBoundingClientRect().right,width=right-left;if(width>0&&Math.abs(text.getBoundingClientRect().width-width)>0.5)text.style.width=`${width}px`;};requestAnimationFrame(syncUnderline);window.addEventListener('resize',syncUnderline,{passive:true});window.addEventListener('ispovesti:layout-visible',syncUnderline);}
  let allowDuplicate=Boolean(restored?.payload?.allow_duplicate),duplicateButton,sending=false,requestId=restored?.requestId||null,lastPayload=restored?JSON.stringify(restored.payload):null;
  if(restored){
@@ -254,6 +266,13 @@ function contentForm(kind,extra,done,onBack,resumeRecord=null){
  }
  form.onsubmit=async e=>{
   e.preventDefault();if(sending)return;
+  if(!siteRulesAccepted){
+   try{
+    const gate=await request('gate_status');
+    if(!gate.site_rules_accepted){rulesPanel.hidden=false;status.textContent='Prije prvog slanja prihvati pravila zajednice.';return;}
+    siteRulesAccepted=true;
+   }catch(error){status.textContent=error.message||'Nije moguće provjeriti prihvatanje pravila.';return;}
+  }
   const body=text.value.trim(),nickname=nick.value.trim(),count=[...body].length,min=kind==='confession'?15:1,max=kind==='confession'?5000:1000;
   if(count<min||count>max){status.textContent=`Tekst mora imati od ${min} do ${max} znakova.`;status.className='hint error';return;}
   const payload={kind,body,nickname,...extra,allow_duplicate:allowDuplicate};
@@ -781,7 +800,46 @@ function trackAnonymousVisit(){
   }).catch(()=>{});
  }catch{}
 }
-initializeFeed();
-void refreshPendingSubmissions();
-trackAnonymousVisit();
-void initializeSecurity().catch(error=>toast(error.message));
+
+async function startWithAgeGate(){
+ const overlay=node('div','age-gate-overlay'),card=node('section','age-gate-card');
+ overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','age-gate-title');
+ const style=node('style');
+ style.textContent='.age-gate-overlay{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.96);display:grid;place-items:center;padding:20px}.age-gate-card{width:min(100%,440px);background:#111;border:1px solid #b99a45;border-radius:12px;padding:24px;color:#eee;box-shadow:0 12px 50px #000}.age-gate-card h2{color:#d4b45d;margin:0 0 12px}.age-gate-card p{line-height:1.55;color:#ddd}.age-gate-card button,.age-gate-card select{display:block;width:100%;margin-top:12px;padding:13px;border-radius:7px;border:1px solid #b99a45;background:#171717;color:#f1d47a;font:inherit}.age-gate-card button:disabled{opacity:.5}.age-gate-card .age-denied{color:#e7c36a;font-weight:600}';
+ document.head.append(style);overlay.append(card);document.body.append(overlay);
+ const title=node('h2','','Da li imaš 18 ili više godina?');title.id='age-gate-title';
+ const intro=node('p','','Ispovesti.ba je namijenjen isključivo punoljetnim osobama. Za nastavak potvrdi da imaš najmanje 18 godina.');
+ const adult=node('button','','18 ili više godina'),minor=node('button','','Manje od 18 godina');
+ adult.type=minor.type='button';
+ const band=node('select');band.setAttribute('aria-label','Izaberi starosnu grupu');
+ for(const [value,label] of [['','Izaberi starosnu grupu'],['18-24','18–24'],['25-34','25–34'],['35-44','35–44'],['45-54','45–54'],['55+','55+']]){const option=node('option','',label);option.value=value;band.append(option);}
+ const proceed=node('button','','Nastavi');proceed.type='button';band.hidden=proceed.hidden=true;
+ adult.onclick=()=>{band.hidden=false;proceed.hidden=false;adult.hidden=true;minor.hidden=true;band.focus();};
+ proceed.onclick=async()=>{
+  if(!band.value){toast('Izaberi starosnu grupu.');return;}
+  proceed.disabled=true;
+  try{await request('gate_accept',{scope:'age',adult:true,age_band:band.value});launch();}
+  catch(error){proceed.disabled=false;toast(error.message||'Potvrda punoljetnosti nije uspjela.');}
+ };
+ minor.onclick=async()=>{
+  adult.disabled=minor.disabled=true;
+  try{await request('gate_accept',{scope:'age',adult:false});}
+  catch{}
+  card.replaceChildren(title,node('p','age-denied','Pristup Ispovesti.ba dozvoljen je samo osobama koje imaju 18 ili više godina.'));
+ };
+ function launch(){
+  overlay.remove();style.remove();
+  initializeFeed();void refreshPendingSubmissions();trackAnonymousVisit();
+  void initializeSecurity().catch(error=>toast(error.message));
+ }
+ card.append(title,intro,adult,minor,band,proceed);
+ try{
+  const gate=await request('gate_status');
+  if(gate.age_status==='adult'){launch();return;}
+  if(gate.age_status==='underage'){card.replaceChildren(title,node('p','age-denied','Pristup Ispovesti.ba dozvoljen je samo osobama koje imaju 18 ili više godina.'));return;}
+ }catch(error){
+  card.replaceChildren(title,node('p','','Provjera pristupa trenutno nije dostupna.'),button('Pokušaj ponovo',()=>{overlay.remove();style.remove();void startWithAgeGate();},'primary'));
+ }
+}
+
+void startWithAgeGate();
