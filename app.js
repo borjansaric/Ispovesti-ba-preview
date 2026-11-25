@@ -223,16 +223,16 @@ $('#close-dialog').onclick=()=>dialog.close();
 $('#write').onclick=()=>modal('Ispovest',contentForm('confession',{},()=>{}));
 $('#sidebar-compose-open').onclick=()=>{closeMenu();modal('Ispovest',contentForm('confession',{},()=>{}));};
 $('#quick-compose').onclick=()=>modal('Ispovest',contentForm('confession',{},()=>{}));
-$('#privacy').onclick=()=>{const box=node('div','anonymity-notice');box.append(node('p','','Na Ispovesti.ba možeš slobodno podijeliti svoju priču bez otkrivanja svog identiteta.'),node('p','','Ne tražimo tvoje pravo ime, e-mail adresu ni lozinku.'),node('p','','Tvoje priče govore umjesto tebe. Ipak, nemoj u objavama navoditi podatke po kojima bi neko mogao prepoznati tebe ili druge osobe.'),node('p','','Tvoja privatnost nam je važna.'));modal('O anonimnosti',box);};
+$('#privacy').onclick=()=>{const box=node('div','anonymity-notice');box.append(node('p','','Na Ispovesti.ba možeš slobodno podeliti svoju priču bez otkrivanja svog identiteta.'),node('p','','Ne tražimo tvoje pravo ime, e-mail adresu ni lozinku.'),node('p','','Tvoje priče govore umesto tebe. Ipak, nemoj u objavama navoditi podatke po kojima bi neko mogao da prepozna tebe ili druge osobe.'),node('p','','Tvoja privatnost nam je važna.'));modal('O anonimnosti',box);};
 $('#footer-privacy').onclick=()=>$('#privacy').click();
 function communityRulesContent(){
  const box=node('div','community-rules');
  const sections=[
-  ['1. Uzrast 18+','Ispovesti.ba je namijenjen isključivo punoljetnim osobama. Maloljetnicima pristup nije dozvoljen.'],
-  ['2. Zaštita djece – nulta tolerancija','Zabranjeni su seksualno zlostavljanje i iskorišćavanje djece, vrbovanje, seksualizacija, ucjene, prijetnje i svaki oblik ugrožavanja maloljetnika. Zabranjeno je traženje, objavljivanje, dijeljenje i upućivanje na CSAM sadržaj (materijal seksualnog zlostavljanja djece). Sumnjiv sadržaj i ponašanje prijavi putem opcije za prijavu. Takve prijave imaju prioritet i zahtijevaju hitno postupanje.'],
-  ['3. Ponašanje i sadržaj','Zabranjeni su vrijeđanje, uznemiravanje, prijetnje, govor mržnje i spam. Ne objavljuj lične i osjetljive podatke po kojima se ti ili drugi mogu prepoznati.'],
-  ['4. Objavljivanje i moderacija','Objavljivanje ispovijesti, komentarisanje, odgovaranje i glasanje su besplatni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj i ograničiti pristup osobama koje krše pravila.'],
-  ['5. Prihvatanje pravila','Prije prve ispovijesti, komentara, odgovora ili poruke u četu potrebno je prihvatiti pravila. Ponovna potvrda traži se nakon njihovih bitnih izmjena.']
+  ['1. Uzrast 18+','Ispovesti.ba je namenjen isključivo punoletnim osobama. Maloletnicima pristup nije dozvoljen.'],
+  ['2. Zaštita dece – nulta tolerancija','Zabranjeni su seksualno zlostavljanje i iskorišćavanje dece, vrbovanje, seksualizacija, ucene, pretnje i svaki oblik ugrožavanja maloletnika. Zabranjeno je traženje, objavljivanje, deljenje i upućivanje na CSAM sadržaj (materijal seksualnog zlostavljanja dece). Sumnjiv sadržaj i ponašanje prijavi putem opcije za prijavu. Takve prijave imaju prioritet i zahtevaju hitno postupanje.'],
+  ['3. Ponašanje i sadržaj','Zabranjeni su vređanje, uznemiravanje, pretnje, govor mržnje i spam. Ne objavljuj lične i osetljive podatke po kojima bi ti ili drugi mogli da budu prepoznati.'],
+  ['4. Objavljivanje i moderacija','Objavljivanje ispovesti, komentarisanje, odgovaranje i glasanje su besplatni. Objavljeni tekst ne možeš naknadno da uređuješ ili brišeš. Administrator može da ukloni neprikladan sadržaj i ograniči pristup osobama koje krše pravila.'],
+  ['5. Prihvatanje pravila','Pre prve ispovesti, komentara, odgovora ili poruke u četu potrebno je prihvatiti pravila. Ponovna potvrda traži se nakon njihovih bitnih izmena.']
  ];
  for(const [heading,body] of sections){box.append(node('h3','',heading),node('p','',body));}
  return box;
