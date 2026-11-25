@@ -317,3 +317,7 @@ button#menu-toggle::after,
 
 
 .site-rules-acceptance{margin-top:12px;padding:14px;border:1px solid var(--gold);border-radius:8px;background:rgba(190,158,74,.07)}.site-rules-acceptance h3{margin:0 0 8px;color:var(--gold);font-size:15px}.site-rules-acceptance p{line-height:1.5}.site-rules-acceptance button{margin-top:8px}
+
+/* Ensure the complete mobile sidebar can be scrolled to its final item. */
+.side-menu{height:100dvh;max-height:100dvh;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+html,body{min-height:100%;overflow-x:hidden}body{min-height:100dvh;overflow-y:auto}
