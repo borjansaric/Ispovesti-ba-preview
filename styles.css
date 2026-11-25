@@ -321,3 +321,6 @@ button#menu-toggle::after,
 /* Ensure the complete mobile sidebar can be scrolled to its final item. */
 .side-menu{height:100dvh;max-height:100dvh;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
 html,body{min-height:100%;overflow-x:hidden}body{min-height:100dvh;overflow-y:auto}
+
+/* Consistent readable hierarchy for the expanded community rules dialog and acceptance panel. */
+.community-rules h3{margin:14px 0 6px;color:var(--gold);font-size:15px}.community-rules h3:first-child{margin-top:0}.community-rules p{margin:0 0 10px;line-height:1.6;color:var(--text)}.site-rules-acceptance .community-rules{font-size:13px}.site-rules-acceptance .community-rules h3{font-size:14px}
