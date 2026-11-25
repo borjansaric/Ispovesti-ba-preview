@@ -72,3 +72,6 @@ body.inline-thread-open .site-header,body.inline-thread-open #feed-title,body.in
 
 
 .chat-rules-acceptance{margin:12px;padding:14px;border:1px solid var(--gold);border-radius:8px;background:#17140d;color:var(--text)}.chat-rules-acceptance h3{margin:0 0 8px;color:var(--gold);font-size:15px}.chat-rules-acceptance p{font-size:13px;line-height:1.5}.chat-rules-acceptance button{margin-top:10px}
+
+/* Clear, full-width confirmation control for first-time chat rules acceptance. */
+.chat-rules-acceptance{max-height:calc(100dvh - 110px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.chat-rules-acceptance p{font-size:14px;line-height:1.6;color:#f2eee3}.chat-rules-acceptance .chat-rules-accept-button{display:block;width:100%;min-height:50px;margin:14px 0 0;padding:12px 16px;border:1px solid #f1d58e;border-radius:9px;background:linear-gradient(135deg,#8d6b2f 0%,#f7e4a4 28%,#c69d4b 62%,#fff1bd 100%);color:#17130a;font-size:15px;font-weight:900;line-height:1.3;letter-spacing:.01em;text-align:center;white-space:normal;box-shadow:inset 0 1px 1px rgba(255,255,255,.5),0 3px 10px rgba(0,0,0,.38)}.chat-rules-acceptance .chat-rules-accept-button:disabled{opacity:.65}
