@@ -119,27 +119,4 @@ if ([...fullAdminHtml.matchAll(adminModulePattern)].length !== 1) {
   throw new Error('Expected exactly one full admin module reference.');
 }
 fullAdminHtml = fullAdminHtml.replace(adminModulePattern, 'src="' + adminModule.url + '"');
-await writeFile(path.join(dist, 'admin.html'), fullAdminHtml);');
-  const pattern = new RegExp('(' + attribute + '=["\\x27])' + escaped + '(?:\\?[^"\\x27]*)?(["\\x27])', 'g');
-  const matches = [...fullAdminHtml.matchAll(pattern)];
-  if (matches.length !== 1) throw new Error('Expected exactly one full admin ' + attribute + ' reference to ' + original + '; found ' + matches.length);
-  fullAdminHtml = fullAdminHtml.replace(pattern, '$1' + replacement + '$2');
-}
-replaceFullAdminReference('href', 'admin/admin.css', adminCss);
-replaceFullAdminReference('src', 'config.js', configJs);
-replaceFullAdminReference('src', 'vendor/supabase.js', supabaseJs);
-replaceFullAdminReference('src', 'admin/admin.mjs', adminModule.url);
 await writeFile(path.join(dist, 'admin.html'), fullAdminHtml);
-await writeFile(path.join(dist, '.nojekyll'), '');
-for (const file of ['SUPABASE-LICENSE', 'VERSION.txt']) {
-  try {
-    const data = await readFile(path.join(root, 'vendor', file));
-    await mkdir(path.join(assets, 'vendor'), { recursive: true });
-    await writeFile(path.join(assets, 'vendor', file), data);
-  } catch (error) {
-    if (error.code !== 'ENOENT') throw error;
-  }
-}
-await rm(assetCache, { recursive: true, force: true });
-await cp(assets, assetCache, { recursive: true });
-console.log('Built fingerprinted preview assets: ' + completed.size + ' modules, 5 stylesheets, config and Supabase client.');
