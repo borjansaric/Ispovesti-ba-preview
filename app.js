@@ -223,19 +223,18 @@ $('#close-dialog').onclick=()=>dialog.close();
 $('#write').onclick=()=>modal('Ispovest',contentForm('confession',{},()=>{}));
 $('#sidebar-compose-open').onclick=()=>{closeMenu();modal('Ispovest',contentForm('confession',{},()=>{}));};
 $('#quick-compose').onclick=()=>modal('Ispovest',contentForm('confession',{},()=>{}));
-$('#privacy').onclick=()=>modal('Tvoja privatnost',node('p','', 'Ne tražimo e-mail, lozinku ni pravo ime. Anonimna sesija čuva se u tvom pregledaču. Za zbirnu statistiku povratka koristi se nasumični identifikator pregledača: analitička baza čuva samo njegov zaštićeni hash i datum posjete, bez povezivanja s anonimnom sesijom, IP adresom, putanjom stranice ili tekstom. Identifikator važi samo u istom pregledaču i na istom uređaju; brisanje podataka sajta resetuje ga. Analitički zapisi se automatski brišu nakon 180 dana. Tehnički podaci koje obrađuju hosting i sigurnosni sistemi ne znače apsolutnu anonimnost. U tekst ne upisuj podatke po kojima se ti ili drugi mogu prepoznati.'));
+$('#privacy').onclick=()=>{const box=node('div','anonymity-notice');box.append(node('p','','Na Ispovesti.ba možeš slobodno podijeliti svoju priču bez otkrivanja svog identiteta.'),node('p','','Ne tražimo tvoje pravo ime, e-mail adresu ni lozinku.'),node('p','','Tvoje priče govore umjesto tebe. Ipak, nemoj u objavama navoditi podatke po kojima bi neko mogao prepoznati tebe ili druge osobe.'),node('p','','Tvoja privatnost nam je važna.'));modal('O anonimnosti',box);};
 $('#footer-privacy').onclick=()=>$('#privacy').click();
 function communityRulesContent(){
  const box=node('div','community-rules');
- box.append(
-  node('h3','','Zaštita maloljetnika'),
-  node('p','','Ispovesti.ba je namijenjen isključivo osobama koje imaju 18 ili više godina. Osobama mlađim od 18 godina nije dozvoljen pristup sajtu, objavljivanje ispovijesti, komentarisanje niti korišćenje chata. Provjera punoljetnosti prikazuje se pri ulasku na sajt.'),
-  node('p','','Nemoj zaobilaziti provjeru godina niti se predstavljati kao punoljetna osoba ako to nisi.'),
-  node('p','','Ako u chatu primijetiš osobu za koju sumnjaš da je mlađa od 18 godina, otvori meni (⋮) uz njenu poruku i izaberi opciju „18− korisnik“. Prijava se šalje moderatoru na pregled. Sama prijava ne znači automatsku zabranu.'),
-  node('h3','','Pravila ponašanja'),
-  node('p','','Piši bez vrijeđanja, uznemiravanja, prijetnji, govora mržnje i spama. Ne traži, ne objavljuj i ne dijeli tuđe lične podatke. Slike i linkovi nisu dozvoljeni. Ne pokušavaj da kontaktiraš druge članove izvan platforme na osnovu njihovih objava.'),
-  node('p','','Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj i pregledati prijave radi zaštite zajednice. Čitanje, objavljivanje ispovijesti, komentari, odgovori i glasanje su besplatni. Ispovijesti čekaju red i objavljuje se najviše jedna na sat.')
- );
+ const sections=[
+  ['1. Uzrast 18+','Ispovesti.ba je namijenjen isključivo punoljetnim osobama. Maloljetnicima pristup nije dozvoljen.'],
+  ['2. Zaštita djece – nulta tolerancija','Zabranjeni su seksualno zlostavljanje i iskorišćavanje djece, vrbovanje, seksualizacija, ucjene, prijetnje i svaki oblik ugrožavanja maloljetnika. Zabranjeno je traženje, objavljivanje, dijeljenje i upućivanje na CSAM sadržaj (materijal seksualnog zlostavljanja djece). Sumnjiv sadržaj i ponašanje prijavi putem opcije za prijavu. Takve prijave imaju prioritet i zahtijevaju hitno postupanje.'],
+  ['3. Ponašanje i sadržaj','Zabranjeni su vrijeđanje, uznemiravanje, prijetnje, govor mržnje i spam. Ne objavljuj lične i osjetljive podatke po kojima se ti ili drugi mogu prepoznati.'],
+  ['4. Objavljivanje i moderacija','Objavljivanje ispovijesti, komentarisanje, odgovaranje i glasanje su besplatni. Objavljeni tekst ne možeš naknadno uređivati ili brisati. Administrator može ukloniti neprikladan sadržaj i ograničiti pristup osobama koje krše pravila.'],
+  ['5. Prihvatanje pravila','Prije prve ispovijesti, komentara, odgovora ili poruke u četu potrebno je prihvatiti pravila. Ponovna potvrda traži se nakon njihovih bitnih izmjena.']
+ ];
+ for(const [heading,body] of sections){box.append(node('h3','',heading),node('p','',body));}
  return box;
 }
 $('#rules').onclick=()=>modal('Pravila zajednice',communityRulesContent());
