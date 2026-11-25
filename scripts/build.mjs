@@ -75,8 +75,8 @@ const app = await buildModule('app.js');
 const chatUi = await buildModule('chat/ui.mjs');
 const chatAdminModule = await buildModule('chat/admin.mjs');
 const adminModule = await buildModule('admin/admin.mjs');
-const [originalCss, stylesCss, luxuryCss, chatCss, adminCss, configJs, supabaseJs] = await Promise.all([
-  copyHashed('original.css'), copyHashed('styles.css'), copyHashed('luxury.css'), copyHashed('chat/chat.css'), copyHashed('admin/admin.css'),
+const [originalCss, stylesCss, luxuryCss, chatCss, adminCss, privacyCss, configJs, supabaseJs] = await Promise.all([
+  copyHashed('original.css'), copyHashed('styles.css'), copyHashed('luxury.css'), copyHashed('chat/chat.css'), copyHashed('admin/admin.css'), copyHashed('privacy.css'),
   copyHashed('config.js'), copyHashed('vendor/supabase.js'),
 ]);
 
@@ -94,6 +94,15 @@ for (const [source, target] of [
 ]) replaceReference(source.endsWith('.css') ? 'href' : 'src', source, target);
 
 await writeFile(path.join(dist, 'index.html'), html);
+
+let privacyHtml = await readFile(path.join(root, 'privacy.html'), 'utf8');
+for (const [source, target] of [['original.css', originalCss], ['styles.css', stylesCss], ['luxury.css', luxuryCss], ['privacy.css', privacyCss]]) {
+  const original = 'href="' + source + '"';
+  const matches = privacyHtml.split(original).length - 1;
+  if (matches !== 1) throw new Error('Expected exactly one privacy stylesheet reference to ' + source + '; found ' + matches);
+  privacyHtml = privacyHtml.replace(original, 'href="' + target + '"');
+}
+await writeFile(path.join(dist, 'privacy.html'), privacyHtml);
 
 let adminHtml = await readFile(path.join(root, 'chat-admin.html'), 'utf8');
 function replaceAdminReference(attribute, original, replacement) {

@@ -232,9 +232,11 @@ function communityRulesContent(){
   ['2. Zaštita dece – nulta tolerancija','Zabranjeni su seksualno zlostavljanje i iskorišćavanje dece, vrbovanje, seksualizacija, ucene, pretnje i svaki oblik ugrožavanja maloletnika. Zabranjeno je traženje, objavljivanje, deljenje i upućivanje na CSAM sadržaj (materijal seksualnog zlostavljanja dece). Sumnjiv sadržaj i ponašanje prijavi putem opcije za prijavu. Takve prijave imaju prioritet i zahtevaju hitno postupanje.'],
   ['3. Ponašanje i sadržaj','Zabranjeni su vređanje, uznemiravanje, pretnje, govor mržnje i spam. Ne objavljuj lične i osetljive podatke po kojima bi ti ili drugi mogli da budu prepoznati.'],
   ['4. Objavljivanje i moderacija','Objavljivanje ispovesti, komentarisanje, odgovaranje i glasanje su besplatni. Objavljeni tekst ne možeš naknadno da uređuješ ili brišeš. Administrator može da ukloni neprikladan sadržaj i ograniči pristup osobama koje krše pravila.'],
-  ['5. Prihvatanje pravila','Pre prve ispovesti, komentara, odgovora ili poruke u četu potrebno je prihvatiti pravila. Ponovna potvrda traži se nakon njihovih bitnih izmena.']
+  ['5. Prihvatanje pravila i privatnost','Pre prve ispovesti, komentara, odgovora ili poruke u četu potrebno je prihvatiti ova pravila i upoznati se sa Politikom privatnosti, koja je dostupna putem posebnog dugmeta. Ponovna potvrda traži se nakon bitnih izmena pravila.']
  ];
  for(const [heading,body] of sections){box.append(node('h3','',heading),node('p','',body));}
+ const privacyLink=node('a','community-privacy-link','Politika privatnosti');privacyLink.href='privacy.html';
+ box.append(privacyLink);
  return box;
 }
 $('#rules').onclick=()=>modal('Pravila zajednice',communityRulesContent());
