@@ -314,3 +314,6 @@ button#menu-toggle::after,
 .pending-submission-text{margin:5px 0 9px;white-space:pre-wrap;overflow-wrap:anywhere;color:#eee}
 .pending-submission-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .pending-discard{color:#c9c1b5}
+
+
+.site-rules-acceptance{margin-top:12px;padding:14px;border:1px solid var(--gold);border-radius:8px;background:rgba(190,158,74,.07)}.site-rules-acceptance h3{margin:0 0 8px;color:var(--gold);font-size:15px}.site-rules-acceptance p{line-height:1.5}.site-rules-acceptance button{margin-top:8px}
