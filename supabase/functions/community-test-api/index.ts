@@ -1,4 +1,18 @@
 // User JWTs are verified by Auth here. Only this gateway can call the private RPCs.
+// Keep the community-content classifier aligned with chat-test-api/moderation.mjs.
+function classifyCommunityContent(value: unknown): string[] {
+ const raw=String(value??'').trim();if(!raw)return [];
+ const text=raw.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLocaleLowerCase('sr-Latn');
+ const flags:string[]=[];
+ if(/\\b(?:ubicu te|ubit cu te|ubiti cu te|zaklacu te|znam gdje zivis|znam gdje stanujes)\\b/.test(text))flags.push('possible_threat');
+ if(/\\b(?:brza zarada|garantovana zarada|sigurna zarada|zarada bez rada|laka zarada|uplati odmah|investiraj odmah|bonus bez depozita|posao preko telegrama)\\b/.test(text))flags.push('promotional_spam');
+ const digits=(raw.match(/\\d/g)||[]).length;
+ if(digits>=9&&digits<=15&&/\\+?\\d(?:[\\s().-]*\\d){7,}/.test(raw))flags.push('possible_phone_number');
+ const letters=raw.match(/\\p{L}/gu)||[],uppercase=raw.match(/\\p{Lu}/gu)||[];
+ if(letters.length>=24&&uppercase.length/letters.length>=0.88)flags.push('excessive_caps');
+ if(raw.length>=30&&/\\b([\\p{L}\\p{N}]{2,}(?:\\s+[\\p{L}\\p{N}]{2,}){0,2})\\b(?:\\s+\\1){2,}/iu.test(text))flags.push('repeated_phrase');
+ return [...new Set(flags)];
+}
 const url=Deno.env.get('SUPABASE_URL')!;
 const serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const allowed=(Deno.env.get('ALLOWED_ORIGINS')||'https://borjansaric.github.io').split(',');
@@ -147,7 +161,19 @@ Deno.serve(async(req:Request)=>{
    delete args.captcha_token;
   }
   if(action==='my_confessions')return send(await timedRpc('community_test_my_confessions',uid,action,args));
+  if(action==='admin_moderation')return send(await timedRpc('community_test_admin_moderation',uid,action,args));
   if(['admin_dashboard','admin_comments','admin_reports','admin_audit','admin_analytics'].includes(action))return send(await timedRpc('community_test_admin_read',uid,action,args));
+  if(action==='submit'){
+   const result=await timedRpc('community_test_dispatch',uid,action,args);
+   if(result?.success&&result?.id&&['confession','comment','reply'].includes(String(args.kind||''))){
+    const reasons=classifyCommunityContent(args.body);
+    if(reasons.length){
+     try{await timedRpc('community_test_moderation_flag',uid,'flag',{content_id:result.id,reasons});}
+     catch{console.warn('Community moderation flag storage unavailable.');}
+    }
+   }
+   return send(result);
+  }
   return send(await timedRpc('community_test_dispatch',uid,action,args));
  }catch(error){if(error instanceof HttpError)return send({error:error.message},error.status);if(error instanceof SyntaxError)return send({error:'Neispravan zahtjev.'},400);return send({error:'Server trenutno nije dostupan. Pokušaj ponovo.'},503);}
 });
