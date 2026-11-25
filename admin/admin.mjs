@@ -162,6 +162,7 @@ async function renderDossier(){
  group('Moderatorske odluke — chat',d.chat_moderation,'action',x=>'Radnja '+x.action+' · cilj '+x.target+' · '+date(x.created_at));
  group('Automatske oznake — sadržaj',d.community_flags,'reasons',x=>'Sadržaj #'+x.content_id+' · '+(x.status||'')+' · '+date(x.created_at));
  group('Automatske oznake — chat',d.chat_flags,'reasons',x=>'Chat #'+x.message_id+' · '+(x.status||'')+' · '+date(x.created_at));
+ group('Evidencija blokada chata',d.chat_bans,'reason',x=>(x.permanent?'Trajna blokada':('Blokada do '+date(x.until_at)))+' · '+(x.reason||'Bez navedenog razloga'));
  setStatus('Dosije je učitan. Aktivnosti su objedinjene samo po istom anonimnom UID-u.');
 }
 
