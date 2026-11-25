@@ -7,8 +7,8 @@ const loginStatus=$('#login-status'),appStatus=$('#app-status'),viewContent=$('#
 const viewTitle=$('#view-title'),viewDescription=$('#view-description'),viewKicker=$('#view-kicker'),signOut=$('#sign-out');
 const adminClient=authClient(true);
 let currentSession=null,emailChallenge=null,currentView='dashboard',chatMessages=[],oldestChatId=null;
-const labels={dashboard:'Kontrolna tabla',confessions:'Ispovijesti',comments:'Komentari i odgovori',reports:'Prijave',chat:'Arhiva chata',stats:'Statistika',analytics:'Analitika posjetilaca',audit:'Evidencija radnji',queue:'Red objava'};
-const descriptions={dashboard:'Sažetak stanja sajta, sadržaja i aktivnosti zajednice.',confessions:'Pregled, pretraga, uklanjanje i vraćanje ispovijesti.',comments:'Pregled komentara i odgovora, uz kontekst i moderatorske radnje.',reports:'Prijave sadržaja zajednice i poruka iz anonimnog chata.',chat:'Kompletna arhiva poruka, anonimni profili i moderatorske radnje na jednom mjestu.',stats:'Svi trenutno raspoloživi mjerljivi pokazatelji iz testne baze.',analytics:'Anonimno zadržavanje posjetilaca nakon 10, 20 i 30 dana.',audit:'Hronološka evidencija administratorskih radnji iz zajednice i chata.',queue:'Sadržaj na čekanju i kontrola pauziranja automatskog objavljivanja.'};
+const labels={'ai-moderator':'AI moderator',dashboard:'Kontrolna tabla',confessions:'Ispovijesti',comments:'Komentari i odgovori',reports:'Prijave',chat:'Arhiva chata',stats:'Statistika',analytics:'Analitika posjetilaca',audit:'Evidencija radnji',queue:'Red objava'};
+const descriptions={'ai-moderator':'Besplatna automatska provjera poruka · testno okruženje.',dashboard:'Sažetak stanja sajta, sadržaja i aktivnosti zajednice.',confessions:'Pregled, pretraga, uklanjanje i vraćanje ispovijesti.',comments:'Pregled komentara i odgovora, uz kontekst i moderatorske radnje.',reports:'Prijave sadržaja zajednice i poruka iz anonimnog chata.',chat:'Kompletna arhiva poruka, anonimni profili i moderatorske radnje na jednom mjestu.',stats:'Svi trenutno raspoloživi mjerljivi pokazatelji iz testne baze.',analytics:'Anonimno zadržavanje posjetilaca nakon 10, 20 i 30 dana.',audit:'Hronološka evidencija administratorskih radnji iz zajednice i chata.',queue:'Sadržaj na čekanju i kontrola pauziranja automatskog objavljivanja.'};
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n;};
 const fmt=value=>Number(value||0).toLocaleString('sr-Latn-RS');
 const date=value=>value?new Date(value).toLocaleString('sr-Latn-RS',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
@@ -29,7 +29,7 @@ function setView(view){
  currentView=view;setStatus();viewContent.replaceChildren();
  document.querySelectorAll('#admin-nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
  viewKicker.textContent='ISPOVESTI.BA · ADMINISTRACIJA';viewTitle.textContent=labels[view]||'Administracija';viewDescription.textContent=descriptions[view]||'';
- const renderers={dashboard:renderDashboard,confessions:renderConfessions,comments:()=>renderComments(0),reports:()=>renderReports(0),chat:renderChat,stats:renderStats,analytics:renderAnalytics,audit:()=>renderAudit(0),queue:renderQueue};
+ const renderers={'ai-moderator':renderAiModerator,dashboard:renderDashboard,confessions:renderConfessions,comments:()=>renderComments(0),reports:()=>renderReports(0),chat:renderChat,stats:renderStats,analytics:renderAnalytics,audit:()=>renderAudit(0),queue:renderQueue};
  Promise.resolve(renderers[view]?.()).catch(e=>setStatus(e.message||'Podaci trenutno nisu dostupni.'));
 }
 async function renderDashboard(){
@@ -112,6 +112,39 @@ async function renderReports(offset){
   c.append(actions);list.append(c);
  }
  setStatus('Prikazano '+items.length+' prijava.');
+}
+async function renderAiModerator(){
+ setStatus('Učitavam označene poruke…');viewContent.replaceChildren();
+ viewContent.append(notice('Kako radi moderator','Ovo je besplatni sistem pravila, a ne zaseban AI jezički model. Označava moguće prijetnje, promotivni spam, brojeve telefona, pretjerana velika slova i ponavljanje fraza. Ne skriva i ne briše poruke automatski.'));
+ const toolbar=el('div','toolbar'),refresh=actionButton('Osvježi',()=>renderAiModerator(),'small');
+ toolbar.append(el('span','meta','Izvor: chat-test-api · posljednjih do 100 poruka'),refresh);viewContent.append(toolbar);
+ const list=el('div','list');viewContent.append(list);
+ try{
+  const d=await chatRequest('admin_messages',{},true);
+  if(currentView!=='ai-moderator')return;
+  const flagged=(d.items||[]).filter(item=>item.moderation?.status==='review');
+  const summary=el('div','stats-grid');
+  summary.append(statCard('Učitane poruke',(d.items||[]).length),statCard('Označene za pregled',flagged.length));
+  viewContent.insertBefore(summary,list);
+  if(!flagged.length)list.append(empty('Nema poruka označenih za pregled u posljednjih do 100 poruka.'));
+  for(const m of flagged){
+   const card=el('article','message-card');card.dataset.search=[m.body,m.generated_nickname,m.id,(m.moderation.reasons||[]).join(' ')].join(' ').toLowerCase();
+   const head=el('div','card-head');head.append(el('strong','',m.generated_nickname||'Anonimni učesnik'),pill('Potrebna provjera','flagged'));
+   card.append(head,el('p','meta','Poruka #'+m.id+' · '+date(m.created_at)),el('p','card-body',m.body||''));
+   const reasons=el('div','report-lines');reasons.append(el('strong','','Razlog automatske oznake'));
+   for(const reason of (m.moderation.reasons||[]))reasons.append(el('p','',moderationReasonLabel(reason)));
+   card.append(reasons);
+   const actions=el('div','card-actions');
+   actions.append(actionButton(m.removed?'Vrati poruku':'Ukloni poruku',async()=>{
+    if(!m.removed&&!confirm('Ukloniti ovu poruku iz javnog chata?'))return;
+    await chatRequest(m.removed?'admin_restore':'admin_remove',{id:m.id},true);
+    await renderAiModerator();
+   },m.removed?'small':'small danger'));
+   card.append(actions);list.append(card);
+  }
+  const search=searchInput('Pretraži označene poruke…',q=>filterList(list,q));toolbar.prepend(search);
+  setStatus('Pregledano '+(d.items||[]).length+' poruka · '+flagged.length+' automatski označenih. Starije poruke učitavaju se kroz arhivu chata.');
+ }catch(error){list.append(empty(error.message||'Označene poruke trenutno nisu dostupne.'));setStatus('Moderacija nije dostupna.');}
 }
 async function renderChat(){
  setStatus('Učitavam chat arhivu i profile…');viewContent.replaceChildren();chatMessages=[];oldestChatId=null;
