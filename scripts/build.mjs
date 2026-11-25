@@ -97,10 +97,10 @@ await writeFile(path.join(dist, 'index.html'), html);
 
 let privacyHtml = await readFile(path.join(root, 'privacy.html'), 'utf8');
 for (const [source, target] of [['original.css', originalCss], ['styles.css', stylesCss], ['luxury.css', luxuryCss], ['privacy.css', privacyCss]]) {
-  const pattern = new RegExp('href=["\\x27]' + source.replace(/[|\\{}()[\]^$+*?.]/g, '\\await writeFile(path.join(dist, 'index.html'), html);') + '(?:\\?[^"\\x27]*)?["\\x27]', 'g');
-  const matches = [...privacyHtml.matchAll(pattern)];
-  if (matches.length !== 1) throw new Error('Expected exactly one privacy stylesheet reference to ' + source + '; found ' + matches.length);
-  privacyHtml = privacyHtml.replace(pattern, 'href="' + target + '"');
+  const original = 'href="' + source + '"';
+  const matches = privacyHtml.split(original).length - 1;
+  if (matches !== 1) throw new Error('Expected exactly one privacy stylesheet reference to ' + source + '; found ' + matches);
+  privacyHtml = privacyHtml.replace(original, 'href="' + target + '"');
 }
 await writeFile(path.join(dist, 'privacy.html'), privacyHtml);
 
