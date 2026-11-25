@@ -160,6 +160,8 @@ async function renderDossier(){
  group('Prijave chat poruka',d.chat_reports,'body',x=>'Chat #'+x.message_id+' · '+reportReasonLabel(x.reason)+' · '+(x.authored_by_target?'prijava na poruku ovog naloga':'prijava koju je poslao nalog')+' · '+date(x.created_at));
  group('Moderatorske odluke — zajednica',d.community_moderation,'action',x=>'Radnja '+x.action+' · sadržaj #'+x.content_id+' · '+date(x.created_at));
  group('Moderatorske odluke — chat',d.chat_moderation,'action',x=>'Radnja '+x.action+' · cilj '+x.target+' · '+date(x.created_at));
+ group('Automatske oznake — sadržaj',d.community_flags,'reasons',x=>'Sadržaj #'+x.content_id+' · '+(x.status||'')+' · '+date(x.created_at));
+ group('Automatske oznake — chat',d.chat_flags,'reasons',x=>'Chat #'+x.message_id+' · '+(x.status||'')+' · '+date(x.created_at));
  setStatus('Dosije je učitan. Aktivnosti su objedinjene samo po istom anonimnom UID-u.');
 }
 
