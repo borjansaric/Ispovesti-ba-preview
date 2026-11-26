@@ -1,11 +1,16 @@
 import {authClient,isLocal} from '../api.js?v=room3';
+const accessCodeKey='ispovesti-chat-preview-access-code';
+let activeAccessCode=(()=>{try{return sessionStorage.getItem(accessCodeKey)||'';}catch{return '';}})();
+export function setChatAccessCode(code){activeAccessCode=String(code||'');try{sessionStorage.setItem(accessCodeKey,activeAccessCode);}catch{}}
+export function clearChatAccessCode(){activeAccessCode='';try{sessionStorage.removeItem(accessCodeKey);}catch{}}
+export function hasChatAccessCode(){return Boolean(activeAccessCode);}
 let localPending;
 async function localSession(){
  if(!localPending)localPending=fetch('/api/chat-session',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',credentials:'same-origin'}).then(async r=>{if(!r.ok)throw Error('Anonimna prijava nije dostupna.');}).catch(e=>{localPending=null;throw e;});
  return localPending;
 }
 export async function chatRequest(action,args={},admin=false){
- const headers={'Content-Type':'application/json'};let url;
+ const headers={'Content-Type':'application/json'};if(activeAccessCode)headers['x-chat-access-code']=activeAccessCode;let url;
  if(isLocal){await localSession();url='/api/chat';}
  else{
   const config=window.ISPOVESTI_CONFIG||{};const environment=config.chatEnvironment;if(environment!=='test'&&environment!=='live')throw Error('Chat okruženje nije podešeno.');

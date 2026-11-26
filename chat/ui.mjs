@@ -1,4 +1,4 @@
-import {chatRequest} from './client.mjs?v=gate1';
+import {chatRequest,setChatAccessCode,clearChatAccessCode,hasChatAccessCode} from './client.mjs?v=gate2';
 export const avatars={ghost:'👻',moon:'🌙',star:'⭐',owl:'🦉',fox:'🦊',leaf:'🍃',cloud:'☁️',comet:'☄️'};
 const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
 const button=(label,run,cls='chat-small')=>{const b=el('button',cls,label);b.type='button';b.onclick=()=>Promise.resolve(run()).catch(e=>alert(e.message));return b;};
@@ -10,12 +10,14 @@ export async function openChat(){
  dialog.classList.add('chat-room');document.body.classList.add('chat-open');document.querySelector('#dialog-title').textContent='Anonimni chat';document.querySelector('#dialog-body').replaceChildren(root);
  const close=document.querySelector('#close-dialog');close.setAttribute('aria-label','Vrati se na ispovesti');if(!dialog.open)dialog.showModal();
  const top=el('div','chat-topbar'),privacy=el('details','chat-settings'),summary=el('summary','','⋯');summary.setAttribute('aria-label','Pravila i privatnost');
- const settings=el('section','chat-settings-content');settings.append(el('h2','','Pravila i privatnost'),el('p','','Jedna zajednička anonimna soba, bez privatnih poruka. Bez pretnji, vređanja, spama, linkova i deljenja tuđih ličnih podataka. Poruke imaju najviše 1.000 znakova; fotografije nisu dozvoljene.'),el('p','','Lično blokiranje sakriva poruke izabranog korisnika samo tebi. Administratorska zabrana onemogućava pristup chatu; administrator pregleda prijave i može ukloniti ili vratiti poruku.'),el('p','','Veza koristi HTTPS. Chat nije end-to-end šifrovan: ovlašćeni moderatori i infrastruktura mogu pristupiti sadržaju. Ne šalji osetljive podatke. U javnom chatu prikazuje se najviše posljednjih 100 poruka. Starije poruke ostaju sačuvane i dostupne su samo ovlašćenom administratoru. Konačan rok čuvanja biće objavljen prije stvarnog pokretanja.'),el('p','','Chat je trenutno besplatan i ne traži pristupni kod niti SMS. Pristup se automatski aktivira u anonimnoj sesiji.'));
+ const settings=el('section','chat-settings-content');settings.append(el('h2','','Pravila i privatnost'),el('p','','Jedna zajednička anonimna soba, bez privatnih poruka. Bez pretnji, vređanja, spama, linkova i deljenja tuđih ličnih podataka. Poruke imaju najviše 1.000 znakova; fotografije nisu dozvoljene.'),el('p','','Lično blokiranje sakriva poruke izabranog korisnika samo tebi. Administratorska zabrana onemogućava pristup chatu; administrator pregleda prijave i može ukloniti ili vratiti poruku.'),el('p','','Veza koristi HTTPS. Chat nije end-to-end šifrovan: ovlašćeni moderatori i infrastruktura mogu pristupiti sadržaju. Ne šalji osetljive podatke. U javnom chatu prikazuje se najviše posljednjih 100 poruka. Starije poruke ostaju sačuvane i dostupne su samo ovlašćenom administratoru. Konačan rok čuvanja biće objavljen prije stvarnog pokretanja.'),el('p','','Chat je u probnoj fazi. Za ulazak je potreban probni pristupni kod; SMS naplata još nije povezana.'));
  const account=el('div','chat-account'),blocked=el('div');settings.append(account,blocked);privacy.append(summary,settings);top.append(privacy);
  const status=el('p','chat-status');status.setAttribute('role','status');
  const list=el('div','chat-messages');list.setAttribute('aria-label','Poruke u zajedničkoj sobi');list.setAttribute('role','log');list.setAttribute('aria-live','polite');
  const form=el('form','chat-compose'),text=el('textarea');text.maxLength=1000;text.required=true;text.rows=1;text.placeholder='Napiši poruku…';text.setAttribute('aria-label','Poruka u zajedničkom chatu');
- const send=el('button','chat-send','➤');send.type='submit';send.setAttribute('aria-label','Pošalji poruku');form.append(text,send);form.hidden=true;root.append(top,status,list,form);
+ const accessGate=el('form','chat-access-gate'),gateTitle=el('h2','','Pristup četu'),gateText=el('p','','Unesi četvorocifreni pristupni kod.'),gateInput=el('input','chat-access-code'),gateSubmit=el('button','chat-access-submit','OTVORI ČET'),gateError=el('p','chat-access-error');
+ gateInput.type='password';gateInput.inputMode='numeric';gateInput.pattern='[0-9]{4}';gateInput.maxLength=4;gateInput.autocomplete='one-time-code';gateInput.required=true;gateInput.setAttribute('aria-label','Četvorocifreni pristupni kod');gateInput.placeholder='••••';gateSubmit.type='submit';gateError.setAttribute('role','alert');accessGate.append(gateTitle,gateText,gateInput,gateSubmit,gateError);
+ const send=el('button','chat-send','➤');send.type='submit';send.setAttribute('aria-label','Pošalji poruku');form.append(text,send);form.hidden=true;root.append(top,accessGate,status,list,form);
  function resetAccess(message){profile=null;messages=[];list.replaceChildren();form.hidden=true;status.textContent=message;clearInterval(timer);}
  function render(items,older=false){
   const atBottom=initial||list.scrollHeight-list.scrollTop-list.clientHeight<80,oldHeight=list.scrollHeight,oldTop=list.scrollTop;
@@ -77,11 +79,22 @@ export async function openChat(){
   }catch(e){if(stopped)return;if([401,403].includes(e.status))resetAccess(e.message);else status.textContent=e.message;}
   finally{polling=false;}
  }
- async function loadProfile(){try{profile=await chatRequest('profile');if(stopped)return;root.dataset.ownSide=profile.side||'left';
+ async function loadProfile(initialProfile=null){try{profile=initialProfile||await chatRequest('profile');if(stopped)return;root.dataset.ownSide=profile.side||'left';
    account.replaceChildren(el('p','hint','Tvoj anonimni chat ID: '+profile.id),el('p','hint',profile.active?(profile.plan==='free'?'Besplatan pristup':'Paket '+profile.plan+' · ističe '+new Date(profile.expires_at).toLocaleString('sr-Latn')):'Chat trenutno nije dostupan.'));
    blocked.replaceChildren();for(const [i,b]of (profile.blocked||[]).entries())blocked.append(button('Odblokiraj korisnika '+(i+1),async()=>{await chatRequest('unblock',{target:b.id});await loadProfile();}));
    form.hidden=!profile.active;if(profile.active){status.textContent='';await refresh(false);clearInterval(timer);timer=setInterval(()=>refresh(),1500);}else status.textContent='Chat trenutno nije dostupan.';
-  }catch(e){resetAccess(e.message);}}
+  }catch(e){
+   if(e.status===403&&String(e.message).toLowerCase().includes('pristupni kod')){clearChatAccessCode();profile=null;form.hidden=true;accessGate.hidden=false;gateInput.value='';gateInput.disabled=false;gateSubmit.disabled=false;gateError.textContent='Kod nije tačan ili više nije važeći. Pokušaj ponovo.';gateInput.focus();clearInterval(timer);}
+   else resetAccess(e.message);
+  }}
+
+ accessGate.onsubmit=async event=>{
+  event.preventDefault();const code=gateInput.value.trim();
+  if(!/^[0-9]{4}$/.test(code)){gateError.textContent='Unesi sva četiri broja.';gateInput.focus();return;}
+  gateSubmit.disabled=true;gateInput.disabled=true;gateError.textContent='';setChatAccessCode(code);
+  try{const verifiedProfile=await chatRequest('profile');accessGate.hidden=true;gateInput.value='';await loadProfile(verifiedProfile);}
+  catch(error){clearChatAccessCode();gateInput.value='';gateInput.disabled=false;gateSubmit.disabled=false;gateError.textContent=error.status===403?'Pogrešan kod. Pokušaj ponovo.':(error.message||'Provera koda nije uspela.');gateInput.focus();}
+ };
 
  async function ensureChatRules(){
   const gate=await chatRequest('gate_status');
@@ -130,6 +143,6 @@ export async function openChat(){
   }finally{sending=false;send.disabled=false;}
  };
  dialog.addEventListener('close',()=>{stopped=true;clearInterval(timer);messages=[];list.replaceChildren();text.value='';dialog.classList.remove('chat-room');document.body.classList.remove('chat-open');close.setAttribute('aria-label','Zatvori');document.querySelector('#open-chat')?.focus({preventScroll:true});},{once:true});
- await loadProfile();
+ if(hasChatAccessCode()){accessGate.hidden=true;await loadProfile();}else{accessGate.hidden=false;gateInput.focus();}
 }
 document.querySelector('#open-chat')?.addEventListener('click',()=>openChat().catch(e=>alert(e.message)));
