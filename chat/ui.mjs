@@ -39,9 +39,9 @@ export async function openChat(){
       const below=anchor.bottom+6;
       const top=below+estimatedHeight<=window.innerHeight-8?below:Math.max(8,anchor.top-estimatedHeight-6);
       menu.style.position='fixed';menu.style.left=left+'px';menu.style.top=top+'px';
-      menu.style.right='auto';menu.style.bottom='auto';menu.style.visibility='visible';
+      menu.style.right='auto';menu.style.bottom='auto';menu.dataset.positioned='true';
      }else{
-      ['position','left','top','right','bottom','visibility'].forEach(key=>menu.style.removeProperty(key));
+      delete menu.dataset.positioned;['position','left','top','right','bottom','visibility'].forEach(key=>menu.style.removeProperty(key));
       if(activeActionMenu===actions){activeActionMenu=null;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}}
      }
     });more.addEventListener('click',event=>{event.preventDefault();actions.open=!actions.open;});more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
