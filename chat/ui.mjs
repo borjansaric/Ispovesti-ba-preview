@@ -51,9 +51,10 @@ export async function openChat(){
     const sendReportButton=button('Pošalji',()=>sendReport('other',detail.value),'chat-small');
     custom.append(detail,sendReportButton);
     const underageButton=button('18− korisnik',()=>sendReport('underage'),'chat-small');
-    reportOptions.append(hateButton,spamButton,moreReason,underageButton,custom);
+    reportOptions.append(hateButton,spamButton,moreReason,custom);
     menu.append(reportButton,reportOptions);
     if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
+    if(!own)menu.append(underageButton);
     actions.append(more,menu);row.append(actions);messageNodes.set(id,row);
    }else{
     row.classList.toggle('own',m.sender===profile.id);row.classList.toggle('other',m.sender!==profile.id);
