@@ -68,19 +68,27 @@ body.inline-thread-open .site-header,body.inline-thread-open #feed-title,body.in
 .chat-access-gate .chat-access-error{min-height:18px;color:#f0a29a;font-size:13px}
 
 
-/* One centered, dialog-level action panel. It no longer inherits message-position rules. */
-.chat-room .chat-message-actions-portal{
- display:flex!important;position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
- transform:translate(-50%,-50%);z-index:2147483647!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
- box-sizing:border-box;width:min(280px,calc(100vw - 32px));min-width:190px;max-width:calc(100vw - 32px);
- max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;overflow-y:auto!important;
- flex-direction:column;gap:3px;padding:8px;border:1px solid #f1d58e!important;border-radius:10px;
- background:linear-gradient(135deg,#8d6b2f 0%,#f7e4a4 17%,#c69d4b 38%,#fff1bd 52%,#b48735 73%,#f2d88f 100%)!important;
- box-shadow:0 10px 30px #000e,inset 0 1px 1px #ffffff80!important;
+/* Compact message-anchored menu: keep it beside the selected message, not centered. */
+.chat-message-menu[open] .chat-message-actions{
+ display:flex!important;position:fixed!important;left:8px;top:8px;right:auto;bottom:auto;transform:none!important;
+ z-index:2147483647!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+ box-sizing:border-box;width:176px;min-width:150px;max-width:calc(100vw - 16px);
+ max-height:55dvh;overflow-y:auto;flex-direction:column;gap:1px;padding:5px;
+ border:1px solid #e5c77d;border-radius:8px;
+ background:linear-gradient(135deg,#8d6b2f 0%,#f7e4a4 17%,#c69d4b 38%,#fff1bd 52%,#b48735 73%,#f2d88f 100%);
+ box-shadow:0 5px 16px #000b;
 }
-.chat-room .chat-message-actions-portal>button{display:block;width:100%;padding:10px 12px;color:#17130a!important;background:transparent!important;text-align:left;font-size:14px;font-weight:800}
-.chat-room .chat-message-actions-portal .chat-report-options:not([hidden]){display:flex!important;flex-direction:column;gap:2px;visibility:visible!important;opacity:1!important}
-.chat-room .chat-message-actions-portal .chat-report-custom:not([hidden]){display:flex!important;align-items:flex-end;gap:7px;visibility:visible!important;opacity:1!important}
-.chat-room .chat-message-actions-portal .chat-report-custom textarea{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;box-sizing:border-box;flex:1 1 auto;width:1px;min-width:0;max-height:70px;color:#17130a;background:transparent}
-.chat-room .chat-message-actions-portal [hidden]{display:none!important}
-.chat-compose textarea{resize:none!important;-webkit-appearance:none;appearance:none}
+.chat-message-actions>button{padding:7px 9px!important;font-size:13px!important;line-height:1.2}
+.chat-message-actions .chat-report-options{border:0!important;padding:2px 0 0!important;margin:1px 0 0!important;gap:1px!important}
+.chat-message-actions .chat-report-options>button{padding:6px 8px!important;font-size:12px!important}
+.chat-message-actions .chat-report-custom{padding:3px 5px 4px!important;gap:5px!important}
+.chat-message-actions .chat-report-custom textarea{
+ display:block;box-sizing:border-box;flex:1 1 auto;width:1px;min-width:0;height:34px!important;min-height:34px!important;max-height:70px;
+ margin:0;padding:6px 7px;border:0!important;border-radius:5px;background:rgba(255,255,255,.28);color:#17130a;
+ font:inherit;font-size:12px;resize:none!important;outline:0;
+}
+.chat-message-actions .chat-report-custom textarea:focus{background:rgba(255,255,255,.42);outline:1px solid rgba(65,43,9,.45)}
+.chat-message-actions .chat-report-custom>button{padding:6px 7px!important;font-size:11px!important}
+.chat-message-actions [hidden]{display:none!important}
+.chat-compose{border-top:0!important}
+.chat-compose textarea{resize:none!important}
