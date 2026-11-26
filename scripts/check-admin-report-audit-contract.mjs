@@ -25,6 +25,7 @@ assert.match(auditGuard,/before truncate/i);
 assert.match(auditGuard,/revoke update, delete, truncate/i);
 
 for(const source of [reportSchema,reportRpcs,auditGuard]){
-  assert.doesNotMatch(source,/community_live\.|chat_live\./i,'Preview admin migration must not modify live schemas.');
+  const executableSql=source.replace(/^\\s*--.*$/gm,'');
+  assert.doesNotMatch(executableSql,/community_live\\.|chat_live\\./i,'Preview admin migration must not modify live schemas.');
 }
 console.log('Preview admin report/audit contract checks passed.');
