@@ -29,7 +29,7 @@
 - Provjereno je da obje audit tabele imaju četiri append-only triggera (UPDATE/DELETE/TRUNCATE) i da `service_role` može samo čitati i dodavati zapise.
 - Namjerni pokušaji UPDATE, DELETE i TRUNCATE nad chat audit tabelom blokirani su triggerima.
 - `chat-test-api` je aktivan, verzija 17.
-- GitHub Actions Preview build i deploy su uspješno završeni za commit `ef720aebd50f82cbe547623b47d240c1cd2dd3bc`; naredna izmjena audit zaštite i ovaj dokument pokreću novu provjeru.
+- GitHub Actions Preview workflow provjerava sintaksu svih JS/MJS fajlova, izolaciju Preview okruženja, moderatorske testove i poseban ugovorni test za prijave/audit.
 
 ## Ograničenja provjere
 
