@@ -13,6 +13,8 @@ const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className
 const fmt=value=>Number(value||0).toLocaleString('sr-Latn-RS');
 const date=value=>value?new Date(value).toLocaleString('sr-Latn-RS',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
 const reportReasonLabel=reason=>({hate_speech:'Govor mržnje',spam:'Spam',other:'Drugo',underage:'18− korisnik',abuse:'Uvredljiv sadržaj',threat:'Prijetnja'}[reason]||reason);
+const reportStatusLabel=status=>({new:'Nova',reviewed:'Pregledana',resolved:'Riješena',dismissed:'Odbačena'}[status]||'Nova');
+function askModeratorReason(promptText){const value=window.prompt(promptText+' (opciono, najviše 500 znakova):','');return value===null?null:value.trim().slice(0,500);}
 const moderationReasonLabel=reason=>({possible_threat:'Moguća prijetnja',promotional_spam:'Moguća reklamna/spam poruka',possible_phone_number:'Mogući broj telefona ili kontakt podatak',excessive_caps:'Neuobičajeno mnogo velikih slova',repeated_phrase:'Ponavljanje iste fraze'}[reason]||reason);
 function setStatus(message=''){appStatus.textContent=message;}
 function empty(message){return el('div','empty',message);}
@@ -107,8 +109,8 @@ function renderContentCard(item){
  head.append(left,pill(item.state,item.state));c.append(head,el('p','card-body',item.body));
  if(item.reports?.length){const r=el('div','report-lines');r.append(el('strong','','Prijave: '+item.reports.length));for(const x of item.reports.slice(0,4))r.append(el('p','',x.reason+' · '+date(x.created_at)));c.append(r);}
  const actions=el('div','card-actions');
- if(item.state==='removed')actions.append(actionButton('Vrati sadržaj',async()=>{if(!confirm('Vrati ovaj sadržaj?'))return;await community('admin_restore',{id:item.id});setView(currentView);}));
- else actions.append(actionButton('Ukloni sadržaj',async()=>{if(!confirm('Ukloni ovaj sadržaj iz javnog prikaza?'))return;await community('admin_remove',{id:item.id});setView(currentView);},'small danger'));
+ if(item.state==='removed')actions.append(actionButton('Vrati sadržaj',async()=>{if(!confirm('Vrati ovaj sadržaj?'))return;const reason=askModeratorReason('Razlog vraćanja sadržaja');if(reason===null)return;await community('admin_restore',{id:item.id,reason});setView(currentView);}));
+ else actions.append(actionButton('Ukloni sadržaj',async()=>{if(!confirm('Ukloni ovaj sadržaj iz javnog prikaza?'))return;const reason=askModeratorReason('Razlog uklanjanja sadržaja');if(reason===null)return;await community('admin_remove',{id:item.id,reason});setView(currentView);},'small danger'));
  c.append(actions);return c;
 }
 async function renderConfessions(){
@@ -123,12 +125,38 @@ async function renderComments(offset){
  const d=await community('admin_comments',{offset,limit:50});if(currentView!=='comments')return;const items=d.items||[];if(!items.length)list.append(empty('Nema komentara ili odgovora za ovaj pregled.'));else items.forEach(x=>list.append(renderContentCard(x)));setStatus('Prikazano '+items.length+' komentara i odgovora.');
 }
 async function renderReports(offset){
- setStatus('Učitavam prijave…');viewContent.replaceChildren();const toolbar=el('div','toolbar'),list=el('div','list'),input=searchInput('Pretraži prijave…',q=>filterList(list,q));toolbar.append(input);
+ setStatus('Učitavam prijave…');viewContent.replaceChildren();
+ const toolbar=el('div','toolbar'),list=el('div','list'),input=searchInput('Pretraži prijave…',q=>filterList(list,q));toolbar.append(input);
  const pager=el('div','pager'),prev=actionButton('Prethodnih 50',()=>renderReports(Math.max(0,offset-50)),'secondary small'),next=actionButton('Sljedećih 50',()=>renderReports(offset+50),'secondary small');prev.disabled=offset===0;pager.append(prev,next);viewContent.append(toolbar,list,pager);
  const d=await community('admin_reports',{offset,limit:50});if(currentView!=='reports')return;const items=d.items||[];if(!items.length)list.append(empty('Nema prijava za ovaj pregled.'));
- for(const item of items){const c=el('article','report-card');c.dataset.search=[item.body,item.nickname,item.reason,item.details,item.target_id,item.source].join(' ').toLowerCase();const head=el('div','card-head');head.append(el('strong','', (item.source==='chat'?'Chat':'Zajednica')+' · '+item.target_kind+' #'+item.target_id),pill(item.state,item.state));c.append(head,el('p','meta','Prijavljeno: '+date(item.reported_at)+' · Razlog: '+reportReasonLabel(item.reason)),el('p','card-body',item.body||'Sadržaj nije dostupan.'));if(item.details)c.append(el('p','report-detail','Dodatni opis: '+item.details));const actions=el('div','card-actions');
-  if(item.source==='chat')actions.append(actionButton(item.state==='removed'?'Vrati poruku':'Ukloni poruku',async()=>{if(item.state!=='removed'&&!confirm('Ukloni ovu chat poruku?'))return;await chatRequest(item.state==='removed'?'admin_restore':'admin_remove',{id:item.target_id},true);setView('reports');},item.state==='removed'?'small':'small danger'));
-  else actions.append(actionButton(item.state==='removed'?'Vrati sadržaj':'Ukloni sadržaj',async()=>{if(item.state!=='removed'&&!confirm('Ukloni prijavljeni sadržaj?'))return;await community(item.state==='removed'?'admin_restore':'admin_remove',{id:item.target_id});setView('reports');},item.state==='removed'?'small':'small danger'));
+ for(const item of items){
+  const c=el('article','report-card');c.dataset.search=[item.body,item.nickname,item.reason,item.details,item.target_id,item.source,item.report_status].join(' ').toLowerCase();
+  const head=el('div','card-head');head.append(el('strong','',(item.source==='chat'?'Chat':'Zajednica')+' · '+item.target_kind+' #'+item.target_id),pill(item.state,item.state),pill(reportStatusLabel(item.report_status),''));
+  c.append(head,el('p','meta','Prijavljeno: '+date(item.reported_at)+' · Razlog: '+reportReasonLabel(item.reason)+' · Status prijave: '+reportStatusLabel(item.report_status)),el('p','card-body',item.body||'Sadržaj nije dostupan.'));
+  if(item.details)c.append(el('p','report-detail','Dodatni opis: '+item.details));
+  const actions=el('div','card-actions');
+  if(item.source==='chat')actions.append(actionButton(item.state==='removed'?'Vrati poruku':'Ukloni poruku',async()=>{
+   if(item.state!=='removed'&&!confirm('Ukloni ovu chat poruku?'))return;
+   const reason=askModeratorReason(item.state==='removed'?'Razlog vraćanja chat poruke':'Razlog uklanjanja chat poruke');if(reason===null)return;
+   await chatRequest(item.state==='removed'?'admin_restore':'admin_remove',{id:item.target_id,reason},true);setView('reports');
+  },item.state==='removed'?'small':'small danger'));
+  else actions.append(actionButton(item.state==='removed'?'Vrati sadržaj':'Ukloni sadržaj',async()=>{
+   if(item.state!=='removed'&&!confirm('Ukloni prijavljeni sadržaj?'))return;
+   const reason=askModeratorReason(item.state==='removed'?'Razlog vraćanja sadržaja':'Razlog uklanjanja sadržaja');if(reason===null)return;
+   await community(item.state==='removed'?'admin_restore':'admin_remove',{id:item.target_id,reason});setView('reports');
+  },item.state==='removed'?'small':'small danger'));
+  const reportActions=el('div','card-actions');
+  for(const [status,label] of [['reviewed','Označi pregledano'],['resolved','Riješeno'],['dismissed','Odbaci prijavu']]){
+   if(item.report_status===status)continue;
+   reportActions.append(actionButton(label,async()=>{
+    const reason=askModeratorReason('Napomena uz status prijave');if(reason===null)return;
+    const args={reporter_id:item.reporter_id,status,reason};
+    if(item.source==='chat'){args.message_id=item.target_id;await chatRequest('admin_report_status',args,true);}
+    else{args.content_id=item.target_id;await community('admin_report_status',args);}
+    setView('reports');
+   },'small secondary'));
+  }
+  actions.append(...reportActions.childNodes);
   if(item.target_author_uid)actions.append(actionButton('Otvori dosije',()=>{selectedDossierUid=item.target_author_uid;setView('dossier');},'small secondary'));
   c.append(actions);list.append(c);
  }
@@ -233,12 +261,12 @@ async function renderAudit(offset){
  setStatus('Učitavam evidenciju…');viewContent.replaceChildren();const toolbar=el('div','toolbar'),list=el('div','list'),input=searchInput('Pretraži radnje, ID administratora ili cilj…',q=>filterList(list,q));toolbar.append(input);
  const pager=el('div','pager'),prev=actionButton('Prethodnih 50',()=>renderAudit(Math.max(0,offset-50)),'secondary small'),next=actionButton('Sljedećih 50',()=>renderAudit(offset+50),'secondary small');prev.disabled=offset===0;pager.append(prev,next);viewContent.append(toolbar,list,pager);
  const d=await community('admin_audit',{offset,limit:50});if(currentView!=='audit')return;const items=d.items||[];if(!items.length)list.append(empty('Evidencija je prazna.'));
- for(const x of items){const c=el('article','content-card');c.dataset.search=[x.action,x.target,x.admin_id,x.source].join(' ').toLowerCase();c.append(el('strong','',x.action),el('p','meta',(x.source==='chat'?'Chat':'Zajednica')+' · '+date(x.created_at)),el('p','meta','Administrator: '+x.admin_id+' · Cilj: '+x.target));list.append(c);}
+ for(const x of items){const c=el('article','content-card');c.dataset.search=[x.action,x.target,x.admin_id,x.source].join(' ').toLowerCase();c.append(el('strong','',x.action),el('p','meta',(x.source==='chat'?'Chat':'Zajednica')+' · '+date(x.created_at)),el('p','meta','Administrator: '+x.admin_id+' · Cilj: '+x.target));if(x.details)c.append(el('p','report-detail','Razlog / detalji: '+x.details));list.append(c);}
  setStatus('Prikazano '+items.length+' evidentiranih radnji.');
 }
 async function renderQueue(){
  setStatus('Učitavam red objava…');viewContent.replaceChildren();const [d,stats]=await Promise.all([community('admin_list',{view:'queue',offset:0}),loadDashboard()]);if(currentView!=='queue')return;
- const paused=!!stats.publisher?.paused,toolbar=el('div','toolbar');toolbar.append(el('p','',paused?'Automatsko objavljivanje je pauzirano.':'Automatsko objavljivanje je aktivno.'),actionButton(paused?'Nastavi objavljivanje':'Pauziraj objavljivanje',async()=>{await community('admin_publisher',{paused:!paused});setView('queue');},'small'));viewContent.append(toolbar);
+ const paused=!!stats.publisher?.paused,toolbar=el('div','toolbar');toolbar.append(el('p','',paused?'Automatsko objavljivanje je pauzirano.':'Automatsko objavljivanje je aktivno.'),actionButton(paused?'Nastavi objavljivanje':'Pauziraj objavljivanje',async()=>{const reason=askModeratorReason(paused?'Razlog nastavka objavljivanja':'Razlog pauziranja objavljivanja');if(reason===null)return;await community('admin_publisher',{paused:!paused,reason});setView('queue');},'small'));viewContent.append(toolbar);
  const list=el('div','list');viewContent.append(list);const items=(d.items||[]).filter(x=>x.kind==='confession');if(!items.length)list.append(empty('Nema ispovijesti na čekanju.'));else items.forEach(x=>list.append(renderContentCard(x)));setStatus('Na čekanju: '+items.length+'. Red je FIFO; panel ne mijenja redoslijed objava.');
 }
 async function renderAnalytics(){
