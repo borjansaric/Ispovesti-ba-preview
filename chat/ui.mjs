@@ -32,16 +32,19 @@ export async function openChat(){
       if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}
       if(activeActionMenu&&activeActionMenu!==actions)activeActionMenu.open=false;
       activeActionMenu=actions;
-      dialog.append(menu);
-      menu.classList.add('chat-message-actions-portal');
-      menu.style.visibility='visible';
+      const anchor=more.getBoundingClientRect();
+      const menuWidth=Math.min(184,window.innerWidth-16);
+      const estimatedHeight=Math.min(menu.scrollHeight||190,Math.floor(window.innerHeight*.55));
+      const left=Math.max(8,Math.min(anchor.left,window.innerWidth-menuWidth-8));
+      const below=anchor.bottom+6;
+      const top=below+estimatedHeight<=window.innerHeight-8?below:Math.max(8,anchor.top-estimatedHeight-6);
+      menu.style.position='fixed';menu.style.left=left+'px';menu.style.top=top+'px';
+      menu.style.right='auto';menu.style.bottom='auto';menu.style.visibility='visible';
      }else{
-      menu.classList.remove('chat-message-actions-portal');
-      menu.style.removeProperty('visibility');
-      menu.remove();
+      ['position','left','top','right','bottom','visibility'].forEach(key=>menu.style.removeProperty(key));
       if(activeActionMenu===actions){activeActionMenu=null;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}}
      }
-    });more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
+    });;more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
     const reportOptions=el('div','chat-report-options');reportOptions.hidden=true;
     const custom=el('div','chat-report-custom');custom.hidden=true;
     const detail=el('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni opis prijave');detail.style.height='28px';detail.addEventListener('input',()=>{detail.style.height='28px';detail.style.height=Math.min(detail.scrollHeight,70)+'px';});
