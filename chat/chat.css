@@ -70,8 +70,8 @@ body.inline-thread-open .site-header,body.inline-thread-open #feed-title,body.in
 
 /* Compact message-anchored menu: keep it beside the selected message, not centered. */
 .chat-message-menu[open] .chat-message-actions{
- display:flex!important;position:fixed!important;left:8px;top:8px;right:auto;bottom:auto;transform:none!important;
- z-index:2147483647!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+ display:flex!important;position:fixed!important;left:8px;top:8px;right:auto;bottom:auto;transform:none!important;visibility:hidden!important;
+ z-index:2147483647!important;opacity:1!important;pointer-events:auto!important;
  box-sizing:border-box;width:176px;min-width:150px;max-width:calc(100vw - 16px);
  max-height:55dvh;overflow-y:auto;flex-direction:column;gap:1px;padding:5px;
  border:1px solid #e5c77d;border-radius:8px;
@@ -92,3 +92,5 @@ body.inline-thread-open .site-header,body.inline-thread-open #feed-title,body.in
 .chat-message-actions [hidden]{display:none!important}
 .chat-compose{border-top:0!important}
 .chat-compose textarea{resize:none!important}
+
+.chat-message-menu[open] .chat-message-actions[data-positioned="true"]{visibility:visible!important}
