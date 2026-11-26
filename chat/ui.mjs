@@ -5,7 +5,7 @@ const button=(label,run,cls='chat-small')=>{const b=el('button',cls,label);b.typ
 export async function openChat(){
  const dialog=document.querySelector('#dialog'),root=el('section','chat-panel');let stopped=false,polling=false,timer,profile,sending=false,requestId,lastBody,pendingMessage=null,initial=true,noOlder=false,activeActionMenu=null;
  let messages=[];let activeReportOptions=null;const messageNodes=new Map();
- root.addEventListener('click',event=>{if(!activeReportOptions&&!activeActionMenu)return;if(event.target.closest('.chat-report-options, .chat-message-menu, .chat-message-actions'))return;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}if(activeActionMenu)activeActionMenu.open=false;});
+ dialog.addEventListener('click',event=>{if(!activeReportOptions&&!activeActionMenu)return;if(event.target.closest('.chat-report-options, .chat-message-menu, .chat-message-actions'))return;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}if(activeActionMenu)activeActionMenu.open=false;});
  if(document.body.classList.contains('menu-open'))document.querySelector('#menu-toggle').click();
  dialog.classList.add('chat-room');document.body.classList.add('chat-open');document.querySelector('#dialog-title').textContent='Anonimni chat';document.querySelector('#dialog-body').replaceChildren(root);
  const close=document.querySelector('#close-dialog');close.setAttribute('aria-label','Vrati se na ispovesti');if(!dialog.open)dialog.showModal();
@@ -32,17 +32,12 @@ export async function openChat(){
       if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}
       if(activeActionMenu&&activeActionMenu!==actions)activeActionMenu.open=false;
       activeActionMenu=actions;
-      root.append(menu);
+      dialog.append(menu);
       menu.classList.add('chat-message-actions-portal');
-      menu.style.visibility='hidden';
-      const anchor=more.getBoundingClientRect(),panel=menu.getBoundingClientRect();
-      const left=Math.max(8,Math.min(anchor.right-panel.width,window.innerWidth-panel.width-8));
-      const below=window.innerHeight-anchor.bottom;
-      const top=below>=panel.height+12?anchor.bottom+6:Math.max(8,anchor.top-panel.height-6);
-      menu.style.left=left+'px';menu.style.top=top+'px';menu.style.visibility='visible';
+      menu.style.visibility='visible';
      }else{
       menu.classList.remove('chat-message-actions-portal');
-      menu.style.removeProperty('left');menu.style.removeProperty('top');menu.style.removeProperty('visibility');
+      menu.style.removeProperty('visibility');
       menu.remove();
       if(activeActionMenu===actions){activeActionMenu=null;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}}
      }
@@ -53,7 +48,7 @@ export async function openChat(){
     let reportSending=false;
     async function sendReport(reason,details=''){
      if(reportSending)return;reportSending=true;
-     const controls=[...reportOptions.querySelectorAll('button,textarea')];controls.forEach(control=>control.disabled=true);
+     const controls=[...menu.querySelectorAll('button,textarea')];controls.forEach(control=>control.disabled=true);
      try{
       const result=await chatRequest('report',{id:m.id,reason,details:details.trim()});
       status.textContent=result.already_reported?'Već si prijavio ovu poruku.':'Prijava je zabilježena. Hvala.';
@@ -66,14 +61,16 @@ export async function openChat(){
     const reportButton=button('Prijavi',()=>{if(activeReportOptions===reportOptions){reportOptions.hidden=true;activeReportOptions=null;return;}if(activeReportOptions)activeReportOptions.hidden=true;activeReportOptions=reportOptions;reportOptions.hidden=false;actions.open=true;});
     const hateButton=button('Govor mržnje',()=>sendReport('hate_speech'),'chat-small');
     const spamButton=button('Spam',()=>sendReport('spam'),'chat-small');
-    const moreReason=button('···',()=>{custom.hidden=!custom.hidden;if(!custom.hidden)detail.focus();},'chat-small');
+    const moreReason=button('⋯',()=>{reportOptions.hidden=true;if(activeReportOptions===reportOptions)activeReportOptions=null;custom.hidden=!custom.hidden;if(!custom.hidden)detail.focus();},'chat-small');
     const sendReportButton=button('Pošalji',()=>sendReport('other',detail.value),'chat-small');
     custom.append(detail,sendReportButton);
     const underageButton=button('18− korisnik',()=>sendReport('underage'),'chat-small');
-    reportOptions.append(hateButton,spamButton,moreReason,custom);
-    menu.append(reportButton,reportOptions);
+    reportOptions.append(hateButton,spamButton);
+    menu.append(reportButton);
     if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
+    menu.append(moreReason);
     if(!own)menu.append(underageButton);
+    menu.append(reportOptions,custom);
     actions.append(more);row.append(actions);messageNodes.set(id,row);
    }else{
     row.classList.toggle('own',m.sender===profile.id);row.classList.toggle('other',m.sender!==profile.id);
@@ -162,7 +159,7 @@ export async function openChat(){
    if([401,403].includes(e.status))resetAccess(e.message);
   }finally{sending=false;send.disabled=false;}
  };
- dialog.addEventListener('close',()=>{stopped=true;clearInterval(timer);messages=[];list.replaceChildren();text.value='';dialog.classList.remove('chat-room');document.body.classList.remove('chat-open');close.setAttribute('aria-label','Zatvori');document.querySelector('#open-chat')?.focus({preventScroll:true});},{once:true});
+ dialog.addEventListener('close',()=>{stopped=true;clearInterval(timer);dialog.querySelectorAll('.chat-message-actions-portal').forEach(menu=>menu.remove());messages=[];list.replaceChildren();text.value='';dialog.classList.remove('chat-room');document.body.classList.remove('chat-open');close.setAttribute('aria-label','Zatvori');document.querySelector('#open-chat')?.focus({preventScroll:true});},{once:true});
  if(hasChatAccessCode()){accessGate.hidden=true;await loadProfile();}else{accessGate.hidden=false;gateInput.focus();}
 }
 document.querySelector('#open-chat')?.addEventListener('click',()=>openChat().catch(e=>alert(e.message)));
