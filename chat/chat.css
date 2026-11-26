@@ -75,3 +75,10 @@ body.inline-thread-open .site-header,body.inline-thread-open #feed-title,body.in
 /* Message actions are portalled to the chat panel so the scroll viewport cannot clip them. */
 .chat-panel .chat-message-actions-portal{display:flex!important;position:fixed!important;z-index:2147483647!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;max-height:min(55dvh,420px)!important;overflow-y:auto!important;background:linear-gradient(135deg,#8d6b2f 0%,#f7e4a4 17%,#c69d4b 38%,#fff1bd 52%,#b48735 73%,#f2d88f 100%)!important;border:1px solid #f1d58e!important;box-shadow:0 8px 24px #000d,inset 0 1px 1px #ffffff80!important}
 .chat-compose textarea{resize:none!important;-webkit-appearance:none;appearance:none}
+
+
+/* Make both report panels explicitly visible inside the detached action-menu portal. */
+.chat-panel .chat-message-actions-portal{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+.chat-panel .chat-message-actions-portal .chat-report-options:not([hidden]){display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+.chat-panel .chat-message-actions-portal .chat-report-custom:not([hidden]){display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+.chat-panel .chat-message-actions-portal .chat-report-custom textarea{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}

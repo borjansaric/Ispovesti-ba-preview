@@ -27,13 +27,14 @@ export async function openChat(){
    if(!row){
     const own=m.sender===profile.id;row=el('article','chat-message '+(own?'own':'other'));row.dataset.id=id;
     const avatar=el('span','chat-avatar',avatars[m.avatar]||avatars.ghost);avatar.setAttribute('aria-hidden','true');const body=el('p','chat-body',m.body);row.append(avatar,body);
-    const actions=el('details','chat-message-menu');const more=el('summary','','⋮');actions.addEventListener('toggle',()=>{
+    const actions=el('details','chat-message-menu');const more=el('summary','','⋯');actions.addEventListener('toggle',()=>{
      if(actions.open){
       if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}
       if(activeActionMenu&&activeActionMenu!==actions)activeActionMenu.open=false;
       activeActionMenu=actions;
       root.append(menu);
       menu.classList.add('chat-message-actions-portal');
+      menu.style.setProperty('display','flex','important');
       menu.style.visibility='hidden';
       const anchor=more.getBoundingClientRect(),panel=menu.getBoundingClientRect();
       const left=Math.max(8,Math.min(anchor.right-panel.width,window.innerWidth-panel.width-8));
@@ -53,7 +54,7 @@ export async function openChat(){
     let reportSending=false;
     async function sendReport(reason,details=''){
      if(reportSending)return;reportSending=true;
-     const controls=[...reportOptions.querySelectorAll('button,textarea')];controls.forEach(control=>control.disabled=true);
+     const controls=[...menu.querySelectorAll('button,textarea')];controls.forEach(control=>control.disabled=true);
      try{
       const result=await chatRequest('report',{id:m.id,reason,details:details.trim()});
       status.textContent=result.already_reported?'Već si prijavio ovu poruku.':'Prijava je zabilježena. Hvala.';
@@ -63,17 +64,19 @@ export async function openChat(){
       controls.forEach(control=>control.disabled=false);reportSending=false;
      }
     }
-    const reportButton=button('Prijavi',()=>{if(activeReportOptions===reportOptions){reportOptions.hidden=true;activeReportOptions=null;return;}if(activeReportOptions)activeReportOptions.hidden=true;activeReportOptions=reportOptions;reportOptions.hidden=false;actions.open=true;});
+    const reportButton=button('Prijavi',()=>{const opening=reportOptions.hidden;if(activeReportOptions&&activeReportOptions!==reportOptions)activeReportOptions.hidden=true;custom.hidden=true;reportOptions.hidden=!opening;activeReportOptions=opening?reportOptions:null;});
     const hateButton=button('Govor mržnje',()=>sendReport('hate_speech'),'chat-small');
     const spamButton=button('Spam',()=>sendReport('spam'),'chat-small');
-    const moreReason=button('···',()=>{custom.hidden=!custom.hidden;if(!custom.hidden)detail.focus();},'chat-small');
+    const moreReason=button('⋯',()=>{reportOptions.hidden=true;if(activeReportOptions===reportOptions)activeReportOptions=null;custom.hidden=!custom.hidden;if(!custom.hidden)detail.focus();},'chat-small chat-more-reason');
     const sendReportButton=button('Pošalji',()=>sendReport('other',detail.value),'chat-small');
     custom.append(detail,sendReportButton);
     const underageButton=button('18− korisnik',()=>sendReport('underage'),'chat-small');
-    reportOptions.append(hateButton,spamButton,moreReason,custom);
-    menu.append(reportButton,reportOptions);
+    reportOptions.append(hateButton,spamButton);
+    menu.append(reportButton);
     if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
+    menu.append(moreReason);
     if(!own)menu.append(underageButton);
+    menu.append(reportOptions,custom);
     actions.append(more);row.append(actions);messageNodes.set(id,row);
    }else{
     row.classList.toggle('own',m.sender===profile.id);row.classList.toggle('other',m.sender!==profile.id);
