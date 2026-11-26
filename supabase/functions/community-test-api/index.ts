@@ -19,6 +19,19 @@ const allowed=(Deno.env.get('ALLOWED_ORIGINS')||'https://borjansaric.github.io')
 const publicActions=new Set(['feed','comments','confession','daily_highlights','captcha_config','activate_admin','track_visit']);
 class HttpError extends Error { status:number; constructor(message:string,status=400){super(message);this.status=status;} }
 const fail=(message:string,status=400):never=>{throw new HttpError(message,status);};
+// Age and site-rule records are shared with the Preview chat gateway, not the live APIs.
+const GATE_SITE_VERSION='site-v2';
+const GATE_CHAT_VERSION='chat-v2';
+async function readUserGate(uid:string){
+ const r=await fetch(url+'/rest/v1/isp_user_gates?user_id=eq.'+encodeURIComponent(uid)+'&select=*',{headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,'Accept-Profile':'public'},signal:AbortSignal.timeout(8000)});
+ if(!r.ok)fail('Provjera pristupa trenutno nije dostupna.',503);
+ const rows=await r.json();return rows[0]||null;
+}
+async function writeUserGate(uid:string,patch:Record<string,unknown>){
+ const r=await fetch(url+'/rest/v1/isp_user_gates?on_conflict=user_id',{method:'POST',headers:{apikey:serviceKey,Authorization:'Bearer '+serviceKey,'Content-Type':'application/json','Content-Profile':'public',Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:uid,...patch,updated_at:new Date().toISOString()}),signal:AbortSignal.timeout(8000)});
+ if(!r.ok)fail('Evidencija potvrde trenutno nije dostupna.',503);
+ return (await r.json())[0]||null;
+}
 async function digest(text:string){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))].map(x=>x.toString(16).padStart(2,'0')).join('');}
 async function key(){return crypto.subtle.importKey('raw',await crypto.subtle.digest('SHA-256',new TextEncoder().encode('ispovesti-turnstile-v1:'+serviceKey)),{name:'AES-GCM'},false,['encrypt','decrypt']);}
 async function encrypt(secret:string){const iv=crypto.getRandomValues(new Uint8Array(12));const bytes=await crypto.subtle.encrypt({name:'AES-GCM',iv},await key(),new TextEncoder().encode(secret));return 'v1:'+btoa(String.fromCharCode(...iv))+':'+btoa(String.fromCharCode(...new Uint8Array(bytes)));}
@@ -95,6 +108,34 @@ Deno.serve(async(req:Request)=>{
     args._session_id=payload.session_id;args._aal=payload.aal;
    }
   }
+  if(action==='gate_status'){
+   const gate=await readUserGate(uid);
+   return send({age_status:gate?.age_status||'pending',age_band:gate?.age_band||null,site_rules_accepted:gate?.site_rules_version===GATE_SITE_VERSION,chat_rules_accepted:gate?.chat_rules_version===GATE_CHAT_VERSION});
+  }
+  if(action==='gate_accept'){
+   const scope=String(args.scope||'');
+   if(scope==='age'){
+    if(typeof args.adult!=='boolean')fail('Potvrdi da li imaš 18 ili više godina.');
+    const ageStatus=args.adult?'adult':'underage';
+    const ageBand=args.adult?String(args.age_band||''):null;
+    if(args.adult&&!['18-24','25-34','35-44','45-54','55+'].includes(ageBand||''))fail('Izaberi starosnu grupu.');
+    const current=await readUserGate(uid);
+    const patch:Record<string,unknown>={age_status:ageStatus,age_band:ageBand,age_confirmed_at:new Date().toISOString()};
+    if(current?.age_status!==ageStatus){
+     patch.site_rules_version=null;patch.site_rules_accepted_at=null;
+     patch.chat_rules_version=null;patch.chat_rules_accepted_at=null;
+    }
+    await writeUserGate(uid,patch);
+    return send({success:true,age_status:ageStatus});
+   }
+   if(scope==='site'){
+    const gate=await readUserGate(uid);
+    if(gate?.age_status!=='adult')fail('Pristup je dozvoljen samo punoljetnim osobama.',403);
+    await writeUserGate(uid,{site_rules_version:GATE_SITE_VERSION,site_rules_accepted_at:new Date().toISOString()});
+    return send({success:true});
+   }
+   fail('Nepoznata vrsta potvrde.');
+  }
   if(action==='captcha_init'){
    const config=await timedRpc('community_test_security',uid,'runtime_config');
    if(config.enabled!==true)return send({verified:true,disabled:true});
@@ -105,6 +146,11 @@ Deno.serve(async(req:Request)=>{
    await timed('turnstile',async()=>verifyCaptcha(await decrypt(config.secret_ciphertext),args.captcha_token,config.hostname,'app_entry'));
    await timedRpc('community_test_captcha_clearance',uid,'grant');
    return send({verified:true});
+  }
+  if(!action.startsWith('admin_')){
+   const gate=await readUserGate(uid);
+   if(gate?.age_status!=='adult')fail('Pristup je dozvoljen samo punoljetnim osobama.',403);
+   if(action==='submit'&&gate?.site_rules_version!==GATE_SITE_VERSION)fail('Prije slanja moraš prihvatiti pravila zajednice.',403);
   }
   if(action==='admin_email_status')return send(await timedRpc('community_test_admin_email',uid,'status',{_session_id:args._session_id}));
   if(action==='admin_email_begin'){
