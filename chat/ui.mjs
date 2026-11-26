@@ -5,7 +5,7 @@ const button=(label,run,cls='chat-small')=>{const b=el('button',cls,label);b.typ
 export async function openChat(){
  const dialog=document.querySelector('#dialog'),root=el('section','chat-panel');let stopped=false,polling=false,timer,profile,sending=false,requestId,lastBody,pendingMessage=null,initial=true,noOlder=false,activeActionMenu=null;
  let messages=[];let activeReportOptions=null;const messageNodes=new Map();
- root.addEventListener('click',event=>{if(!activeReportOptions&&!activeActionMenu)return;if(event.target.closest('.chat-report-options, .chat-message-menu'))return;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}if(activeActionMenu)activeActionMenu.open=false;});
+ root.addEventListener('click',event=>{if(!activeReportOptions&&!activeActionMenu)return;if(event.target.closest('.chat-report-options, .chat-message-menu, .chat-message-actions'))return;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}if(activeActionMenu)activeActionMenu.open=false;});
  if(document.body.classList.contains('menu-open'))document.querySelector('#menu-toggle').click();
  dialog.classList.add('chat-room');document.body.classList.add('chat-open');document.querySelector('#dialog-title').textContent='Anonimni chat';document.querySelector('#dialog-body').replaceChildren(root);
  const close=document.querySelector('#close-dialog');close.setAttribute('aria-label','Vrati se na ispovesti');if(!dialog.open)dialog.showModal();
@@ -13,7 +13,7 @@ export async function openChat(){
  const settings=el('section','chat-settings-content');settings.append(el('h2','','Pravila i privatnost'),el('p','','Jedna zajednička anonimna soba, bez privatnih poruka. Bez pretnji, vređanja, spama, linkova i deljenja tuđih ličnih podataka. Poruke imaju najviše 1.000 znakova; fotografije nisu dozvoljene.'),el('p','','Lično blokiranje sakriva poruke izabranog korisnika samo tebi. Administratorska zabrana onemogućava pristup chatu; administrator pregleda prijave i može ukloniti ili vratiti poruku.'),el('p','','Veza koristi HTTPS. Chat nije end-to-end šifrovan: ovlašćeni moderatori i infrastruktura mogu pristupiti sadržaju. Ne šalji osetljive podatke. U javnom chatu prikazuje se najviše posljednjih 100 poruka. Starije poruke ostaju sačuvane i dostupne su samo ovlašćenom administratoru. Konačan rok čuvanja biće objavljen prije stvarnog pokretanja.'),el('p','','Chat je u probnoj fazi. Za ulazak je potreban probni pristupni kod; SMS naplata još nije povezana.'));
  const account=el('div','chat-account'),blocked=el('div');settings.append(account,blocked);privacy.append(summary,settings);top.append(privacy);
  const status=el('p','chat-status');status.setAttribute('role','status');
- const list=el('div','chat-messages');list.setAttribute('aria-label','Poruke u zajedničkoj sobi');list.setAttribute('role','log');list.setAttribute('aria-live','polite');
+ const list=el('div','chat-messages');list.addEventListener('scroll',()=>{if(activeActionMenu)activeActionMenu.open=false;},{passive:true});list.setAttribute('aria-label','Poruke u zajedničkoj sobi');list.setAttribute('role','log');list.setAttribute('aria-live','polite');
  const form=el('form','chat-compose'),text=el('textarea');text.maxLength=1000;text.required=true;text.rows=1;text.placeholder='Napiši poruku…';text.setAttribute('aria-label','Poruka u zajedničkom chatu');
  const accessGate=el('form','chat-access-gate'),gateTitle=el('h2','','Pristup četu'),gateText=el('p','','Unesi četvorocifreni pristupni kod.'),gateInput=el('input','chat-access-code'),gateSubmit=el('button','chat-access-submit','OTVORI ČET'),gateError=el('p','chat-access-error');
  gateInput.type='password';gateInput.inputMode='numeric';gateInput.pattern='[0-9]{4}';gateInput.maxLength=4;gateInput.autocomplete='one-time-code';gateInput.required=true;gateInput.setAttribute('aria-label','Četvorocifreni pristupni kod');gateInput.placeholder='••••';gateSubmit.type='submit';gateError.setAttribute('role','alert');accessGate.append(gateTitle,gateText,gateInput,gateSubmit,gateError);
@@ -27,7 +27,26 @@ export async function openChat(){
    if(!row){
     const own=m.sender===profile.id;row=el('article','chat-message '+(own?'own':'other'));row.dataset.id=id;
     const avatar=el('span','chat-avatar',avatars[m.avatar]||avatars.ghost);avatar.setAttribute('aria-hidden','true');const body=el('p','chat-body',m.body);row.append(avatar,body);
-    const actions=el('details','chat-message-menu');actions.addEventListener('toggle',()=>{if(actions.open){if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}if(activeActionMenu&&activeActionMenu!==actions)activeActionMenu.open=false;activeActionMenu=actions;}else if(activeActionMenu===actions){activeActionMenu=null;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}}});const more=el('summary','','⋮');more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
+    const actions=el('details','chat-message-menu');const more=el('summary','','⋮');actions.addEventListener('toggle',()=>{
+     if(actions.open){
+      if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}
+      if(activeActionMenu&&activeActionMenu!==actions)activeActionMenu.open=false;
+      activeActionMenu=actions;
+      root.append(menu);
+      menu.classList.add('chat-message-actions-portal');
+      menu.style.visibility='hidden';
+      const anchor=more.getBoundingClientRect(),panel=menu.getBoundingClientRect();
+      const left=Math.max(8,Math.min(anchor.right-panel.width,window.innerWidth-panel.width-8));
+      const below=window.innerHeight-anchor.bottom;
+      const top=below>=panel.height+12?anchor.bottom+6:Math.max(8,anchor.top-panel.height-6);
+      menu.style.left=left+'px';menu.style.top=top+'px';menu.style.visibility='visible';
+     }else{
+      menu.classList.remove('chat-message-actions-portal');
+      menu.style.removeProperty('left');menu.style.removeProperty('top');menu.style.removeProperty('visibility');
+      menu.remove();
+      if(activeActionMenu===actions){activeActionMenu=null;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}}
+     }
+    });more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
     const reportOptions=el('div','chat-report-options');reportOptions.hidden=true;
     const custom=el('div','chat-report-custom');custom.hidden=true;
     const detail=el('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni opis prijave');detail.style.height='28px';detail.addEventListener('input',()=>{detail.style.height='28px';detail.style.height=Math.min(detail.scrollHeight,70)+'px';});
@@ -55,7 +74,7 @@ export async function openChat(){
     menu.append(reportButton,reportOptions);
     if(!own){const blockButton=button('Blokiraj',async()=>{await chatRequest('block',{target:m.sender});actions.open=false;status.textContent='Korisnik je blokiran. Njegove poruke više nećeš vidjeti.';await loadProfile();});menu.append(blockButton);}
     if(!own)menu.append(underageButton);
-    actions.append(more,menu);row.append(actions);messageNodes.set(id,row);
+    actions.append(more);row.append(actions);messageNodes.set(id,row);
    }else{
     row.classList.toggle('own',m.sender===profile.id);row.classList.toggle('other',m.sender!==profile.id);
     const avatar=row.querySelector('.chat-avatar'),body=row.querySelector('.chat-body');
