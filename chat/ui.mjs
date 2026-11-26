@@ -74,7 +74,7 @@ export async function openChat(){
     menu.append(moreReason);
     if(!own)menu.append(underageButton);
     menu.append(reportOptions,custom);
-    actions.append(more);row.append(actions);messageNodes.set(id,row);
+    actions.append(more,menu);row.append(actions);messageNodes.set(id,row);
    }else{
     row.classList.toggle('own',m.sender===profile.id);row.classList.toggle('other',m.sender!==profile.id);
     const avatar=row.querySelector('.chat-avatar'),body=row.querySelector('.chat-body');
