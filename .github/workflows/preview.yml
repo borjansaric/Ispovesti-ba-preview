@@ -41,6 +41,7 @@ jobs:
           while IFS= read -r -d '' file; do echo "Checking $file"; node --input-type=module --check < "$file"; done < <(find . -type f \( -name '*.js' -o -name '*.mjs' \) -not -path './.git/*' -not -path './.asset-cache/*' -not -path './dist/*' -print0)
           node scripts/check-preview-isolation.mjs
           node --test supabase/functions/chat-test-api/moderation.test.mjs
+          node scripts/check-admin-report-audit-contract.mjs
           node scripts/build.mjs
 
       - name: Configure GitHub Pages
