@@ -3,7 +3,7 @@ export const avatars={ghost:'👻',moon:'🌙',star:'⭐',owl:'🦉',fox:'🦊',
 const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
 const button=(label,run,cls='chat-small')=>{const b=el('button',cls,label);b.type='button';b.onclick=()=>Promise.resolve(run()).catch(e=>alert(e.message));return b;};
 export async function openChat(){
- const dialog=document.querySelector('#dialog'),root=el('section','chat-panel');let stopped=false,polling=false,timer,profile,sending=false,requestId,lastBody,pendingMessage=null,initial=true,noOlder=false,activeActionMenu=null;
+ const dialog=document.querySelector('#dialog'),root=el('section','chat-panel');let stopped=false,polling=false,timer,profile,sending=false,requestId,lastBody,pendingMessage=null,initial=true,activeActionMenu=null;
  let messages=[];let activeReportOptions=null;const messageNodes=new Map();
  dialog.addEventListener('click',event=>{if(!activeReportOptions&&!activeActionMenu)return;if(event.target.closest('.chat-report-options, .chat-message-menu, .chat-message-actions'))return;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}if(activeActionMenu)activeActionMenu.open=false;});
  if(document.body.classList.contains('menu-open'))document.querySelector('#menu-toggle').click();
@@ -91,11 +91,11 @@ export async function openChat(){
  async function refresh(older=false,initialHistory=null){if(stopped||polling||!profile?.active||document.hidden||activeActionMenu)return;polling=true;
   try{const responses=[initialHistory||await chatRequest('history')];if(stopped)return;
    if(activeActionMenu)return;
-   const latest=responses[0],cutoff=Date.parse(latest.history_cutoff),seen=new Map();for(const r of responses)for(const m of r.items)if(Date.parse(m.created_at)>cutoff)seen.set(m.id,m);
+   const latest=responses[0],seen=new Map();for(const r of responses)for(const m of (r.items||[]))seen.set(m.id,m);
    messages=[...seen.values()].sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)||(BigInt(a.id)<BigInt(b.id)?-1:1));
    if(pendingMessage&&!seen.has(pendingMessage.id))messages.push(pendingMessage);
    root.dataset.ownSide=latest.side||profile.side||'left';
-   noOlder=true;render(messages,older);form.hidden=false;
+   render(messages,older);form.hidden=false;
   }catch(e){if(stopped)return;if([401,403].includes(e.status))resetAccess(e.message);else status.textContent=e.message;}
   finally{polling=false;}
  }
