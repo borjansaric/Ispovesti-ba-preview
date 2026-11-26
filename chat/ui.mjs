@@ -44,7 +44,7 @@ export async function openChat(){
       ['position','left','top','right','bottom','visibility'].forEach(key=>menu.style.removeProperty(key));
       if(activeActionMenu===actions){activeActionMenu=null;if(activeReportOptions){activeReportOptions.hidden=true;activeReportOptions=null;}}
      }
-    });;more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
+    });more.addEventListener('click',event=>{event.preventDefault();actions.open=!actions.open;});more.setAttribute('aria-label','Radnje uz poruku');const menu=el('div','chat-message-actions');
     const reportOptions=el('div','chat-report-options');reportOptions.hidden=true;
     const custom=el('div','chat-report-custom');custom.hidden=true;
     const detail=el('textarea');detail.rows=1;detail.maxLength=500;detail.placeholder='Opiši razlog prijave…';detail.setAttribute('aria-label','Dodatni opis prijave');detail.style.height='28px';detail.addEventListener('input',()=>{detail.style.height='28px';detail.style.height=Math.min(detail.scrollHeight,70)+'px';});
