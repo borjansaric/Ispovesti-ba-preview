@@ -54,6 +54,21 @@ jobs:
           path: ./dist
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
 
+      - name: Wait for unique Pages artifact indexing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PAGES_ARTIFACT_NAME: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          for attempt in $(seq 1 24); do
+            count=$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=$PAGES_ARTIFACT_NAME" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{process.stdout.write(String(JSON.parse(s).total_count||0))}catch{process.stdout.write('0')}})")
+            if [ "$count" -eq 1 ]; then echo "Unique Pages artifact is indexed."; exit 0; fi
+            if [ "$count" -gt 1 ]; then echo "Unexpected duplicate unique Pages artifacts were found."; exit 1; fi
+            echo "Artifact not indexed yet (attempt $attempt/24); waiting 5 seconds."
+            sleep 5
+          done
+          echo "Pages artifact did not become visible in time."
+          exit 1
+
       - name: Deploy preview only
         id: deployment
         uses: actions/deploy-pages@v4
